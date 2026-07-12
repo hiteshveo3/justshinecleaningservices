@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { AppWindowIcon, BrushCleaningIcon, CheckmarkCircle02Icon, CleaningBucketIcon, CleanIcon, InstagramIcon, Location01Icon, OfficeIcon, Sofa01Icon, StarIcon, VacuumCleanerIcon, WhatsappBusinessIcon } from "@hugeicons/core-free-icons";
+import { AppWindowIcon, BrushCleaningIcon, CheckmarkCircle02Icon, CleaningBucketIcon, CleanIcon, Clock01Icon, CustomerService01Icon, Location01Icon, OfficeIcon, Sofa01Icon, StarIcon, VacuumCleanerIcon, WhatsappBusinessIcon } from "@hugeicons/core-free-icons";
 import { CtaButtons } from "@/components/cta-buttons";
 import { FaqAccordion } from "@/components/faq-accordion";
 import { JsonLd, localBusinessSchema } from "@/components/seo";
@@ -12,6 +12,12 @@ const brandCleaningImage = "/images/Affordable Cleaning Services in Abu Dhabi - 
 const servicePhotos = services.map(() => brandCleaningImage);
 const mainServiceSlugs = ["home-cleaning", "deep-cleaning", "villa-cleaning", "office-cleaning", "carpet-cleaning", "sofa-cleaning"];
 const mainServices = services.filter((service) => mainServiceSlugs.includes(service.slug));
+const processSteps = [
+  { title: "Send details", text: "Share service type, location, timing, and photos on WhatsApp.", icon: WhatsappBusinessIcon },
+  { title: "Get guidance", text: "We confirm the right scope, starting price, and available slot.", icon: CustomerService01Icon },
+  { title: "Team arrives", text: "Trained cleaners bring the standard supplies and follow the agreed plan.", icon: Clock01Icon },
+];
+const serviceAreas = ["Al Danah", "Al Reem Island", "Khalifa City", "Yas Island", "Saadiyat Island", "Mussafah", "Al Reef", "Downtown Abu Dhabi"];
 const serviceBenefits: Record<string, string> = {
   "villa-cleaning": "Deep villa cleaning for move-in, weekly, and one-time refreshes.",
   "home-cleaning": "Flexible home cleaning for apartments, families, and busy schedules.",
@@ -157,30 +163,48 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-5 grid gap-5 lg:grid-cols-[.95fr_1.05fr]">
-            <div className="rounded-2xl border border-emerald-950/10 bg-white p-5">
-              <p className="font-medium text-emerald-950">Visit or follow Just Shine Cleaning Services</p>
-              <p className="mt-2 text-sm leading-6 text-slate-700">Al Jazeera Towers, Al Danah, Abu Dhabi. Follow service updates and recent cleaning work on Instagram and Facebook.</p>
-              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                <a className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-medium text-emerald-950 ring-1 ring-emerald-950/10 transition hover:bg-lime-50" href="https://www.instagram.com/justshine.uae/" target="_blank" rel="noreferrer">
-                  <HugeiconsIcon icon={InstagramIcon} className="icon" size={18} color="currentColor" strokeWidth={2} aria-hidden="true" />
-                  Instagram
-                </a>
-                <a className="inline-flex items-center justify-center gap-2 rounded-lg bg-lime-300 px-4 py-3 text-sm font-medium text-emerald-950 transition hover:bg-lime-200" href="https://web.facebook.com/justshinecleaningservces" target="_blank" rel="noreferrer">
-                  <HugeiconsIcon icon={Location01Icon} className="icon" size={18} color="currentColor" strokeWidth={2} aria-hidden="true" />
-                  Facebook
-                </a>
-              </div>
+        </div>
+      </section>
+      <section className="section bg-white">
+        <div className="container">
+          <div className="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:items-start">
+            <div>
+              <p className="eyebrow">How it works</p>
+              <h2 className="mt-3 text-2xl font-medium leading-tight text-emerald-950 sm:text-3xl">Simple booking.</h2>
+              <p className="mt-4 max-w-xl text-sm leading-7 text-slate-700 sm:text-base">No complicated booking flow for Phase 1. Call or WhatsApp, share the details, and we guide you to the right cleaning service.</p>
             </div>
-            <div className="overflow-hidden rounded-2xl border border-emerald-950/10 bg-white">
-              <iframe
-                allowFullScreen
-                className="h-72 w-full"
-                loading="lazy"
-                referrerPolicy="strict-origin-when-cross-origin"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3630.819462489719!2d54.36250367392074!3d24.491711459916544!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5e67002f41a8a5%3A0xc0adc04da10963b0!2sJust%20Shine%20Cleaning%20Services!5e0!3m2!1sen!2s!4v1783766623880!5m2!1sen!2s"
-                title="Just Shine Cleaning Services map"
-              />
+            <div className="grid gap-4 md:grid-cols-3">
+              {processSteps.map((step, index) => (
+                <article className="rounded-xl border border-emerald-950/10 bg-[#f8fff3] p-5" key={step.title}>
+                  <div className="flex items-center justify-between">
+                    <span className="grid size-11 place-items-center rounded-lg bg-lime-300 text-emerald-950">
+                      <HugeiconsIcon icon={step.icon} className="icon" size={21} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
+                    </span>
+                    <span className="text-sm font-medium text-emerald-800">0{index + 1}</span>
+                  </div>
+                  <h3 className="mt-5 text-lg font-medium text-emerald-950">{step.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-700">{step.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="section bg-[linear-gradient(135deg,#f8fff3_0%,#efffd6_60%,#dff8e8_100%)]">
+        <div className="container">
+          <div className="grid gap-8 lg:grid-cols-[1fr_1.2fr] lg:items-center">
+            <div>
+              <p className="eyebrow">Coverage</p>
+              <h2 className="mt-3 text-2xl font-medium leading-tight text-emerald-950 sm:text-3xl">Abu Dhabi service areas.</h2>
+              <p className="mt-4 text-sm leading-7 text-slate-700 sm:text-base">Based near Al Jazeera Towers, Al Danah. Share your location and we will confirm team availability for your area.</p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {serviceAreas.map((area) => (
+                <span className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-medium text-emerald-950 ring-1 ring-emerald-950/10" key={area}>
+                  <HugeiconsIcon icon={Location01Icon} className="icon" size={17} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
+                  {area}
+                </span>
+              ))}
             </div>
           </div>
         </div>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { GlobalSearchIcon } from "@hugeicons/core-free-icons";
+import { BookOpen01Icon, CleaningBucketIcon, GlobalSearchIcon, MessageQuestionIcon } from "@hugeicons/core-free-icons";
 import { faqs, posts, services } from "@/lib/content";
 
 type SearchItem = {
@@ -76,18 +76,23 @@ export function SiteSearch({ onSelect, compact = false }: { onSelect?: () => voi
       </div>
 
       {(query || compact) && (
-        <div className={compact ? "mt-3 grid gap-2" : "absolute right-0 top-full z-50 mt-2 grid w-80 gap-2 rounded-xl border border-emerald-950/10 bg-white p-3 shadow-lg"}>
+        <div className={compact ? "mt-3 grid gap-2" : "absolute right-0 top-full z-50 mt-2 grid max-h-[28rem] w-[24rem] overflow-y-auto rounded-2xl border border-emerald-950/10 bg-white p-3 shadow-lg"}>
           {results.length > 0 ? (
             results.map((item) => (
               <Link
-                className="rounded-lg border border-emerald-950/10 p-3 text-left transition hover:border-emerald-700 hover:bg-lime-50"
+                className="group grid grid-cols-[2.5rem_1fr] gap-3 rounded-xl border border-emerald-950/10 bg-[#fbfff7] p-3 text-left transition hover:border-lime-500 hover:bg-lime-50"
                 href={item.href}
                 key={`${item.type}-${item.href}`}
                 onClick={onSelect}
               >
-                <span className="text-[11px] font-medium uppercase text-emerald-700">{item.type}</span>
-                <span className="mt-1 block text-sm font-medium text-emerald-950">{item.title}</span>
-                <span className="mt-1 block line-clamp-2 text-xs leading-5 text-slate-600">{item.summary}</span>
+                <span className="grid size-10 place-items-center rounded-lg bg-white text-emerald-800 ring-1 ring-emerald-950/10">
+                  <HugeiconsIcon icon={item.type === "Service" ? CleaningBucketIcon : item.type === "Blog" ? BookOpen01Icon : MessageQuestionIcon} className="icon" size={18} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
+                </span>
+                <span className="min-w-0">
+                  <span className="inline-flex rounded-full bg-lime-100 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-emerald-800">{item.type}</span>
+                  <span className="mt-1 block text-sm font-medium text-emerald-950 group-hover:text-emerald-800">{item.title}</span>
+                  <span className="mt-1 block line-clamp-2 text-xs leading-5 text-slate-600">{item.summary}</span>
+                </span>
               </Link>
             ))
           ) : (

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Facebook01Icon, Linkedin01Icon, Mail01Icon, NewTwitterIcon, Share08Icon, WhatsappBusinessIcon } from "@hugeicons/core-free-icons";
 import { FaqAccordion } from "@/components/faq-accordion";
 import { ReadingProgress } from "@/components/reading-progress";
 import { JsonLd } from "@/components/seo";
@@ -51,6 +53,7 @@ export default async function BlogPost({ params }: Props) {
   const postUrl = `${site.url}/blog/${post.slug}`;
   const shareText = encodeURIComponent(post.title);
   const shareUrl = encodeURIComponent(postUrl);
+  const authorImage = "/images/Affordable Cleaning Services in Abu Dhabi - Just Shine Cleaning Services.webp";
 
   return (
     <article className="bg-white">
@@ -174,18 +177,37 @@ export default async function BlogPost({ params }: Props) {
               </div>
             )}
             <div className="rounded-2xl bg-lime-50 p-5">
-              <p className="font-medium text-emerald-950">Share</p>
-              <div className="mt-3 grid gap-2 text-sm">
-                <a className="rounded-lg bg-white px-3 py-2 text-slate-700" href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`} target="_blank" rel="noreferrer">Facebook</a>
-                <a className="rounded-lg bg-white px-3 py-2 text-slate-700" href={`https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`} target="_blank" rel="noreferrer">Twitter</a>
-                <a className="rounded-lg bg-white px-3 py-2 text-slate-700" href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`} target="_blank" rel="noreferrer">LinkedIn</a>
-                <a className="rounded-lg bg-white px-3 py-2 text-slate-700" href={`https://wa.me/?text=${shareText}%20${shareUrl}`} target="_blank" rel="noreferrer">WhatsApp</a>
-                <a className="rounded-lg bg-white px-3 py-2 text-slate-700" href={`mailto:?subject=${shareText}&body=${shareUrl}`}>Email</a>
+              <div className="flex items-center gap-2 text-emerald-950">
+                <HugeiconsIcon icon={Share08Icon} className="icon" size={18} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
+                <p className="font-medium">Share</p>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {[
+                  { label: "Facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, icon: Facebook01Icon },
+                  { label: "X", href: `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`, icon: NewTwitterIcon },
+                  { label: "LinkedIn", href: `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`, icon: Linkedin01Icon },
+                  { label: "WhatsApp", href: `https://wa.me/?text=${shareText}%20${shareUrl}`, icon: WhatsappBusinessIcon },
+                ].map((item) => (
+                  <a aria-label={`Share on ${item.label}`} className="grid size-11 place-items-center rounded-lg bg-white text-emerald-900 ring-1 ring-emerald-950/10 transition hover:bg-lime-100" href={item.href} key={item.label} target="_blank" rel="noreferrer">
+                    <HugeiconsIcon icon={item.icon} className="icon" size={19} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
+                  </a>
+                ))}
+                <a aria-label="Share by email" className="grid size-11 place-items-center rounded-lg bg-white text-emerald-900 ring-1 ring-emerald-950/10 transition hover:bg-lime-100" href={`mailto:?subject=${shareText}&body=${shareUrl}`}>
+                  <HugeiconsIcon icon={Mail01Icon} className="icon" size={19} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
+                </a>
               </div>
             </div>
             <div className="rounded-2xl bg-lime-50 p-5">
-              <p className="font-medium text-emerald-950">{post.author}</p>
-              <p className="mt-2 text-sm leading-6 text-slate-700">Expert cleaning tips from the Just Shine Cleaning Services team in Abu Dhabi.</p>
+              <div className="flex items-center gap-3">
+                <div className="relative size-14 overflow-hidden rounded-xl bg-lime-100 ring-1 ring-emerald-950/10">
+                  <Image alt={post.author} className="object-cover" fill sizes="3.5rem" src={authorImage} />
+                </div>
+                <div>
+                  <p className="font-medium text-emerald-950">{post.author}</p>
+                  <p className="text-xs text-slate-600">Abu Dhabi cleaning team</p>
+                </div>
+              </div>
+              <p className="mt-4 text-sm leading-6 text-slate-700">Expert cleaning tips from the Just Shine Cleaning Services team in Abu Dhabi.</p>
               <Link className="mt-3 inline-flex text-sm font-medium text-emerald-800 underline" href="/blog/author/just-shine-team">View author posts</Link>
             </div>
           </aside>

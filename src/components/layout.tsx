@@ -37,7 +37,7 @@ export function Header() {
   const whatsappHref = `https://wa.me/${site.tel.replace("+", "")}?text=${encodeURIComponent("Hi Just Shine Cleaning Services, I need cleaning in Abu Dhabi.")}`;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-emerald-950/10 bg-white/90 backdrop-blur">
+    <header className="header-solid sticky top-0 z-40 border-b border-emerald-950/10">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2 font-medium text-emerald-950">
           <span className="grid size-10 place-items-center rounded-lg bg-lime-300 text-emerald-950 ring-1 ring-lime-600/20"><HugeiconsIcon icon={SparklesIcon} className="icon" size={21} color="currentColor" strokeWidth={2} aria-hidden="true" /></span>
@@ -52,18 +52,19 @@ export function Header() {
               Services
               <HugeiconsIcon icon={ArrowDown01Icon} className="icon transition group-hover:rotate-180" size={15} color="currentColor" strokeWidth={2} aria-hidden="true" />
             </Link>
-            <div className="invisible fixed left-1/2 top-[3.72rem] w-[min(46rem,calc(100vw-2rem))] -translate-x-1/2 pt-2 opacity-0 transition duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-              <div className="max-h-[calc(100vh-6rem)] overflow-y-auto rounded-2xl border border-emerald-950/10 bg-white/95 p-4 shadow-[0_18px_48px_rgba(16,35,27,.12)] backdrop-blur">
-                <div className="grid gap-5 lg:grid-cols-3">
+            <div className="invisible fixed left-1/2 top-[3.72rem] w-[min(58rem,calc(100vw-2rem))] -translate-x-1/2 pt-3 opacity-0 transition duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+              <div className="max-h-[calc(100vh-6.25rem)] overflow-y-auto rounded-2xl border border-emerald-950/10 bg-white p-5 shadow-[0_18px_48px_rgba(16,35,27,.12)]">
+                <div className="grid gap-4 lg:grid-cols-3">
                     {serviceGroups.map((group) => (
-                      <div key={group.title}>
-                        <h3 className="px-3 text-xs font-medium uppercase tracking-[0.08em] text-emerald-700">{group.title}</h3>
+                      <div className="rounded-xl bg-[#f8fff3] p-2 ring-1 ring-emerald-950/10" key={group.title}>
+                        <h3 className="px-3 py-2 text-xs font-medium uppercase tracking-[0.08em] text-emerald-700">{group.title}</h3>
                         <div className="mt-2 grid gap-1">
                           {group.items.map((slug) => {
                             const service = services.find((item) => item.slug === slug)!;
                             return (
-                              <Link className="block rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-950 transition hover:bg-[#f3ffe8] hover:text-emerald-900 focus:bg-[#f3ffe8] focus:text-emerald-900" key={service.slug} href={`/services/${service.slug}`}>
-                                {service.name.replace(" Services", "")}
+                              <Link className="flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-950 transition hover:bg-lime-100 hover:text-emerald-900 focus:bg-lime-100 focus:text-emerald-900" key={service.slug} href={`/services/${service.slug}`}>
+                                <span>{service.name.replace(" Services", "")}</span>
+                                <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-normal text-emerald-800 ring-1 ring-emerald-950/10">AED {service.price}</span>
                               </Link>
                             );
                           })}
@@ -71,9 +72,9 @@ export function Header() {
                       </div>
                     ))}
                 </div>
-                <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-[#f6fff0] px-4 py-3">
-                  <p className="text-sm font-medium text-emerald-950">Explore all cleaning services</p>
-                  <Link className="rounded-lg bg-lime-300 px-4 py-2 text-sm font-medium text-emerald-950" href="/services">View all</Link>
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_58%,#dff8e8_100%)] px-4 py-3 ring-1 ring-emerald-950/10">
+                  <p className="text-sm font-medium text-emerald-950">Need help choosing? See all services with filters and pricing.</p>
+                  <Link className="rounded-lg bg-emerald-900 px-4 py-2 text-sm font-medium text-white" href="/services">View all services</Link>
                 </div>
               </div>
             </div>

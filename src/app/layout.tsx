@@ -26,7 +26,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" suppressHydrationWarning>
       <body>
         <Header />
-        <main>{children}</main>
+        <main className="min-h-screen">{children}</main>
         <BottomCta />
         <Footer />
         <GoToTop />
