@@ -155,12 +155,12 @@ summary::-webkit-details-marker { display: none; }
   justify-content: center;
   min-height: 3rem;
   padding: .75rem 1rem;
-  transition: background .2s ease, color .2s ease, transform .2s ease;
+  transition: background .2s ease, color .2s ease, transform .2s ease, box-shadow .2s ease;
 }
 .btn-primary { background: #0b4f2f; color: white; }
-.btn-primary:hover { background: #063d25; transform: translateY(-1px); }
+.btn-primary:hover { background: #063d25; box-shadow: 0 10px 22px rgba(11, 79, 47, .16); transform: translateY(-1px); }
 .btn-secondary { background: #d9ff42; color: #10231b; }
-.btn-secondary:hover { background: #c6ef29; transform: translateY(-1px); }
+.btn-secondary:hover { background: #c6ef29; box-shadow: 0 10px 22px rgba(149, 191, 22, .16); transform: translateY(-1px); }
 .cta-button-grid {
   display: grid;
   gap: .75rem;

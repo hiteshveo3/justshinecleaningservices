@@ -107,7 +107,7 @@ export default function Home() {
                       <span className="rounded-lg bg-white px-2.5 py-1 text-xs text-emerald-950 ring-1 ring-emerald-950/10" key={highlight}>{highlight}</span>
                     ))}
                   </div>
-                  <div className="mt-5 flex items-center justify-between gap-3 border-t border-emerald-950/10 pt-4">
+                  <div className="mt-5 rounded-lg bg-white/80 px-3 py-2 ring-1 ring-emerald-950/10">
                     <span className="text-sm font-medium text-emerald-950">{servicePriceLabel(service)} <span className="font-normal text-slate-600">| {service.duration} hrs</span></span>
                   </div>
                   <div className="mt-4 grid grid-cols-[1fr_auto] gap-3">
@@ -162,11 +162,11 @@ export default function Home() {
               <p className="font-medium text-emerald-950">Visit or follow Just Shine Cleaning Services</p>
               <p className="mt-2 text-sm leading-6 text-slate-700">Al Jazeera Towers, Al Danah, Abu Dhabi. Follow service updates and recent cleaning work on Instagram and Facebook.</p>
               <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                <a className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-medium text-emerald-950 ring-1 ring-emerald-950/10" href="https://www.instagram.com/justshine.uae/" target="_blank" rel="noreferrer">
+                <a className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-medium text-emerald-950 ring-1 ring-emerald-950/10 transition hover:-translate-y-0.5 hover:bg-lime-50" href="https://www.instagram.com/justshine.uae/" target="_blank" rel="noreferrer">
                   <HugeiconsIcon icon={InstagramIcon} className="icon" size={18} color="currentColor" strokeWidth={2} aria-hidden="true" />
                   Instagram
                 </a>
-                <a className="inline-flex items-center justify-center gap-2 rounded-lg bg-lime-300 px-4 py-3 text-sm font-medium text-emerald-950" href="https://web.facebook.com/justshinecleaningservces" target="_blank" rel="noreferrer">
+                <a className="inline-flex items-center justify-center gap-2 rounded-lg bg-lime-300 px-4 py-3 text-sm font-medium text-emerald-950 transition hover:-translate-y-0.5 hover:bg-lime-200" href="https://web.facebook.com/justshinecleaningservces" target="_blank" rel="noreferrer">
                   <HugeiconsIcon icon={Location01Icon} className="icon" size={18} color="currentColor" strokeWidth={2} aria-hidden="true" />
                   Facebook
                 </a>

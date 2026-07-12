@@ -18,7 +18,7 @@ import {
 import { SiteSearch } from "./site-search";
 import { services, site } from "@/lib/content";
 
-const whatsappHref = `https://wa.me/${site.tel.replace("+", "")}?text=${encodeURIComponent("I need cleaning")}`;
+const whatsappHref = `https://wa.me/${site.tel.replace("+", "")}?text=${encodeURIComponent("Hi Just Shine Cleaning Services, I need cleaning in Abu Dhabi. Location: Service type: Preferred date/time:")}`;
 
 export function MobileBottomNav() {
   const [open, setOpen] = useState(false);
@@ -76,12 +76,12 @@ export function MobileBottomNav() {
               ))}
             </div>
 
-            <div className="mt-5 rounded-xl bg-lime-50 p-4">
+            <div className="mt-5 rounded-xl bg-lime-50 p-4 ring-1 ring-emerald-950/10">
               <p className="text-sm font-medium text-emerald-950">Popular services</p>
-              <div className="mt-3 grid gap-2">
+              <div className="mt-3 grid grid-cols-2 gap-2">
                 {services.slice(0, 4).map((service) => (
-                  <Link className="text-sm text-slate-700" href={`/services/${service.slug}`} key={service.slug} onClick={() => setOpen(false)}>
-                    {service.name}
+                  <Link className="rounded-lg bg-white px-3 py-2 text-sm font-medium text-emerald-950 ring-1 ring-emerald-950/10" href={`/services/${service.slug}`} key={service.slug} onClick={() => setOpen(false)}>
+                    {service.name.replace(" Services", "")}
                   </Link>
                 ))}
               </div>
