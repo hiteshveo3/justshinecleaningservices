@@ -5,7 +5,7 @@ import { CallIcon, WhatsappBusinessIcon } from "@hugeicons/core-free-icons";
 import { site } from "@/lib/content";
 
 export function CtaButtons({ service = "home" }: { service?: string }) {
-  const text = encodeURIComponent(`I need ${service} cleaning`);
+  const text = encodeURIComponent(`Hi Just Shine Cleaning Services, I need ${service} cleaning in Abu Dhabi. Location: Preferred date/time: Home size: Photos/details:`);
   const track = (event: string) => {
     window.gtag?.("event", event, { service });
   };

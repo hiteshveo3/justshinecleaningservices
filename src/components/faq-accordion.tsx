@@ -30,6 +30,10 @@ export function FaqAccordion({ items, idPrefix = "faq" }: { items: FaqItem[]; id
 }
 
 function FaqRow({ item, id, open, onToggle }: { item: FaqItem; id: string; open: boolean; onToggle: () => void }) {
+  const [showFull, setShowFull] = useState(false);
+  const isLong = item.a.length > 950;
+  const answer = isLong && !showFull ? `${item.a.slice(0, 900).trim()}...` : item.a;
+
   return (
     <div className="scroll-mt-24 rounded-xl border border-emerald-950/10 bg-[#f6fff0] transition hover:border-emerald-900/20 hover:bg-[#f3ffe8]" id={id}>
       <button
@@ -51,8 +55,17 @@ function FaqRow({ item, id, open, onToggle }: { item: FaqItem; id: string; open:
       <div className={`overflow-hidden transition-all duration-700 ease-in-out ${open ? "max-h-[5000px] opacity-100" : "max-h-0 opacity-0"}`}>
         <div className="px-5 pb-5 md:pl-[4.25rem]">
           <div className="whitespace-pre-line rounded-lg bg-white/70 p-4 text-sm leading-7 text-slate-700 ring-1 ring-emerald-950/10 sm:text-base">
-            {item.a}
+            {answer}
           </div>
+          {isLong && (
+            <button
+              className="mt-3 inline-flex min-h-10 items-center justify-center rounded-lg bg-lime-300 px-4 text-sm font-medium text-emerald-950 transition hover:bg-lime-200"
+              type="button"
+              onClick={() => setShowFull((value) => !value)}
+            >
+              {showFull ? "Show shorter answer" : "Read full answer"}
+            </button>
+          )}
           {item.links && item.links.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2">
               {item.links.map((link) => (
