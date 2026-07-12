@@ -14,6 +14,11 @@ type SearchItem = {
   keywords: string;
 };
 
+function compactSummary(text: string) {
+  const cleaned = text.replace(/\s+/g, " ").replace(/\s-\s/g, " ");
+  return cleaned.length > 145 ? `${cleaned.slice(0, 142).trim()}...` : cleaned;
+}
+
 const searchItems: SearchItem[] = [
   ...services.map((service) => ({
     title: service.name,
@@ -33,7 +38,7 @@ const searchItems: SearchItem[] = [
     title: faq.q,
     href: `/faq#faq-${index + 1}`,
     type: "FAQ" as const,
-    summary: faq.a,
+    summary: compactSummary(faq.a),
     keywords: `${faq.q} ${faq.a}`,
   })),
 ];

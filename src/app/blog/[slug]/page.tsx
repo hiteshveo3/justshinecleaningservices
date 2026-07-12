@@ -100,7 +100,7 @@ export default async function BlogPost({ params }: Props) {
               <div className="sticky top-16 z-20 -mx-4 mb-4 border-y border-emerald-950/10 bg-white/95 px-4 py-2 backdrop-blur lg:hidden">
                 <div className="no-scrollbar flex gap-2 overflow-x-auto text-sm text-slate-700">
                   <span className="shrink-0 rounded-lg bg-lime-100 px-3 py-2 text-xs font-medium uppercase tracking-wide text-emerald-900">On this page</span>
-                  {headings.map((heading) => <a className="shrink-0 rounded-lg bg-[#f6fff0] px-3 py-2 ring-1 ring-emerald-950/10" href={`#${heading.id}`} key={heading.id}>{heading.text}</a>)}
+                  {headings.map((heading, index) => <a className="shrink-0 rounded-lg bg-[#f6fff0] px-3 py-2 ring-1 ring-emerald-950/10" href={`#${heading.id}`} key={heading.id}>{index + 1}. {heading.text}</a>)}
                 </div>
               </div>
             )}
@@ -172,7 +172,7 @@ export default async function BlogPost({ params }: Props) {
               <div className="rounded-2xl bg-lime-50 p-5">
                 <p className="font-medium text-emerald-950">Table of contents</p>
                 <div className="mt-3 grid gap-2 text-sm text-slate-700">
-                  {headings.map((heading) => <a href={`#${heading.id}`} key={heading.id}>{heading.text}</a>)}
+                  {headings.map((heading, index) => <a className="grid grid-cols-[1.5rem_1fr] gap-2 rounded-lg px-2 py-1.5 transition hover:bg-white" href={`#${heading.id}`} key={heading.id}><span className="text-emerald-700">{index + 1}.</span><span>{heading.text}</span></a>)}
                 </div>
               </div>
             )}
@@ -218,9 +218,14 @@ export default async function BlogPost({ params }: Props) {
             <h2 className="text-2xl font-medium text-emerald-950">Related posts</h2>
             <div className="mt-5 grid gap-4 md:grid-cols-3">
               {related.map((item) => (
-                <Link className="rounded-xl bg-lime-50 p-5" href={`/blog/${item.slug}`} key={item.slug}>
-                  <span className="text-xs text-slate-600">{item.publishedAt}</span>
-                  <span className="mt-2 block font-medium text-emerald-950">{item.title}</span>
+                <Link className="overflow-hidden rounded-xl bg-lime-50 ring-1 ring-emerald-950/10" href={`/blog/${item.slug}`} key={item.slug}>
+                  <span className="relative block aspect-[4/3] bg-lime-100">
+                    <Image alt={item.title} className="object-cover" fill sizes="(min-width: 768px) 33vw, 100vw" src={item.featured_image} />
+                  </span>
+                  <span className="block p-5">
+                    <span className="text-xs text-slate-600">{item.publishedAt}</span>
+                    <span className="mt-2 block font-medium text-emerald-950">{item.title}</span>
+                  </span>
                 </Link>
               ))}
             </div>

@@ -17,6 +17,17 @@ const processSteps = [
   { title: "Get guidance", text: "We confirm the right scope, starting price, and available slot.", icon: CustomerService01Icon },
   { title: "Team arrives", text: "Trained cleaners bring the standard supplies and follow the agreed plan.", icon: Clock01Icon },
 ];
+const trustPoints = [
+  "Residential and commercial cleaning",
+  "Clear starting prices before booking",
+  "WhatsApp quote with photos and location",
+  "Flexible hourly and visit-based services",
+];
+const cleaningPlans = [
+  { title: "Quick refresh", text: "For regular dust, floors, bathrooms, and visible daily mess.", href: "/services/home-cleaning" },
+  { title: "Full reset", text: "For hidden dust, grease, grout, corners, and detailed home cleaning.", href: "/services/deep-cleaning" },
+  { title: "Special care", text: "For sofas, carpets, windows, pest control, offices, and move-in/out cleaning.", href: "/services" },
+];
 const serviceAreas = ["Al Danah", "Al Reem Island", "Khalifa City", "Yas Island", "Saadiyat Island", "Mussafah", "Al Reef", "Downtown Abu Dhabi"];
 const serviceBenefits: Record<string, string> = {
   "villa-cleaning": "Deep villa cleaning for move-in, weekly, and one-time refreshes.",
@@ -74,11 +85,25 @@ export default function Home() {
                 sizes="(min-width: 1024px) 45vw, 100vw"
                 src={brandCleaningImage}
               />
-              <div className="absolute inset-x-4 bottom-4 rounded-xl bg-white/92 p-4 backdrop-blur">
-                <p className="text-sm font-medium text-emerald-950">Homes | Offices | Deep Cleaning</p>
-                <p className="mt-1 text-xs text-slate-600">Reliable, affordable, professional cleaning in Abu Dhabi.</p>
+              <div className="absolute bottom-4 left-4 max-w-[18rem] rounded-xl bg-white/92 p-3 ring-1 ring-emerald-950/10 backdrop-blur">
+                <p className="text-sm font-medium text-emerald-950">Homes | Offices</p>
+                <p className="mt-1 text-xs text-slate-600">Fast cleaning quotes in Abu Dhabi.</p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+      <section className="section bg-white">
+        <div className="container">
+          <div className="grid gap-4 md:grid-cols-4">
+            {trustPoints.map((point) => (
+              <div className="flex items-center gap-3 rounded-xl border border-emerald-950/10 bg-[#f8fff3] p-4" key={point}>
+                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-lime-300 text-emerald-950">
+                  <HugeiconsIcon icon={CheckmarkCircle02Icon} className="icon" size={18} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
+                </span>
+                <p className="text-sm font-medium leading-5 text-emerald-950">{point}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -187,6 +212,26 @@ export default function Home() {
                 </article>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+      <section className="section bg-lime-50">
+        <div className="container">
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div>
+              <p className="eyebrow">Choose a plan</p>
+              <h2 className="mt-3 max-w-xl text-2xl font-medium leading-tight text-emerald-950 sm:text-3xl">Pick the cleaning level that fits the job.</h2>
+            </div>
+            <Link className="font-medium text-emerald-800 underline" href="/pricing">See pricing</Link>
+          </div>
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
+            {cleaningPlans.map((plan, index) => (
+              <Link className="rounded-xl border border-emerald-950/10 bg-white p-5 transition hover:bg-[#f8fff3]" href={plan.href} key={plan.title}>
+                <span className="text-sm font-medium text-emerald-700">0{index + 1}</span>
+                <h3 className="mt-4 text-xl font-medium text-emerald-950">{plan.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-slate-700">{plan.text}</p>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
