@@ -1,0 +1,210 @@
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { FaqAccordion } from "@/components/faq-accordion";
+import { ReadingProgress } from "@/components/reading-progress";
+import { JsonLd } from "@/components/seo";
+import { getBlogPosts } from "@/lib/data";
+import { servicePriceLabel, services, site } from "@/lib/content";
+import { extractHeadings, readingTime, relatedPosts, withHeadingIds } from "@/lib/blog";
+
+type Props = { params: Promise<{ slug: string }> };
+
+export async function generateStaticParams() {
+  return (await getBlogPosts()).map((post) => ({ slug: post.slug }));
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const post = (await getBlogPosts()).find((item) => item.slug === slug);
+  if (!post) return {};
+  return {
+    title: post.title,
+    description: post.excerpt,
+    alternates: { canonical: `/blog/${post.slug}` },
+    openGraph: { title: post.title, description: post.excerpt, images: [post.featured_image], type: "article" },
+    twitter: { card: "summary_large_image", title: post.title, description: post.excerpt, images: [post.featured_image] },
+  };
+}
+
+export default async function BlogPost({ params }: Props) {
+  const { slug } = await params;
+  const posts = await getBlogPosts();
+  const post = posts.find((item) => item.slug === slug);
+  if (!post) notFound();
+  const isDeepCleaningGuide = post.slug === "deep-cleaning-services-abu-dhabi-guide-2026";
+  const faqSplit = isDeepCleaningGuide ? post.content.split("<h2>Frequently Asked Questions</h2>") : [post.content];
+  const mainArticleContent = faqSplit[0];
+  const headings = extractHeadings(mainArticleContent);
+  const content = withHeadingIds(mainArticleContent);
+  const faqItems = isDeepCleaningGuide ? [
+    { q: "How long does deep cleaning take?", a: "Most homes take 4-8 hours depending on size and condition. Large villas may require a longer visit or larger team." },
+    { q: "Is deep cleaning safe for pets and children?", a: "Yes, professional teams can use family-safe products. Tell the team about pets, allergies, or sensitive surfaces before the visit." },
+    { q: "What should I do before cleaners arrive?", a: "Clear floors, secure valuables, move lightweight items, and share priority areas or photos on WhatsApp." },
+    { q: "Can deep cleaning remove all stains?", a: "Most stains improve, but permanent damage cannot always be reversed. It is best to discuss expectations before starting." },
+    { q: "How often should villas get deep cleaning in Abu Dhabi?", a: "Every 8-12 weeks works for many villas. Homes with pets, allergies, or high traffic may benefit from monthly deep cleaning." },
+  ] : [];
+  const relatedServices = services.filter((service) => ["deep-cleaning", "sofa-cleaning", "carpet-cleaning", "move-in-out-cleaning"].includes(service.slug));
+  const related = relatedPosts(post, posts);
+  const minutes = readingTime(post.content);
+  const postUrl = `${site.url}/blog/${post.slug}`;
+  const shareText = encodeURIComponent(post.title);
+  const shareUrl = encodeURIComponent(postUrl);
+
+  return (
+    <article className="bg-white">
+      <ReadingProgress />
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: post.title,
+        description: post.excerpt,
+        image: `${site.url}${post.featured_image}`,
+        author: { "@type": "Person", name: post.author },
+        publisher: { "@type": "Organization", name: site.name },
+        datePublished: post.publishedAt,
+        dateModified: post.publishedAt,
+        mainEntityOfPage: postUrl,
+      }} />
+      <section className="bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-end">
+          <div className="min-w-0">
+            <p className="eyebrow">Cleaning guide</p>
+            <h1 className="mt-4 text-3xl font-semibold leading-tight text-emerald-950 sm:text-4xl lg:text-[2.65rem]">{post.title}</h1>
+            <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-700">{post.excerpt}</p>
+            <div className="mt-5 flex flex-wrap gap-3 text-sm text-slate-600">
+              <span>By {post.author}</span>
+              <span>{post.publishedAt}</span>
+              <span>{minutes} min read</span>
+            </div>
+            <div className="mt-5 flex flex-wrap gap-2 text-xs text-emerald-950">
+              <span className="rounded-lg bg-white/80 px-3 py-2 ring-1 ring-emerald-950/10">Abu Dhabi cleaning experts</span>
+              <span className="rounded-lg bg-white/80 px-3 py-2 ring-1 ring-emerald-950/10">Updated 2026</span>
+              <span className="rounded-lg bg-white/80 px-3 py-2 ring-1 ring-emerald-950/10">Fast WhatsApp quote</span>
+            </div>
+          </div>
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-lime-100 ring-1 ring-emerald-950/10">
+            <Image alt={post.title} className="h-full w-full object-cover" fill priority sizes="(min-width: 1024px) 18rem, 100vw" src={post.featured_image} />
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
+          <div className="min-w-0">
+            {headings.length > 0 && (
+              <div className="sticky top-16 z-20 -mx-4 mb-4 border-y border-emerald-950/10 bg-white/95 px-4 py-2 backdrop-blur lg:hidden">
+                <div className="no-scrollbar flex gap-2 overflow-x-auto text-sm text-slate-700">
+                  <span className="shrink-0 rounded-lg bg-lime-100 px-3 py-2 text-xs font-medium uppercase tracking-wide text-emerald-900">On this page</span>
+                  {headings.map((heading) => <a className="shrink-0 rounded-lg bg-[#f6fff0] px-3 py-2 ring-1 ring-emerald-950/10" href={`#${heading.id}`} key={heading.id}>{heading.text}</a>)}
+                </div>
+              </div>
+            )}
+
+            {isDeepCleaningGuide && (
+              <>
+                <div className="rounded-2xl bg-lime-50 p-5 ring-1 ring-emerald-950/10">
+                  <p className="text-xs font-medium uppercase text-emerald-800">Quick answer</p>
+                  <p className="mt-3 text-lg leading-8 text-emerald-950">Deep cleaning in Abu Dhabi is best every 8-12 weeks for most homes, with higher frequency for pets, allergies, or villas exposed to heavy dust. Just Shine Cleaning Services starts deep cleaning from {servicePriceLabel(services.find((service) => service.slug === "deep-cleaning")!)}.</p>
+                </div>
+                <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-2xl bg-[#f6fff0] p-5 ring-1 ring-emerald-950/10">
+                    <p className="text-sm font-medium text-emerald-950">Regular Cleaning</p>
+                    <p className="mt-2 text-sm leading-6 text-slate-700">Best for weekly maintenance, visible dust, floors, counters, bathrooms, and day-to-day freshness.</p>
+                  </div>
+                  <div className="rounded-2xl bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] p-5 ring-1 ring-emerald-950/10">
+                    <p className="text-sm font-medium text-emerald-950">Deep Cleaning</p>
+                    <p className="mt-2 text-sm leading-6 text-slate-700">Best for hidden dust, kitchen grease, grout, vents, corners, baseboards, and full-home reset.</p>
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div className="blog-content" dangerouslySetInnerHTML={{ __html: content }} />
+
+            {isDeepCleaningGuide && (
+              <div className="mt-8 rounded-2xl bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] p-5 ring-1 ring-emerald-950/10">
+                <p className="font-medium text-emerald-950">Want an exact quote?</p>
+                <p className="mt-2 text-sm leading-6 text-slate-700">Send your home size, location, preferred timing, and photos on WhatsApp. We will guide you with the right service scope.</p>
+                <a className="mt-4 inline-flex rounded-lg bg-lime-300 px-4 py-3 text-sm font-medium text-emerald-950" href={`https://wa.me/${site.tel.replace("+", "")}?text=${encodeURIComponent("Hi Just Shine Cleaning Services, I need a deep cleaning quote in Abu Dhabi. Home size: Location: Preferred date/time: Photos/details:")}`}>WhatsApp for Quote</a>
+              </div>
+            )}
+
+            {faqItems.length > 0 && (
+              <section className="mt-10">
+                <p className="eyebrow">FAQ</p>
+                <h2 className="mt-4 text-2xl font-medium text-emerald-950">Deep cleaning questions</h2>
+                <div className="mt-5"><FaqAccordion items={faqItems} /></div>
+              </section>
+            )}
+
+            <div className="mt-8 rounded-2xl bg-lime-50 p-5">
+              <p className="font-medium text-emerald-950">Need help with cleaning?</p>
+              <p className="mt-2 text-sm leading-6 text-slate-700">Share photos, location, and preferred timing with Just Shine Cleaning Services for a quick quote.</p>
+              <Link className="mt-4 inline-flex rounded-lg bg-emerald-900 px-4 py-3 text-sm font-medium text-white" href="/contact">Contact Just Shine Cleaning Services</Link>
+            </div>
+
+            {isDeepCleaningGuide && (
+              <section className="mt-10">
+                <h2 className="text-2xl font-medium text-emerald-950">Related services</h2>
+                <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                  {relatedServices.map((service) => (
+                    <div className="rounded-2xl bg-lime-50 p-5 ring-1 ring-emerald-950/10" key={service.slug}>
+                      <p className="font-medium text-emerald-950">{service.name}</p>
+                      <p className="mt-2 text-sm text-slate-700">{servicePriceLabel(service)}</p>
+                      <div className="mt-4 flex gap-2">
+                        <Link className="rounded-lg bg-white px-3 py-2 text-sm font-medium text-emerald-900 ring-1 ring-emerald-950/10" href={`/services/${service.slug}`}>Details</Link>
+                        <a className="rounded-lg bg-lime-300 px-3 py-2 text-sm font-medium text-emerald-950" href={`https://wa.me/${site.tel.replace("+", "")}?text=${encodeURIComponent(`Hi Just Shine Cleaning Services, I need ${service.name} in Abu Dhabi.`)}`}>WhatsApp</a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+
+          <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
+            {headings.length > 0 && (
+              <div className="rounded-2xl bg-lime-50 p-5">
+                <p className="font-medium text-emerald-950">Table of contents</p>
+                <div className="mt-3 grid gap-2 text-sm text-slate-700">
+                  {headings.map((heading) => <a href={`#${heading.id}`} key={heading.id}>{heading.text}</a>)}
+                </div>
+              </div>
+            )}
+            <div className="rounded-2xl bg-lime-50 p-5">
+              <p className="font-medium text-emerald-950">Share</p>
+              <div className="mt-3 grid gap-2 text-sm">
+                <a className="rounded-lg bg-white px-3 py-2 text-slate-700" href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`} target="_blank" rel="noreferrer">Facebook</a>
+                <a className="rounded-lg bg-white px-3 py-2 text-slate-700" href={`https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`} target="_blank" rel="noreferrer">Twitter</a>
+                <a className="rounded-lg bg-white px-3 py-2 text-slate-700" href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`} target="_blank" rel="noreferrer">LinkedIn</a>
+                <a className="rounded-lg bg-white px-3 py-2 text-slate-700" href={`https://wa.me/?text=${shareText}%20${shareUrl}`} target="_blank" rel="noreferrer">WhatsApp</a>
+                <a className="rounded-lg bg-white px-3 py-2 text-slate-700" href={`mailto:?subject=${shareText}&body=${shareUrl}`}>Email</a>
+              </div>
+            </div>
+            <div className="rounded-2xl bg-lime-50 p-5">
+              <p className="font-medium text-emerald-950">{post.author}</p>
+              <p className="mt-2 text-sm leading-6 text-slate-700">Expert cleaning tips from the Just Shine Cleaning Services team in Abu Dhabi.</p>
+              <Link className="mt-3 inline-flex text-sm font-medium text-emerald-800 underline" href="/blog/author/just-shine-team">View author posts</Link>
+            </div>
+          </aside>
+        </div>
+
+        {related.length > 0 && (
+          <section className="mx-auto mt-14 max-w-7xl">
+            <h2 className="text-2xl font-medium text-emerald-950">Related posts</h2>
+            <div className="mt-5 grid gap-4 md:grid-cols-3">
+              {related.map((item) => (
+                <Link className="rounded-xl bg-lime-50 p-5" href={`/blog/${item.slug}`} key={item.slug}>
+                  <span className="text-xs text-slate-600">{item.publishedAt}</span>
+                  <span className="mt-2 block font-medium text-emerald-950">{item.title}</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+      </section>
+    </article>
+  );
+}
