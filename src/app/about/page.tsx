@@ -45,15 +45,16 @@ export default function AboutPage() {
       <section className="section hero-gradient">
         <div className="container grid gap-10 lg:grid-cols-[.9fr_.7fr] lg:items-center">
           <div>
-            <p className="eyebrow">About Just Shine Cleaning Services</p>
-            <h1 className="mt-4 max-w-4xl text-3xl font-medium leading-tight text-emerald-950 sm:text-4xl">Just Shine Cleaning Services for Abu Dhabi homes and businesses.</h1>
+            <p className="eyebrow bg-white/90 text-emerald-900 ring-1 ring-emerald-950/10">About Just Shine Cleaning Services</p>
+            <h1 className="mt-4 max-w-3xl text-[2rem] font-medium leading-tight text-emerald-950 sm:text-4xl">Reliable cleaning for Abu Dhabi homes and businesses.</h1>
             <p className="mt-5 max-w-2xl text-base leading-8 text-slate-700">We&apos;re more than just a cleaning company. We&apos;re your trusted partner for creating spotless, healthy, and welcoming spaces across Abu Dhabi.</p>
             <div className="mt-6 max-w-xl"><CtaButtons service="home" /></div>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            {stats.map((stat) => (
-              <div key={stat} className="rounded-lg border border-emerald-950/10 bg-white/75 p-4">
-                <p className="text-lg font-medium text-emerald-950">{stat}</p>
+            {stats.map((stat, index) => (
+              <div key={stat} className="group rounded-xl border border-emerald-950/10 bg-white/75 p-4 transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-[0_14px_30px_rgba(16,35,27,.08)]">
+                <span className="text-xs font-medium text-emerald-700">0{index + 1}</span>
+                <p className="mt-2 text-base font-medium leading-snug text-emerald-950 sm:text-lg">{stat}</p>
               </div>
             ))}
           </div>

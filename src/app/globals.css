@@ -214,17 +214,18 @@ summary::-webkit-details-marker { display: none; }
   border-color: rgba(11, 79, 47, .2);
 }
 .service-card {
-  background: linear-gradient(180deg, #f6fff0 0%, #efffde 100%);
-  border: 1px solid rgba(16, 35, 27, .1);
+  background: linear-gradient(180deg, #fbfff7 0%, #f2ffe8 100%);
+  border: 1px solid rgba(16, 35, 27, .08);
   border-radius: .85rem;
   min-height: 100%;
   padding: 1.1rem;
-  transition: background .2s ease, border-color .2s ease, transform .2s ease;
+  transition: background .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease;
 }
 .service-card:hover {
-  background: linear-gradient(180deg, #f3ffe8 0%, #e9ffd2 100%);
-  border-color: rgba(11, 79, 47, .2);
-  transform: translateY(-2px);
+  background: linear-gradient(180deg, #f8fff3 0%, #efffdd 100%);
+  border-color: rgba(11, 79, 47, .14);
+  box-shadow: 0 14px 34px rgba(16, 35, 27, .08);
+  transform: translateY(-1px);
 }
 .service-icon {
   align-items: center;

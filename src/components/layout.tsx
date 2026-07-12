@@ -21,8 +21,6 @@ const serviceGroups = [
   { title: "Commercial", items: ["office-cleaning", "restaurant-cleaning", "showroom-cleaning"] },
 ];
 
-const popularServices = ["deep-cleaning", "villa-cleaning", "sofa-cleaning"];
-
 const legalLinks = [
   ["Terms & Conditions", "/terms"],
   ["Privacy Policy", "/privacy"],
@@ -36,16 +34,16 @@ const legalLinks = [
 ];
 
 export function Header() {
-  const whatsappHref = `https://wa.me/${site.tel.replace("+", "")}?text=${encodeURIComponent("I need cleaning")}`;
+  const whatsappHref = `https://wa.me/${site.tel.replace("+", "")}?text=${encodeURIComponent("Hi Just Shine Cleaning Services, I need cleaning in Abu Dhabi.")}`;
 
   return (
     <header className="sticky top-0 z-40 border-b border-emerald-950/10 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2 font-medium text-emerald-950">
-          <span className="grid size-10 place-items-center rounded bg-lime-300 text-emerald-950"><HugeiconsIcon icon={SparklesIcon} className="icon" size={21} color="currentColor" strokeWidth={2} aria-hidden="true" /></span>
-          <span className="leading-tight">
-            <span className="block sm:hidden">Just Shine Cleaning Services</span>
-            <span className="hidden sm:block">Just Shine Cleaning Services</span>
+          <span className="grid size-10 place-items-center rounded-lg bg-lime-300 text-emerald-950 ring-1 ring-lime-600/20"><HugeiconsIcon icon={SparklesIcon} className="icon" size={21} color="currentColor" strokeWidth={2} aria-hidden="true" /></span>
+          <span className="leading-tight tracking-[-0.01em]">
+            <span className="block max-w-[9rem] text-sm sm:hidden">Just Shine Cleaning Services</span>
+            <span className="hidden text-[0.95rem] sm:block">Just Shine Cleaning Services</span>
           </span>
         </Link>
         <nav className="hidden items-center gap-2 text-sm font-normal text-slate-700 md:flex">
@@ -54,35 +52,17 @@ export function Header() {
               Services
               <HugeiconsIcon icon={ArrowDown01Icon} className="icon transition group-hover:rotate-180" size={15} color="currentColor" strokeWidth={2} aria-hidden="true" />
             </Link>
-            <div className="invisible fixed left-1/2 top-[3.72rem] w-[min(64rem,calc(100vw-2rem))] -translate-x-1/2 pt-2 opacity-0 transition duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-              <div className="max-h-[calc(100vh-6rem)] overflow-y-auto rounded-2xl border border-emerald-950/10 bg-white shadow-[0_18px_48px_rgba(16,35,27,.14)]">
-                <div className="grid lg:grid-cols-[15rem_1fr_15rem]">
-                  <div className="bg-[linear-gradient(145deg,#d9ff42_0%,#efffd6_60%,#f8fff3_100%)] p-4">
-                    <p className="text-xs font-medium uppercase tracking-wide text-emerald-900">Most booked</p>
-                    <div className="mt-3 grid gap-1">
-                      {popularServices.map((slug) => {
-                        const service = services.find((item) => item.slug === slug)!;
-                        return (
-                          <Link className="rounded-lg px-3 py-2.5 transition hover:bg-white/80" href={`/services/${service.slug}`} key={service.slug}>
-                            <span className="block text-sm font-medium text-emerald-950">{service.name}</span>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                    <Link className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-lg bg-emerald-900 px-4 text-sm font-medium text-white" href="/services">
-                      View all services
-                    </Link>
-                  </div>
-
-                  <div className="grid gap-4 p-4 lg:grid-cols-3">
+            <div className="invisible fixed left-1/2 top-[3.72rem] w-[min(46rem,calc(100vw-2rem))] -translate-x-1/2 pt-2 opacity-0 transition duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+              <div className="max-h-[calc(100vh-6rem)] overflow-y-auto rounded-2xl border border-emerald-950/10 bg-white/95 p-4 shadow-[0_18px_48px_rgba(16,35,27,.12)] backdrop-blur">
+                <div className="grid gap-5 lg:grid-cols-3">
                     {serviceGroups.map((group) => (
                       <div key={group.title}>
-                        <h3 className="text-sm font-medium text-emerald-950">{group.title}</h3>
-                        <div className="mt-2 grid divide-y divide-emerald-950/10">
+                        <h3 className="px-3 text-xs font-medium uppercase tracking-[0.08em] text-emerald-700">{group.title}</h3>
+                        <div className="mt-2 grid gap-1">
                           {group.items.map((slug) => {
                             const service = services.find((item) => item.slug === slug)!;
                             return (
-                              <Link className="block rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-950 transition hover:bg-lime-50 hover:text-emerald-900 focus:bg-lime-50 focus:text-emerald-900" key={service.slug} href={`/services/${service.slug}`}>
+                              <Link className="block rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-950 transition hover:bg-[#f3ffe8] hover:text-emerald-900 focus:bg-[#f3ffe8] focus:text-emerald-900" key={service.slug} href={`/services/${service.slug}`}>
                                 {service.name.replace(" Services", "")}
                               </Link>
                             );
@@ -90,28 +70,10 @@ export function Header() {
                         </div>
                       </div>
                     ))}
-                  </div>
-
-                  <div className="border-t border-emerald-950/10 bg-[#f8fff3] p-4 lg:border-l lg:border-t-0">
-                    <div>
-                      <p className="text-sm font-medium text-emerald-950">Need exact pricing?</p>
-                      <p className="mt-2 text-xs leading-5 text-slate-600">Use the advanced calculator for service, property, urgency, add-ons, and savings.</p>
-                      <Link className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-lg bg-lime-300 px-4 text-sm font-medium text-emerald-950" href="/pricing">
-                        Open calculator
-                      </Link>
-                    </div>
-                    <div className="mt-3 grid gap-2">
-                      <a className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-emerald-900 px-4 text-sm font-medium text-white" href={`tel:${site.tel}`}>
-                        <HugeiconsIcon icon={CallIcon} className="icon" size={16} color="currentColor" strokeWidth={2} aria-hidden="true" />
-                        Call now
-                      </a>
-                      <a className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-lime-300 px-4 text-sm font-medium text-emerald-950" href={whatsappHref}>
-                        <HugeiconsIcon icon={WhatsappBusinessIcon} className="icon" size={17} color="currentColor" strokeWidth={2} aria-hidden="true" />
-                        WhatsApp
-                      </a>
-                    </div>
-                    <p className="mt-4 text-xs leading-5 text-slate-600">{site.location}</p>
-                  </div>
+                </div>
+                <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-[#f6fff0] px-4 py-3">
+                  <p className="text-sm font-medium text-emerald-950">Explore all cleaning services</p>
+                  <Link className="rounded-lg bg-lime-300 px-4 py-2 text-sm font-medium text-emerald-950" href="/services">View all</Link>
                 </div>
               </div>
             </div>
@@ -120,9 +82,9 @@ export function Header() {
         </nav>
         <div className="hidden items-center gap-2 md:flex">
           <SiteSearch />
-          <a className="inline-flex items-center gap-2 rounded-lg bg-emerald-900 px-4 py-2 text-sm font-medium text-white" href={`tel:${site.tel}`}>
+          <a className="inline-flex items-center gap-2 rounded-lg bg-emerald-900 px-4 py-2 text-sm font-medium text-white transition hover:-translate-y-0.5 hover:bg-emerald-800" href={`tel:${site.tel}`}>
             <HugeiconsIcon icon={CallIcon} className="icon" size={17} color="currentColor" strokeWidth={2} aria-hidden="true" />
-            Call now
+            <span>Call</span>
           </a>
         </div>
         <a className="inline-flex items-center gap-2 rounded-lg bg-lime-300 px-3 py-2 text-sm font-medium text-emerald-950 md:hidden" href={whatsappHref}>
