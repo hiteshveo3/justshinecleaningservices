@@ -155,12 +155,12 @@ summary::-webkit-details-marker { display: none; }
   justify-content: center;
   min-height: 3rem;
   padding: .75rem 1rem;
-  transition: background .2s ease, color .2s ease, transform .2s ease, box-shadow .2s ease;
+  transition: background .2s ease, color .2s ease, transform .2s ease;
 }
 .btn-primary { background: #0b4f2f; color: white; }
-.btn-primary:hover { background: #063d25; box-shadow: 0 10px 22px rgba(11, 79, 47, .16); transform: translateY(-1px); }
+.btn-primary:hover { background: #063d25; transform: translateY(-1px); }
 .btn-secondary { background: #d9ff42; color: #10231b; }
-.btn-secondary:hover { background: #c6ef29; box-shadow: 0 10px 22px rgba(149, 191, 22, .16); transform: translateY(-1px); }
+.btn-secondary:hover { background: #c6ef29; transform: translateY(-1px); }
 .cta-button-grid {
   display: grid;
   gap: .75rem;
@@ -186,7 +186,6 @@ summary::-webkit-details-marker { display: none; }
   background: #ffffff;
   border: 3px solid #0b4f2f;
   border-radius: 999px;
-  box-shadow: 0 6px 18px rgba(16, 35, 27, .16);
   height: 1.4rem;
   margin-top: -.42rem;
   width: 1.4rem;
@@ -200,7 +199,6 @@ summary::-webkit-details-marker { display: none; }
   background: #ffffff;
   border: 3px solid #0b4f2f;
   border-radius: 999px;
-  box-shadow: 0 6px 18px rgba(16, 35, 27, .16);
   height: 1.4rem;
   width: 1.4rem;
 }
@@ -208,7 +206,7 @@ summary::-webkit-details-marker { display: none; }
   background: white;
   border: 1px solid rgba(16, 35, 27, .1);
   border-radius: .5rem;
-  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+  transition: border-color .2s ease, background .2s ease;
 }
 .card:hover {
   border-color: rgba(11, 79, 47, .2);
@@ -219,13 +217,11 @@ summary::-webkit-details-marker { display: none; }
   border-radius: .85rem;
   min-height: 100%;
   padding: 1.1rem;
-  transition: background .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+  transition: background .2s ease, border-color .2s ease;
 }
 .service-card:hover {
   background: linear-gradient(180deg, #f8fff3 0%, #efffdd 100%);
   border-color: rgba(11, 79, 47, .14);
-  box-shadow: 0 14px 34px rgba(16, 35, 27, .08);
-  transform: translateY(-1px);
 }
 .service-icon {
   align-items: center;
@@ -239,7 +235,7 @@ summary::-webkit-details-marker { display: none; }
   width: 2.75rem;
 }
 .elevated {
-  box-shadow: 0 16px 40px rgba(16, 35, 27, .1);
+  border: 1px solid rgba(16, 35, 27, .1);
 }
 .blog-content {
   color: #1d293d;
@@ -301,7 +297,6 @@ summary::-webkit-details-marker { display: none; }
   border-collapse: separate;
   border-radius: .9rem;
   border-spacing: 0;
-  box-shadow: 0 12px 28px rgba(16, 35, 27, .06);
   display: block;
   font-size: .92rem;
   margin-top: 1.5rem;

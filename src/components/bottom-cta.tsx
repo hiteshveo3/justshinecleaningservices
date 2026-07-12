@@ -16,11 +16,11 @@ export function BottomCta() {
           Share photos, location, service type, and timing on WhatsApp for a clear starting quote.
         </p>
         <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <a className="inline-flex min-h-14 w-full items-center justify-center gap-3 rounded-lg bg-emerald-900 px-7 text-base font-medium text-white ring-1 ring-emerald-950/10 transition hover:-translate-y-0.5 hover:bg-emerald-800 sm:w-auto" href={whatsappHref}>
+          <a className="inline-flex min-h-14 w-full items-center justify-center gap-3 rounded-lg bg-emerald-900 px-7 text-base font-medium text-white ring-1 ring-emerald-950/10 transition hover:bg-emerald-800 sm:w-auto" href={whatsappHref}>
             <HugeiconsIcon icon={WhatsappBusinessIcon} className="icon" size={22} color="currentColor" strokeWidth={2} aria-hidden="true" />
             WhatsApp for Quote
           </a>
-          <Link className="inline-flex min-h-14 w-full items-center justify-center gap-3 rounded-lg bg-lime-300 px-7 text-base font-medium text-emerald-950 ring-1 ring-lime-500/30 transition hover:-translate-y-0.5 hover:bg-lime-200 sm:w-auto" href="/pricing">
+          <Link className="inline-flex min-h-14 w-full items-center justify-center gap-3 rounded-lg bg-lime-300 px-7 text-base font-medium text-emerald-950 ring-1 ring-lime-500/30 transition hover:bg-lime-200 sm:w-auto" href="/pricing">
             <HugeiconsIcon icon={DollarCircleIcon} className="icon" size={20} color="currentColor" strokeWidth={2} aria-hidden="true" />
             See Pricing
           </Link>

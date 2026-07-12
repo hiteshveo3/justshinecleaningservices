@@ -52,7 +52,7 @@ export default function AboutPage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             {stats.map((stat, index) => (
-              <div key={stat} className="group rounded-xl border border-emerald-950/10 bg-white/75 p-4 transition duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-[0_14px_30px_rgba(16,35,27,.08)]">
+              <div key={stat} className="group rounded-xl border border-emerald-950/10 bg-white/75 p-4 transition duration-300 hover:bg-white">
                 <span className="text-xs font-medium text-emerald-700">0{index + 1}</span>
                 <p className="mt-2 text-base font-medium leading-snug text-emerald-950 sm:text-lg">{stat}</p>
               </div>

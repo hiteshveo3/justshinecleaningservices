@@ -82,7 +82,7 @@ export function Header() {
         </nav>
         <div className="hidden items-center gap-2 md:flex">
           <SiteSearch />
-          <a className="inline-flex items-center gap-2 rounded-lg bg-emerald-900 px-4 py-2 text-sm font-medium text-white transition hover:-translate-y-0.5 hover:bg-emerald-800" href={`tel:${site.tel}`}>
+          <a className="inline-flex items-center gap-2 rounded-lg bg-emerald-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-800" href={`tel:${site.tel}`}>
             <HugeiconsIcon icon={CallIcon} className="icon" size={17} color="currentColor" strokeWidth={2} aria-hidden="true" />
             <span>Call</span>
           </a>
