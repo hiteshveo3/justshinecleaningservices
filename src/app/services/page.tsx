@@ -8,13 +8,28 @@ export const metadata = {
 
 export default async function ServicesPage() {
   const services = await getServices();
+  const serviceCount = services.length;
 
   return (
-    <section className="bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] px-4 py-14 sm:px-6 lg:px-8">
+    <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <p className="eyebrow">Services</p>
-        <h1 className="mt-4 max-w-4xl text-3xl font-semibold leading-tight text-emerald-950 sm:text-4xl lg:text-[2.65rem]">Find the right cleaning service in Abu Dhabi</h1>
-        <p className="mt-4 max-w-3xl leading-7 text-slate-700">Search residential, commercial, and specialty cleaning services with clear starting prices and fast WhatsApp booking.</p>
+        <div className="rounded-3xl bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] p-5 ring-1 ring-emerald-950/10 sm:p-8 lg:p-10">
+          <p className="eyebrow">Services</p>
+          <h1 className="mt-4 max-w-4xl text-3xl font-semibold leading-tight text-emerald-950 sm:text-4xl lg:text-[2.65rem]">Find the right cleaning service in Abu Dhabi</h1>
+          <p className="mt-4 max-w-3xl leading-7 text-slate-700">Search residential, commercial, and specialty cleaning services with clear starting prices and fast WhatsApp booking.</p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            {[
+              [`${serviceCount} services`, "Residential, commercial, and specialty"],
+              ["Clear prices", "Starting rates shown before booking"],
+              ["WhatsApp quote", "Send location, timing, and photos"],
+            ].map(([title, text]) => (
+              <div className="rounded-xl bg-white/80 p-4 ring-1 ring-emerald-950/10" key={title}>
+                <p className="font-medium text-emerald-950">{title}</p>
+                <p className="mt-1 text-sm leading-5 text-slate-700">{text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
         <ServicesIndex services={services} />
       </div>
     </section>

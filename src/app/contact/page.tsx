@@ -13,7 +13,9 @@ const bookingFaqs = [
   ["What information do you need?", "Service type, property size, area, preferred date/time, and photos if the job needs inspection."],
 ];
 
-export default function ContactPage() {
+export default async function ContactPage({ searchParams }: { searchParams?: Promise<{ sent?: string }> }) {
+  const params = searchParams ? await searchParams : {};
+  const sent = params.sent;
   const schema = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
@@ -40,6 +42,12 @@ export default function ContactPage() {
             <p className="eyebrow">Contact Just Shine Cleaning Services</p>
             <h1 className="mt-4 text-3xl font-medium leading-tight text-emerald-950 sm:text-4xl">We&apos;re here to help with cleaning quotes.</h1>
             <p className="mt-4 max-w-2xl text-base leading-8 text-slate-700">Multiple ways to reach us. Choose what works best for you and get a free quote for cleaning services in Abu Dhabi.</p>
+            {sent === "1" && (
+              <p className="mt-5 rounded-lg bg-white/85 p-4 text-sm font-medium text-emerald-950 ring-1 ring-emerald-950/10">Thanks. Your request was received. We will contact you soon.</p>
+            )}
+            {sent === "0" && (
+              <p className="mt-5 rounded-lg bg-white/85 p-4 text-sm font-medium text-emerald-950 ring-1 ring-red-200">Please fill name, email, phone, service type, and message.</p>
+            )}
             <div className="mt-6 max-w-xl"><CtaButtons service="home" /></div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -76,16 +84,34 @@ export default function ContactPage() {
             </div>
           </div>
           <form className="card grid gap-4 bg-[#f7fff0] p-5 sm:p-6" action="/api/contact" method="post">
-            <input className="rounded-lg border border-emerald-950/10 bg-white p-3" name="name" placeholder="Name" required />
-            <input className="rounded-lg border border-emerald-950/10 bg-white p-3" name="email" type="email" placeholder="Email" required />
-            <input className="rounded-lg border border-emerald-950/10 bg-white p-3" name="phone" placeholder="Phone" required />
-            <select className="rounded-lg border border-emerald-950/10 bg-white p-3" name="serviceType" required>
-              <option value="">Service type</option>
-              {services.map((service) => <option key={service.slug}>{service.name}</option>)}
-              <option>Other</option>
-            </select>
-            <input className="rounded-lg border border-emerald-950/10 bg-white p-3" name="area" placeholder="Address / Area" />
-            <textarea className="min-h-32 rounded-lg border border-emerald-950/10 bg-white p-3" name="message" placeholder="Message / special requests" required />
+            <label className="grid gap-1.5 text-sm font-medium text-emerald-950">
+              Name
+              <input className="rounded-lg border border-emerald-950/10 bg-white p-3 font-normal text-slate-800" name="name" placeholder="Your name" autoComplete="name" required />
+            </label>
+            <label className="grid gap-1.5 text-sm font-medium text-emerald-950">
+              Email
+              <input className="rounded-lg border border-emerald-950/10 bg-white p-3 font-normal text-slate-800" name="email" type="email" placeholder="you@example.com" autoComplete="email" required />
+            </label>
+            <label className="grid gap-1.5 text-sm font-medium text-emerald-950">
+              Phone
+              <input className="rounded-lg border border-emerald-950/10 bg-white p-3 font-normal text-slate-800" name="phone" placeholder="+971 55 223 2850" autoComplete="tel" required />
+            </label>
+            <label className="grid gap-1.5 text-sm font-medium text-emerald-950">
+              Service type
+              <select className="rounded-lg border border-emerald-950/10 bg-white p-3 font-normal text-slate-800" name="serviceType" defaultValue="" required>
+                <option value="">Choose a service</option>
+                {services.map((service) => <option key={service.slug}>{service.name}</option>)}
+                <option>Other</option>
+              </select>
+            </label>
+            <label className="grid gap-1.5 text-sm font-medium text-emerald-950">
+              Address / Area
+              <input className="rounded-lg border border-emerald-950/10 bg-white p-3 font-normal text-slate-800" name="area" placeholder="Al Reem, Khalifa City, Al Danah..." autoComplete="street-address" />
+            </label>
+            <label className="grid gap-1.5 text-sm font-medium text-emerald-950">
+              Message
+              <textarea className="min-h-32 rounded-lg border border-emerald-950/10 bg-white p-3 font-normal text-slate-800" name="message" placeholder="Property size, preferred date/time, special requests, photos if available..." required />
+            </label>
             <button className="btn-primary" type="submit">Get free quote</button>
           </form>
         </div>

@@ -21,10 +21,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const service = await getService(slug);
   if (!service) return {};
+  const title = `${service.name} Abu Dhabi | Price & Booking`;
+  const description = `${service.name} in Abu Dhabi from ${servicePriceLabel(service)}. Compare pricing, scope, process, FAQs, and book Just Shine Cleaning Services by Call or WhatsApp.`;
   return {
-    title: `${service.name} Abu Dhabi | Fast Booking`,
-    description: `${service.description} Call or WhatsApp Just Shine Cleaning Services for ${service.name.toLowerCase()} in Abu Dhabi.`,
+    title,
+    description,
     alternates: { canonical: `/services/${service.slug}` },
+    openGraph: {
+      title,
+      description,
+      url: `/services/${service.slug}`,
+      type: "website",
+    },
   };
 }
 

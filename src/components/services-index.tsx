@@ -74,6 +74,7 @@ export function ServicesIndex({ services }: { services: Service[] }) {
 
   const activeFilters = [category !== "All", priceUnit !== "All", maxPrice !== 100, sort !== "Recommended"].filter(Boolean).length;
   const resetFilters = () => {
+    setQuery("");
     setCategory("All");
     setPriceUnit("All");
     setMaxPrice(100);
@@ -82,7 +83,7 @@ export function ServicesIndex({ services }: { services: Service[] }) {
 
   return (
     <div className="mt-8">
-      <div className="rounded-2xl bg-lime-50 p-4">
+      <div className="rounded-2xl bg-lime-50 p-4 ring-1 ring-emerald-950/10">
         <label className="relative">
           <span className="sr-only">Search services</span>
           <HugeiconsIcon icon={GlobalSearchIcon} className="icon absolute left-3 top-1/2 -translate-y-1/2 text-emerald-900" size={18} color="currentColor" strokeWidth={2} aria-hidden="true" />
@@ -108,7 +109,18 @@ export function ServicesIndex({ services }: { services: Service[] }) {
         </button>
       </div>
 
-      <p className="mt-4 text-sm text-slate-700">{filteredServices.length} services found</p>
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-slate-700">{filteredServices.length} services found</p>
+        {(query || activeFilters > 0) && (
+          <div className="flex flex-wrap gap-2">
+            {query && <span className="rounded-lg bg-lime-50 px-3 py-1.5 text-xs font-medium text-emerald-950 ring-1 ring-emerald-950/10">Search: {query}</span>}
+            {category !== "All" && <span className="rounded-lg bg-lime-50 px-3 py-1.5 text-xs font-medium text-emerald-950 ring-1 ring-emerald-950/10">{category}</span>}
+            {priceUnit !== "All" && <span className="rounded-lg bg-lime-50 px-3 py-1.5 text-xs font-medium text-emerald-950 ring-1 ring-emerald-950/10">{priceUnit}</span>}
+            {maxPrice !== 100 && <span className="rounded-lg bg-lime-50 px-3 py-1.5 text-xs font-medium text-emerald-950 ring-1 ring-emerald-950/10">Max AED {maxPrice}</span>}
+            {sort !== "Recommended" && <span className="rounded-lg bg-lime-50 px-3 py-1.5 text-xs font-medium text-emerald-950 ring-1 ring-emerald-950/10">{sort}</span>}
+          </div>
+        )}
+      </div>
 
       <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {filteredServices.map((service) => (
@@ -137,7 +149,13 @@ export function ServicesIndex({ services }: { services: Service[] }) {
         ))}
       </div>
 
-      {filteredServices.length === 0 && <p className="mt-6 rounded-xl bg-lime-50 p-5 text-sm text-slate-700">No services matched. Try resetting filters or searching sofa, office, home, pest, or window.</p>}
+      {filteredServices.length === 0 && (
+        <div className="mt-6 rounded-xl bg-lime-50 p-5 text-sm text-slate-700 ring-1 ring-emerald-950/10">
+          <p className="font-medium text-emerald-950">No services matched.</p>
+          <p className="mt-2">Try resetting filters or searching sofa, office, home, pest, or window cleaning.</p>
+          <button className="mt-4 rounded-lg bg-emerald-900 px-4 py-2 text-sm font-medium text-white" onClick={resetFilters} type="button">Reset filters</button>
+        </div>
+      )}
 
       {drawerOpen && (
         <div className="fixed inset-0 z-[70] lg:hidden" role="dialog" aria-modal="true" aria-label="Service filters">
