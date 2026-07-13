@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!service) return {};
   const title = `${service.name} Abu Dhabi | Price & Booking`;
   const description = `${service.name} in Abu Dhabi from ${servicePriceLabel(service)}. Compare pricing, scope, process, FAQs, and book Just Shine Cleaning Services by Call or WhatsApp.`;
+  const image = service.images[0] || brandCleaningImage;
   return {
     title,
     description,
@@ -32,6 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       url: `/services/${service.slug}`,
       type: "website",
+      images: [{ url: image, alt: `${service.name} in Abu Dhabi` }],
     },
   };
 }
@@ -45,6 +47,7 @@ export default async function ServicePage({ params }: Props) {
   const serviceFaqs = getServiceFaqs(service.slug);
   const pageContent = getServicePageContent(service);
   const relatedServices = allServices.filter((item) => item.slug !== service.slug).slice(0, 3);
+  const serviceImage = service.images[0] || brandCleaningImage;
   const schema = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -82,7 +85,7 @@ export default async function ServicePage({ params }: Props) {
                 fill
                 priority
                 sizes="(min-width: 1024px) 45vw, 100vw"
-                src={brandCleaningImage}
+                src={serviceImage}
               />
               <div className="absolute bottom-4 left-4 max-w-[19rem] rounded-xl bg-white/92 p-3 ring-1 ring-emerald-950/10 backdrop-blur">
                 <p className="text-sm font-medium text-emerald-950">From {servicePriceLabel(service)}</p>
@@ -340,7 +343,7 @@ export default async function ServicePage({ params }: Props) {
                 {relatedServices.map((item) => (
                   <Link className="overflow-hidden rounded-xl bg-white ring-1 ring-emerald-950/10 transition hover:bg-[#fbfff7]" href={`/services/${item.slug}`} key={item.slug}>
                     <div className="relative aspect-[4/3]">
-                      <Image alt={`${item.name} in Abu Dhabi`} className="object-cover" fill sizes="(min-width: 768px) 20vw, 90vw" src={brandCleaningImage} />
+                      <Image alt={`${item.name} in Abu Dhabi`} className="object-cover" fill sizes="(min-width: 768px) 20vw, 90vw" src={item.images[0] || brandCleaningImage} />
                     </div>
                     <div className="p-4">
                       <p className="text-lg font-medium text-emerald-950">{item.name}</p>

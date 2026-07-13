@@ -126,7 +126,7 @@ export function ServicesIndex({ services }: { services: Service[] }) {
         {filteredServices.map((service) => (
           <article className="service-card group p-3" key={service.slug}>
             <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-lime-100">
-              <Image alt={`${service.name} by Just Shine Cleaning Services`} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" fill sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" src={brandCleaningImage} />
+              <Image alt={`${service.name} by Just Shine Cleaning Services`} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" fill sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" src={service.images[0] || brandCleaningImage} />
               <span className="absolute left-4 top-4 rounded-lg bg-white/95 px-3 py-1 text-xs font-medium text-emerald-900 ring-1 ring-emerald-950/10">{serviceCategory(service)}</span>
               <span className="absolute right-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs text-emerald-900 ring-1 ring-emerald-950/10">{servicePriceLabel(service)}</span>
             </div>

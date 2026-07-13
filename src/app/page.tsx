@@ -9,7 +9,6 @@ import { faqs, servicePriceLabel, services, site, testimonials } from "@/lib/con
 
 const serviceIcons = [CleaningBucketIcon, CleanIcon, OfficeIcon, VacuumCleanerIcon, Sofa01Icon, AppWindowIcon, BrushCleaningIcon];
 const brandCleaningImage = "/images/Affordable Cleaning Services in Abu Dhabi - Just Shine Cleaning Services.webp";
-const servicePhotos = services.map(() => brandCleaningImage);
 const mainServiceSlugs = ["home-cleaning", "deep-cleaning", "villa-cleaning", "office-cleaning", "carpet-cleaning", "sofa-cleaning"];
 const mainServices = services.filter((service) => mainServiceSlugs.includes(service.slug));
 const processSteps = [
@@ -123,7 +122,7 @@ export default function Home() {
                     className="h-full w-full object-cover transition duration-500 hover:scale-[1.03]"
                     fill
                     sizes="(min-width: 768px) 33vw, 100vw"
-                    src={servicePhotos[index]}
+                    src={service.images[0] || brandCleaningImage}
                   />
                   <span className="absolute left-4 top-4 service-icon bg-white/95">
                     <HugeiconsIcon icon={serviceIcons[index] || CleaningBucketIcon} className="icon" size={23} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
