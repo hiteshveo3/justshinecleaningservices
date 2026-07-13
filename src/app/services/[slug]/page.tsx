@@ -260,6 +260,58 @@ export default async function ServicePage({ params }: Props) {
             </section>
 
             <section>
+              <p className="eyebrow">Comparison</p>
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <h2 className="text-2xl font-medium text-emerald-950 sm:text-3xl">Just Shine vs typical Abu Dhabi cleaning options</h2>
+                  <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700 sm:text-base">{pageContent.comparison.intro}</p>
+                </div>
+                <Link className="inline-flex min-h-11 w-fit items-center justify-center rounded-lg bg-lime-300 px-4 text-sm font-medium text-emerald-950" href="/testimonials">View reviews</Link>
+              </div>
+
+              <div className="mt-5 overflow-hidden rounded-2xl border border-emerald-950/10 bg-white">
+                <div className="hidden lg:grid lg:grid-cols-[1.1fr_repeat(4,minmax(0,1fr))]">
+                  {["Feature", "Just Shine", "Premium providers", "Budget apps", "Freelance cleaners"].map((heading) => (
+                    <div className="bg-[#f2ffe8] px-4 py-3 text-sm font-medium text-emerald-950" key={heading}>{heading}</div>
+                  ))}
+                  {pageContent.comparison.rows.map((row) => (
+                    <div className="contents" key={row.feature}>
+                      <div className="border-t border-emerald-950/10 px-4 py-3 text-sm font-medium text-emerald-950">{row.feature}</div>
+                      <div className="border-t border-emerald-950/10 bg-[#fbfff7] px-4 py-3 text-sm leading-6 text-slate-700">{row.justShine}</div>
+                      <div className="border-t border-emerald-950/10 px-4 py-3 text-sm leading-6 text-slate-700">{row.premium}</div>
+                      <div className="border-t border-emerald-950/10 px-4 py-3 text-sm leading-6 text-slate-700">{row.budget}</div>
+                      <div className="border-t border-emerald-950/10 px-4 py-3 text-sm leading-6 text-slate-700">{row.freelance}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="grid gap-3 p-3 lg:hidden">
+                  {pageContent.comparison.rows.map((row) => (
+                    <article className="rounded-xl bg-[#f8fff3] p-4 ring-1 ring-emerald-950/10" key={row.feature}>
+                      <h3 className="text-base font-medium text-emerald-950">{row.feature}</h3>
+                      <div className="mt-3 grid gap-2 text-sm leading-6 text-slate-700">
+                        <p><span className="font-medium text-emerald-900">Just Shine:</span> {row.justShine}</p>
+                        <p><span className="font-medium text-slate-700">Premium providers:</span> {row.premium}</p>
+                        <p><span className="font-medium text-slate-700">Budget apps:</span> {row.budget}</p>
+                        <p><span className="font-medium text-slate-700">Freelance cleaners:</span> {row.freelance}</p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-5 grid gap-4 md:grid-cols-3">
+                {pageContent.comparison.reasons.map((reason) => (
+                  <article className="rounded-xl bg-lime-50 p-5 ring-1 ring-emerald-950/10" key={reason.title}>
+                    <h3 className="text-lg font-medium text-emerald-950">{reason.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-700">{reason.text}</p>
+                  </article>
+                ))}
+              </div>
+              <p className="mt-4 text-xs leading-5 text-slate-500">Comparison is based on common booking models in Abu Dhabi. Exact inclusions, pricing, and availability can change by company, property size, and service condition.</p>
+            </section>
+
+            <section>
               <p className="eyebrow">Related services</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Other cleaning services you may need</h2>
               <div className="mt-5 grid gap-4 md:grid-cols-3">
@@ -309,6 +361,7 @@ function getServicePageContent(service: Service) {
   const price = servicePriceLabel(service);
   const isCommercial = ["office-cleaning", "restaurant-cleaning", "showroom-cleaning"].includes(service.slug);
   const isSpecialist = ["sofa-cleaning", "carpet-cleaning", "window-cleaning", "pest-control"].includes(service.slug);
+  const comparison = getServiceComparison(service);
 
   return {
     overview: `${name} in Abu Dhabi helps keep ${isCommercial ? "commercial spaces, teams, visitors, and customers" : "homes, apartments, villas, and family spaces"} cleaner, healthier, and easier to maintain. Just Shine Cleaning Services focuses on clear scope, practical scheduling, and WhatsApp-first booking so you know what is included before the team arrives.`,
@@ -358,6 +411,179 @@ function getServicePageContent(service: Service) {
       { title: "Surface-aware cleaning", text: "Marble, tile, glass, wood, fabric, and commercial surfaces need different methods to avoid damage." },
       { title: "Abu Dhabi dust awareness", text: "Fine sand, AC airflow, and humidity affect cleaning frequency, especially for villas and soft furnishings." },
       { title: "Practical follow-up", text: "For recurring needs, ask about weekly, bi-weekly, monthly, or quarterly cleaning plans." },
+    ],
+    comparison,
+  };
+}
+
+function getServiceComparison(service: Service) {
+  const genericRows = [
+    {
+      feature: "Starting price",
+      justShine: servicePriceLabel(service),
+      premium: "Often higher hourly or package pricing",
+      budget: "May look cheaper upfront",
+      freelance: "Varies by cleaner and scope",
+    },
+    {
+      feature: "Scope clarity",
+      justShine: "Quote-first booking with service scope, timing, and priority areas confirmed",
+      premium: "Usually documented, but add-ons may increase the final bill",
+      budget: "Often limited to basic cleaning tasks",
+      freelance: "Depends on individual experience and communication",
+    },
+    {
+      feature: "Products and surface care",
+      justShine: "Surface-aware cleaning for homes, villas, offices, fabric, glass, and floors",
+      premium: "Usually professional, sometimes with higher package minimums",
+      budget: "Can be basic or product-limited",
+      freelance: "Tools and product quality can vary",
+    },
+    {
+      feature: "Booking speed",
+      justShine: "Call and WhatsApp booking for quick Abu Dhabi quotes",
+      premium: "Usually scheduled through forms or call centers",
+      budget: "App slots may depend on area availability",
+      freelance: "Fast when available, less predictable when busy",
+    },
+    {
+      feature: "Best fit",
+      justShine: "Customers who want clear pricing, practical service coverage, and direct support",
+      premium: "Customers who prefer large packaged contracts",
+      budget: "Customers focused mainly on the lowest displayed price",
+      freelance: "Small one-off tasks with simple requirements",
+    },
+  ];
+
+  const serviceRows: Record<string, typeof genericRows> = {
+    "deep-cleaning": [
+      {
+        feature: "Deep cleaning focus",
+        justShine: "Kitchen buildup, bathrooms, corners, vents, grout, hidden dust, and room-by-room detail",
+        premium: "Detailed packages, often at a higher hourly or fixed rate",
+        budget: "May cover visible areas more than hidden buildup",
+        freelance: "Depth depends heavily on cleaner experience",
+      },
+      {
+        feature: "Abu Dhabi dust handling",
+        justShine: "Built around fine sand, AC circulation, and high-use family spaces",
+        premium: "Usually good for scheduled deep cleans",
+        budget: "May need extra time or paid add-ons",
+        freelance: "Can be strong if personally experienced",
+      },
+      ...genericRows.slice(0, 3),
+    ],
+    "sofa-cleaning": [
+      {
+        feature: "Fabric care",
+        justShine: "Shampoo/steam approach with fabric condition checked before cleaning",
+        premium: "Professional upholstery packages, often higher per-seat pricing",
+        budget: "Basic wash may be unsuitable for delicate upholstery",
+        freelance: "Equipment and fabric knowledge can vary",
+      },
+      {
+        feature: "Odor and stain support",
+        justShine: "Good for everyday stains, freshness, dust, and upholstery odor attention",
+        premium: "Usually available, often as a paid add-on",
+        budget: "May focus on quick visual cleaning only",
+        freelance: "Depends on tools and stain products available",
+      },
+      ...genericRows.slice(0, 3),
+    ],
+    "carpet-cleaning": [
+      {
+        feature: "Cleaning method",
+        justShine: "Steam/shampoo support for embedded dust, sand, odors, and stains",
+        premium: "Professional machines, often with package minimums",
+        budget: "May use lighter equipment or quicker passes",
+        freelance: "Equipment quality varies widely",
+      },
+      {
+        feature: "Allergen and sand attention",
+        justShine: "Designed for Abu Dhabi carpets and rugs exposed to fine dust",
+        premium: "Usually solid for high-traffic homes",
+        budget: "May need repeat service sooner",
+        freelance: "Depends on method and drying guidance",
+      },
+      ...genericRows.slice(0, 3),
+    ],
+    "villa-cleaning": [
+      {
+        feature: "Villa coverage",
+        justShine: "Interior rooms, bathrooms, kitchens, garden/entry/parking areas based on agreed scope",
+        premium: "Often comprehensive but may split outdoor areas into add-ons",
+        budget: "Usually focused on indoor basics",
+        freelance: "May need multiple cleaners for larger villas",
+      },
+      {
+        feature: "Team fit",
+        justShine: "Planned around villa size, access, dust, and priority zones",
+        premium: "Good for formal contracts",
+        budget: "Can take longer for large properties",
+        freelance: "Availability and consistency can vary",
+      },
+      ...genericRows.slice(0, 3),
+    ],
+    "office-cleaning": [
+      {
+        feature: "Commercial routine",
+        justShine: "Daily, weekly, bi-weekly, and monthly office cleaning plans",
+        premium: "Strong for large corporate contracts",
+        budget: "May lack inspection and routine consistency",
+        freelance: "Good for small offices, less ideal for scaling",
+      },
+      {
+        feature: "Workplace timing",
+        justShine: "Flexible scheduling around teams, visitors, and office hours",
+        premium: "Structured schedules, sometimes less flexible",
+        budget: "Depends on slot availability",
+        freelance: "Flexible if the cleaner is available",
+      },
+      ...genericRows.slice(0, 3),
+    ],
+    "window-cleaning": [
+      {
+        feature: "Glass result",
+        justShine: "Streak-free focus for indoor/outdoor windows, frames, and tracks",
+        premium: "Professional finish, often higher package pricing",
+        budget: "May charge extra for frames, tracks, or exterior glass",
+        freelance: "Result depends on tools and access",
+      },
+      {
+        feature: "Best use",
+        justShine: "Homes, apartments, villas, offices, and brighter interior spaces",
+        premium: "Good for complex buildings",
+        budget: "Better for simple windows only",
+        freelance: "Best for small, low-risk windows",
+      },
+      ...genericRows.slice(0, 3),
+    ],
+    "pest-control": [
+      {
+        feature: "Treatment fit",
+        justShine: "Cockroach, bed bug, ant, and prevention-focused treatments",
+        premium: "Often detailed, sometimes with higher call-out charges",
+        budget: "May focus on one-time spray only",
+        freelance: "Quality depends on certification and products",
+      },
+      {
+        feature: "Prevention",
+        justShine: "Recurring prevention options for homes and apartments",
+        premium: "Usually available as formal contracts",
+        budget: "Follow-up may be limited",
+        freelance: "Follow-up depends on individual availability",
+      },
+      ...genericRows.slice(0, 3),
+    ],
+  };
+
+  return {
+    intro: `${service.name} in Abu Dhabi should be compared by total value, not only the lowest displayed price. Look at scope, product care, booking speed, add-ons, and how clearly the provider explains what is included.`,
+    rows: serviceRows[service.slug] || genericRows,
+    reasons: [
+      { title: "Transparent starting price", text: `Just Shine lists ${servicePriceLabel(service)} as the starting point, then confirms the practical scope before booking.` },
+      { title: "WhatsApp-first clarity", text: "Photos, location, priority areas, timing, and add-ons can be discussed before the team arrives." },
+      { title: "Built for Abu Dhabi", text: "The service is planned around local dust, AC airflow, apartments, villas, offices, and busy schedules." },
     ],
   };
 }
