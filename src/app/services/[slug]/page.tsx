@@ -84,10 +84,24 @@ export default async function ServicePage({ params }: Props) {
           </div>
         </div>
       </section>
-      <section className="bg-white px-4 py-12 sm:px-6 lg:px-8">
+      <section className="bg-[#fbfff7] px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="min-w-0 space-y-10">
-            <section>
+            <nav className="sticky top-16 z-20 -mx-4 overflow-x-auto border-y border-emerald-950/10 bg-[#fbfff7]/95 px-4 py-3 backdrop-blur lg:hidden">
+              <div className="flex min-w-max gap-2">
+                {[
+                  ["Overview", "#overview"],
+                  ["Pricing", "#pricing"],
+                  ["Process", "#process"],
+                  ["Compare", "#comparison"],
+                  ["FAQ", "#faq"],
+                ].map(([label, href]) => (
+                  <a className="rounded-lg bg-white px-3 py-2 text-sm font-medium text-emerald-950 ring-1 ring-emerald-950/10" href={href} key={href}>{label}</a>
+                ))}
+              </div>
+            </nav>
+
+            <section className="rounded-3xl bg-white p-5 ring-1 ring-emerald-950/10 sm:p-6" id="overview">
               <p className="eyebrow">Overview</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">{service.name} for Abu Dhabi homes and businesses</h2>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700 sm:text-base">{pageContent.overview}</p>
@@ -101,12 +115,12 @@ export default async function ServicePage({ params }: Props) {
               </div>
             </section>
 
-            <section>
+            <section className="rounded-3xl bg-[#f3ffe8] p-5 ring-1 ring-emerald-950/10 sm:p-6">
               <p className="eyebrow">Scope</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">What is included</h2>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 {pageContent.included.map((item) => (
-                  <div className="rounded-xl border border-emerald-950/10 bg-white p-4" key={item}>
+                  <div className="rounded-xl border border-emerald-950/10 bg-white/80 p-4" key={item}>
                     <p className="text-sm font-medium leading-6 text-emerald-950">{item}</p>
                   </div>
                 ))}
@@ -114,7 +128,7 @@ export default async function ServicePage({ params }: Props) {
             </section>
 
             {pricing && (
-              <section>
+              <section className="rounded-3xl bg-white p-5 ring-1 ring-emerald-950/10 sm:p-6" id="pricing">
                 <p className="eyebrow">Tiered pricing</p>
                 <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                   <div>
@@ -125,7 +139,7 @@ export default async function ServicePage({ params }: Props) {
                 </div>
 
                 <div className="mt-5 grid gap-4 md:grid-cols-3">
-                  <article className="rounded-2xl bg-[#f6fff0] p-5 ring-1 ring-emerald-950/10">
+                  <article className="rounded-2xl bg-[linear-gradient(135deg,#e8ff87,#f8fff3)] p-5 ring-1 ring-emerald-950/10">
                     <p className="text-sm text-slate-600">Current starting price</p>
                     <p className="mt-2 text-2xl font-medium text-emerald-950">{pricing.current}</p>
                     <p className="mt-1 text-sm text-slate-500 line-through">{pricing.original}</p>
@@ -140,7 +154,7 @@ export default async function ServicePage({ params }: Props) {
                 </div>
 
                 <div className="mt-5 grid gap-5 lg:grid-cols-2">
-                  <div className="rounded-2xl bg-white p-4 ring-1 ring-emerald-950/10">
+                  <div className="rounded-2xl bg-[#fbfff7] p-4 ring-1 ring-emerald-950/10">
                     <h3 className="font-medium text-emerald-950">Current vs original</h3>
                     <div className="mt-3 grid gap-2">
                       {pricing.rows.map((row) => (
@@ -152,7 +166,7 @@ export default async function ServicePage({ params }: Props) {
                       ))}
                     </div>
                   </div>
-                  <div className="rounded-2xl bg-white p-4 ring-1 ring-emerald-950/10">
+                  <div className="rounded-2xl bg-[#fbfff7] p-4 ring-1 ring-emerald-950/10">
                     <h3 className="font-medium text-emerald-950">Discounts and add-ons</h3>
                     <div className="mt-3 grid gap-2">
                       {[...pricing.discounts, ...(pricing.addOns || [])].map((row) => (
@@ -170,7 +184,7 @@ export default async function ServicePage({ params }: Props) {
               </section>
             )}
 
-            <section>
+            <section className="rounded-3xl bg-[#f8fff3] p-5 ring-1 ring-emerald-950/10 sm:p-6">
               <p className="eyebrow">Best for</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">When to book {service.name}</h2>
               <div className="mt-5 grid gap-4 md:grid-cols-3">
@@ -183,20 +197,20 @@ export default async function ServicePage({ params }: Props) {
               </div>
             </section>
 
-            <section>
+            <section className="rounded-3xl bg-white p-5 ring-1 ring-emerald-950/10 sm:p-6" id="process">
               <p className="eyebrow">Process</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">How the service works</h2>
               <div className="mt-5 grid gap-4 md:grid-cols-4">
                 {pageContent.process.map((step, index) => (
-                  <article className="rounded-xl border border-emerald-950/10 bg-white p-4" key={step}>
-                    <span className="text-sm font-medium text-emerald-700">0{index + 1}</span>
+                  <article className="relative rounded-xl border border-emerald-950/10 bg-[#fbfff7] p-4" key={step}>
+                    <span className="inline-flex size-9 items-center justify-center rounded-lg bg-lime-300 text-sm font-medium text-emerald-950">0{index + 1}</span>
                     <p className="mt-3 text-sm font-medium leading-6 text-emerald-950">{step}</p>
                   </article>
                 ))}
               </div>
             </section>
 
-            <section>
+            <section className="rounded-3xl bg-[#f3ffe8] p-5 ring-1 ring-emerald-950/10 sm:p-6">
               <p className="eyebrow">Timing</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Duration and scheduling</h2>
               <div className="mt-5 grid gap-4 md:grid-cols-3">
@@ -210,7 +224,7 @@ export default async function ServicePage({ params }: Props) {
               </div>
             </section>
 
-            <section>
+            <section className="rounded-3xl bg-white p-5 ring-1 ring-emerald-950/10 sm:p-6">
               <p className="eyebrow">Preparation</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Before the team arrives</h2>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -222,12 +236,12 @@ export default async function ServicePage({ params }: Props) {
               </div>
             </section>
 
-            <section>
+            <section className="rounded-3xl bg-[#f8fff3] p-5 ring-1 ring-emerald-950/10 sm:p-6">
               <p className="eyebrow">Add-ons</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Useful add-on services</h2>
               <div className="mt-5 grid gap-4 md:grid-cols-3">
                 {pageContent.addOns.map((item) => (
-                  <Link className="rounded-xl border border-emerald-950/10 bg-white p-5 transition hover:bg-lime-50" href={item.href} key={item.title}>
+                  <Link className="rounded-xl border border-emerald-950/10 bg-white/85 p-5 transition hover:bg-lime-50" href={item.href} key={item.title}>
                     <h3 className="text-lg font-medium text-emerald-950">{item.title}</h3>
                     <p className="mt-2 text-sm leading-6 text-slate-700">{item.text}</p>
                   </Link>
@@ -235,7 +249,7 @@ export default async function ServicePage({ params }: Props) {
               </div>
             </section>
 
-            <section>
+            <section className="rounded-3xl bg-white p-5 ring-1 ring-emerald-950/10 sm:p-6">
               <p className="eyebrow">Abu Dhabi areas</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Service coverage</h2>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700 sm:text-base">Just Shine Cleaning Services is based near Al Jazeera Towers, Al Danah, and serves homes, villas, offices, apartments, showrooms, and commercial spaces across Abu Dhabi.</p>
@@ -246,12 +260,12 @@ export default async function ServicePage({ params }: Props) {
               </div>
             </section>
 
-            <section>
+            <section className="rounded-3xl bg-[#f3ffe8] p-5 ring-1 ring-emerald-950/10 sm:p-6">
               <p className="eyebrow">Quality</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">What makes the result better</h2>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 {pageContent.quality.map((item) => (
-                  <article className="rounded-xl border border-emerald-950/10 bg-white p-5" key={item.title}>
+                  <article className="rounded-xl border border-emerald-950/10 bg-white/85 p-5" key={item.title}>
                     <h3 className="text-lg font-medium text-emerald-950">{item.title}</h3>
                     <p className="mt-2 text-sm leading-6 text-slate-700">{item.text}</p>
                   </article>
@@ -259,7 +273,7 @@ export default async function ServicePage({ params }: Props) {
               </div>
             </section>
 
-            <section>
+            <section className="rounded-3xl bg-white p-5 ring-1 ring-emerald-950/10 sm:p-6" id="comparison">
               <p className="eyebrow">Comparison</p>
               <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
@@ -269,18 +283,18 @@ export default async function ServicePage({ params }: Props) {
                 <Link className="inline-flex min-h-11 w-fit items-center justify-center rounded-lg bg-lime-300 px-4 text-sm font-medium text-emerald-950" href="/testimonials">View reviews</Link>
               </div>
 
-              <div className="mt-5 overflow-hidden rounded-2xl border border-emerald-950/10 bg-white">
+              <div className="mt-5 overflow-hidden rounded-2xl border border-emerald-950/10 bg-[#f7ffef]">
                 <div className="hidden lg:grid lg:grid-cols-[1.1fr_repeat(4,minmax(0,1fr))]">
                   {["Feature", "Just Shine", "Premium providers", "Budget apps", "Freelance cleaners"].map((heading) => (
-                    <div className="bg-[#f2ffe8] px-4 py-3 text-sm font-medium text-emerald-950" key={heading}>{heading}</div>
+                    <div className={`px-4 py-3 text-sm font-medium text-emerald-950 ${heading === "Just Shine" ? "bg-lime-300" : "bg-[#eaffcf]"}`} key={heading}>{heading}</div>
                   ))}
                   {pageContent.comparison.rows.map((row) => (
                     <div className="contents" key={row.feature}>
-                      <div className="border-t border-emerald-950/10 px-4 py-3 text-sm font-medium text-emerald-950">{row.feature}</div>
-                      <div className="border-t border-emerald-950/10 bg-[#fbfff7] px-4 py-3 text-sm leading-6 text-slate-700">{row.justShine}</div>
-                      <div className="border-t border-emerald-950/10 px-4 py-3 text-sm leading-6 text-slate-700">{row.premium}</div>
-                      <div className="border-t border-emerald-950/10 px-4 py-3 text-sm leading-6 text-slate-700">{row.budget}</div>
-                      <div className="border-t border-emerald-950/10 px-4 py-3 text-sm leading-6 text-slate-700">{row.freelance}</div>
+                      <div className="border-t border-emerald-950/10 bg-white/65 px-4 py-3 text-sm font-medium text-emerald-950">{row.feature}</div>
+                      <div className="border-t border-emerald-950/10 bg-[#efffd4] px-4 py-3 text-sm font-medium leading-6 text-emerald-950">{row.justShine}</div>
+                      <div className="border-t border-emerald-950/10 bg-white/65 px-4 py-3 text-sm leading-6 text-slate-700">{row.premium}</div>
+                      <div className="border-t border-emerald-950/10 bg-white/45 px-4 py-3 text-sm leading-6 text-slate-700">{row.budget}</div>
+                      <div className="border-t border-emerald-950/10 bg-white/65 px-4 py-3 text-sm leading-6 text-slate-700">{row.freelance}</div>
                     </div>
                   ))}
                 </div>
@@ -311,20 +325,25 @@ export default async function ServicePage({ params }: Props) {
               <p className="mt-4 text-xs leading-5 text-slate-500">Comparison is based on common booking models in Abu Dhabi. Exact inclusions, pricing, and availability can change by company, property size, and service condition.</p>
             </section>
 
-            <section>
+            <section className="rounded-3xl bg-[#f8fff3] p-5 ring-1 ring-emerald-950/10 sm:p-6">
               <p className="eyebrow">Related services</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Other cleaning services you may need</h2>
               <div className="mt-5 grid gap-4 md:grid-cols-3">
                 {relatedServices.map((item) => (
-                  <Link className="rounded-xl bg-lime-50 p-5 ring-1 ring-emerald-950/10 transition hover:bg-[#f8fff3]" href={`/services/${item.slug}`} key={item.slug}>
-                    <p className="text-lg font-medium text-emerald-950">{item.name}</p>
-                    <p className="mt-2 text-sm text-slate-700">{servicePriceLabel(item)}</p>
+                  <Link className="overflow-hidden rounded-xl bg-white ring-1 ring-emerald-950/10 transition hover:bg-[#fbfff7]" href={`/services/${item.slug}`} key={item.slug}>
+                    <div className="relative aspect-[4/3]">
+                      <Image alt={`${item.name} in Abu Dhabi`} className="object-cover" fill sizes="(min-width: 768px) 20vw, 90vw" src={brandCleaningImage} />
+                    </div>
+                    <div className="p-4">
+                      <p className="text-lg font-medium text-emerald-950">{item.name}</p>
+                      <p className="mt-2 text-sm text-slate-700">{servicePriceLabel(item)}</p>
+                    </div>
                   </Link>
                 ))}
               </div>
             </section>
 
-            <section>
+            <section className="rounded-3xl bg-[linear-gradient(135deg,#f8fff3,#e8ff87_70%,#f3ffe8)] p-5 ring-1 ring-emerald-950/10 sm:p-6" id="faq">
               <p className="eyebrow">FAQ</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">{service.name} questions</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700 sm:text-base">Quick answers about scope, booking, timing, pricing, and what to expect.</p>
@@ -336,6 +355,17 @@ export default async function ServicePage({ params }: Props) {
 
           <aside className="hidden lg:block">
             <div className="sticky top-24 rounded-2xl bg-white p-5 ring-1 ring-emerald-950/10">
+              <nav className="mb-5 grid gap-2 border-b border-emerald-950/10 pb-5">
+                {[
+                  ["Overview", "#overview"],
+                  ["Pricing", "#pricing"],
+                  ["Process", "#process"],
+                  ["Comparison", "#comparison"],
+                  ["FAQ", "#faq"],
+                ].map(([label, href]) => (
+                  <a className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-lime-50 hover:text-emerald-950" href={href} key={href}>{label}</a>
+                ))}
+              </nav>
               <p className="text-sm font-medium text-emerald-950">Book this service</p>
               <p className="mt-2 text-sm leading-6 text-slate-700">{pricing?.scope || service.scope}</p>
               <div className="mt-4 grid gap-2 rounded-xl bg-[#f6fff0] p-3">
