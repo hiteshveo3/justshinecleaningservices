@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@firebase/storage": "^0.14.3",
     "@hugeicons/core-free-icons": "^4.2.2",
     "@hugeicons/react": "^1.1.9",
     "firebase": "^12.16.0",

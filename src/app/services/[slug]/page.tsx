@@ -6,7 +6,7 @@ import { CtaButtons } from "@/components/cta-buttons";
 import { FaqAccordion } from "@/components/faq-accordion";
 import { JsonLd } from "@/components/seo";
 import { getService, getServices } from "@/lib/data";
-import { servicePriceLabel, site } from "@/lib/content";
+import { servicePriceLabel, site, type Service } from "@/lib/content";
 import { faqCategories, type FaqItem } from "@/lib/faq-data";
 import { pricingServices } from "@/lib/pricing";
 
@@ -32,8 +32,11 @@ export default async function ServicePage({ params }: Props) {
   const { slug } = await params;
   const service = await getService(slug);
   if (!service) notFound();
+  const allServices = await getServices();
   const pricing = pricingServices.find((item) => item.slug === service.slug);
   const serviceFaqs = getServiceFaqs(service.slug);
+  const pageContent = getServicePageContent(service);
+  const relatedServices = allServices.filter((item) => item.slug !== service.slug).slice(0, 3);
   const schema = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -73,9 +76,9 @@ export default async function ServicePage({ params }: Props) {
                 sizes="(min-width: 1024px) 45vw, 100vw"
                 src={brandCleaningImage}
               />
-              <div className="absolute inset-x-4 bottom-4 rounded-xl bg-white/92 p-4 backdrop-blur">
-                <p className="text-sm font-medium text-emerald-950">Starting from {servicePriceLabel(service)}</p>
-                <p className="mt-1 text-xs text-slate-600">Typical duration: {service.duration} hours</p>
+              <div className="absolute bottom-4 left-4 max-w-[19rem] rounded-xl bg-white/92 p-3 ring-1 ring-emerald-950/10 backdrop-blur">
+                <p className="text-sm font-medium text-emerald-950">From {servicePriceLabel(service)}</p>
+                <p className="mt-1 text-xs text-slate-600">{service.duration} hrs typical | Abu Dhabi</p>
               </div>
             </div>
           </div>
@@ -84,6 +87,32 @@ export default async function ServicePage({ params }: Props) {
       <section className="bg-white px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="min-w-0 space-y-10">
+            <section>
+              <p className="eyebrow">Overview</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">{service.name} for Abu Dhabi homes and businesses</h2>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700 sm:text-base">{pageContent.overview}</p>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {pageContent.quickFacts.map((fact) => (
+                  <div className="rounded-xl border border-emerald-950/10 bg-[#f8fff3] p-4" key={fact.label}>
+                    <p className="text-xs font-medium uppercase tracking-[0.08em] text-emerald-700">{fact.label}</p>
+                    <p className="mt-2 text-sm font-medium leading-6 text-emerald-950">{fact.value}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <p className="eyebrow">Scope</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">What is included</h2>
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                {pageContent.included.map((item) => (
+                  <div className="rounded-xl border border-emerald-950/10 bg-white p-4" key={item}>
+                    <p className="text-sm font-medium leading-6 text-emerald-950">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
             {pricing && (
               <section>
                 <p className="eyebrow">Tiered pricing</p>
@@ -142,6 +171,108 @@ export default async function ServicePage({ params }: Props) {
             )}
 
             <section>
+              <p className="eyebrow">Best for</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">When to book {service.name}</h2>
+              <div className="mt-5 grid gap-4 md:grid-cols-3">
+                {pageContent.bestFor.map((item) => (
+                  <article className="rounded-xl border border-emerald-950/10 bg-[#f8fff3] p-5" key={item.title}>
+                    <h3 className="text-lg font-medium text-emerald-950">{item.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-700">{item.text}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <p className="eyebrow">Process</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">How the service works</h2>
+              <div className="mt-5 grid gap-4 md:grid-cols-4">
+                {pageContent.process.map((step, index) => (
+                  <article className="rounded-xl border border-emerald-950/10 bg-white p-4" key={step}>
+                    <span className="text-sm font-medium text-emerald-700">0{index + 1}</span>
+                    <p className="mt-3 text-sm font-medium leading-6 text-emerald-950">{step}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <p className="eyebrow">Timing</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Duration and scheduling</h2>
+              <div className="mt-5 grid gap-4 md:grid-cols-3">
+                {pageContent.timing.map((item) => (
+                  <div className="rounded-xl border border-emerald-950/10 bg-lime-50 p-5" key={item.label}>
+                    <p className="text-sm text-slate-600">{item.label}</p>
+                    <p className="mt-2 text-xl font-medium text-emerald-950">{item.value}</p>
+                    <p className="mt-2 text-sm leading-6 text-slate-700">{item.note}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <p className="eyebrow">Preparation</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Before the team arrives</h2>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                {pageContent.preparation.map((item) => (
+                  <div className="rounded-xl bg-[#f8fff3] p-4 ring-1 ring-emerald-950/10" key={item}>
+                    <p className="text-sm leading-6 text-slate-700">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <p className="eyebrow">Add-ons</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Useful add-on services</h2>
+              <div className="mt-5 grid gap-4 md:grid-cols-3">
+                {pageContent.addOns.map((item) => (
+                  <Link className="rounded-xl border border-emerald-950/10 bg-white p-5 transition hover:bg-lime-50" href={item.href} key={item.title}>
+                    <h3 className="text-lg font-medium text-emerald-950">{item.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-700">{item.text}</p>
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <p className="eyebrow">Abu Dhabi areas</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Service coverage</h2>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700 sm:text-base">Just Shine Cleaning Services is based near Al Jazeera Towers, Al Danah, and serves homes, villas, offices, apartments, showrooms, and commercial spaces across Abu Dhabi.</p>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {["Al Danah", "Al Reem Island", "Khalifa City", "Yas Island", "Saadiyat Island", "Mussafah", "Al Reef", "Downtown Abu Dhabi"].map((area) => (
+                  <span className="rounded-lg bg-lime-50 px-3 py-2 text-sm font-medium text-emerald-950 ring-1 ring-emerald-950/10" key={area}>{area}</span>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <p className="eyebrow">Quality</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">What makes the result better</h2>
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                {pageContent.quality.map((item) => (
+                  <article className="rounded-xl border border-emerald-950/10 bg-white p-5" key={item.title}>
+                    <h3 className="text-lg font-medium text-emerald-950">{item.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-700">{item.text}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <p className="eyebrow">Related services</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Other cleaning services you may need</h2>
+              <div className="mt-5 grid gap-4 md:grid-cols-3">
+                {relatedServices.map((item) => (
+                  <Link className="rounded-xl bg-lime-50 p-5 ring-1 ring-emerald-950/10 transition hover:bg-[#f8fff3]" href={`/services/${item.slug}`} key={item.slug}>
+                    <p className="text-lg font-medium text-emerald-950">{item.name}</p>
+                    <p className="mt-2 text-sm text-slate-700">{servicePriceLabel(item)}</p>
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            <section>
               <p className="eyebrow">FAQ</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">{service.name} questions</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700 sm:text-base">Quick answers about scope, booking, timing, pricing, and what to expect.</p>
@@ -169,6 +300,66 @@ export default async function ServicePage({ params }: Props) {
       </section>
     </>
   );
+}
+
+function getServicePageContent(service: Service) {
+  const name = service.name;
+  const lower = name.toLowerCase();
+  const scope = service.scope;
+  const price = servicePriceLabel(service);
+  const isCommercial = ["office-cleaning", "restaurant-cleaning", "showroom-cleaning"].includes(service.slug);
+  const isSpecialist = ["sofa-cleaning", "carpet-cleaning", "window-cleaning", "pest-control"].includes(service.slug);
+
+  return {
+    overview: `${name} in Abu Dhabi helps keep ${isCommercial ? "commercial spaces, teams, visitors, and customers" : "homes, apartments, villas, and family spaces"} cleaner, healthier, and easier to maintain. Just Shine Cleaning Services focuses on clear scope, practical scheduling, and WhatsApp-first booking so you know what is included before the team arrives.`,
+    quickFacts: [
+      { label: "Starting price", value: price },
+      { label: "Typical duration", value: `${service.duration} hours` },
+      { label: "Scope", value: scope },
+      { label: "Booking", value: "Call or WhatsApp quote" },
+    ],
+    included: [
+      `${scope} handled according to the agreed service scope.`,
+      `Dust, marks, buildup, and high-use areas checked before starting ${lower}.`,
+      "Standard cleaning supplies and tools used where suitable for the surface.",
+      "Priority areas can be shared on WhatsApp with photos before booking.",
+      "Final walkthrough guidance so you know what was cleaned and what may need add-ons.",
+      "Flexible booking for Abu Dhabi homes, villas, apartments, offices, and commercial spaces.",
+    ],
+    bestFor: [
+      { title: "Regular maintenance", text: `${name} is useful when you want a cleaner space without spending your own time on detailed cleaning.` },
+      { title: "Before guests or inspections", text: "Book before visitors, handovers, office checks, events, or property viewings for a more polished space." },
+      { title: "Dust and hygiene reset", text: "Abu Dhabi dust, AC circulation, and busy routines can make professional cleaning helpful even when surfaces look tidy." },
+    ],
+    process: [
+      "Send service type, location, preferred timing, and photos if possible.",
+      "We confirm scope, starting price, expected duration, and available slot.",
+      "The team arrives with the agreed plan and focuses on priority areas first.",
+      "You review the result and ask for add-ons or recurring options if needed.",
+    ],
+    timing: [
+      { label: "Typical visit", value: `${service.duration} hours`, note: "Actual time depends on property size, condition, access, and add-ons." },
+      { label: "Fast quote", value: "WhatsApp", note: "Photos help us estimate scope and avoid vague pricing." },
+      { label: "Best schedule", value: isSpecialist ? "Every 3-6 months" : "Weekly to quarterly", note: "Frequency depends on traffic, dust, pets, allergies, and usage." },
+    ],
+    preparation: [
+      "Clear loose items from floors, counters, and priority surfaces where possible.",
+      "Share stains, delicate materials, pets, access notes, and parking details before arrival.",
+      "Send photos on WhatsApp if you want a clearer starting quote or add-on recommendation.",
+      "Keep valuables, documents, and fragile decor secured before the cleaning team starts.",
+    ],
+    addOns: [
+      { title: "Deep Cleaning", text: "A stronger reset for hidden dust, corners, grout, kitchen grease, and bathrooms.", href: "/services/deep-cleaning" },
+      { title: "Sofa & Carpet", text: "Useful when fabric, upholstery, rugs, or carpets need shampooing or steam attention.", href: "/services/sofa-cleaning" },
+      { title: "Window Cleaning", text: "For brighter rooms, glass fronts, indoor/outdoor window areas, frames, and tracks.", href: "/services/window-cleaning" },
+    ],
+    quality: [
+      { title: "Clear scope before work", text: "The best results start with clear expectations: service type, property size, photos, access, and priority areas." },
+      { title: "Surface-aware cleaning", text: "Marble, tile, glass, wood, fabric, and commercial surfaces need different methods to avoid damage." },
+      { title: "Abu Dhabi dust awareness", text: "Fine sand, AC airflow, and humidity affect cleaning frequency, especially for villas and soft furnishings." },
+      { title: "Practical follow-up", text: "For recurring needs, ask about weekly, bi-weekly, monthly, or quarterly cleaning plans." },
+    ],
+  };
 }
 
 function getServiceFaqs(slug: string): FaqItem[] {
