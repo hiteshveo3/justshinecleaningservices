@@ -84,7 +84,7 @@ export default async function ServicePage({ params }: Props) {
           </div>
         </div>
       </section>
-      <section className="bg-[#fbfff7] px-4 py-12 sm:px-6 lg:px-8">
+      <section className="bg-white px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="min-w-0 space-y-10">
             <nav className="sticky top-16 z-20 -mx-4 overflow-x-auto border-y border-emerald-950/10 bg-[#fbfff7]/95 px-4 py-3 backdrop-blur lg:hidden">
@@ -355,17 +355,6 @@ export default async function ServicePage({ params }: Props) {
 
           <aside className="hidden lg:block">
             <div className="sticky top-24 rounded-2xl bg-white p-5 ring-1 ring-emerald-950/10">
-              <nav className="mb-5 grid gap-2 border-b border-emerald-950/10 pb-5">
-                {[
-                  ["Overview", "#overview"],
-                  ["Pricing", "#pricing"],
-                  ["Process", "#process"],
-                  ["Comparison", "#comparison"],
-                  ["FAQ", "#faq"],
-                ].map(([label, href]) => (
-                  <a className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-lime-50 hover:text-emerald-950" href={href} key={href}>{label}</a>
-                ))}
-              </nav>
               <p className="text-sm font-medium text-emerald-950">Book this service</p>
               <p className="mt-2 text-sm leading-6 text-slate-700">{pricing?.scope || service.scope}</p>
               <div className="mt-4 grid gap-2 rounded-xl bg-[#f6fff0] p-3">
