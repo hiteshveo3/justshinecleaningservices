@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:just_shine_booking/firebase_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -273,6 +275,7 @@ class BookingRequest {
     required this.notes,
     required this.status,
     required this.createdAt,
+    this.photoPaths = const [],
   });
 
   final String id;
@@ -285,12 +288,14 @@ class BookingRequest {
   final String notes;
   final String status;
   final DateTime createdAt;
+  final List<String> photoPaths;
 
   BookingRequest copyWith({
     String? day,
     String? time,
     String? notes,
     String? status,
+    List<String>? photoPaths,
   }) {
     return BookingRequest(
       id: id,
@@ -303,6 +308,7 @@ class BookingRequest {
       notes: notes ?? this.notes,
       status: status ?? this.status,
       createdAt: createdAt,
+      photoPaths: photoPaths ?? this.photoPaths,
     );
   }
 
@@ -318,6 +324,7 @@ class BookingRequest {
       'notes': notes,
       'status': status,
       'createdAt': createdAt.toIso8601String(),
+      'photoPaths': photoPaths,
     };
   }
 
@@ -337,6 +344,11 @@ class BookingRequest {
       createdAt:
           DateTime.tryParse(json['createdAt'] as String? ?? '') ??
           DateTime.now(),
+      photoPaths:
+          (json['photoPaths'] as List<dynamic>?)
+              ?.whereType<String>()
+              .toList() ??
+          const [],
     );
   }
 
@@ -350,6 +362,7 @@ class BookingRequest {
       'Property: $propertyType',
       'Timing: $day, $time',
       if (notes.isNotEmpty) 'Notes: $notes',
+      if (photoPaths.isNotEmpty) 'Photos attached in app: ${photoPaths.length}',
     ].join('\n');
   }
 }
@@ -387,16 +400,23 @@ class AppMessage {
 }
 
 class CustomerProfile {
-  const CustomerProfile({this.name = '', this.phone = '', this.address = ''});
+  const CustomerProfile({
+    this.name = '',
+    this.phone = '',
+    this.address = '',
+    this.photoPath = '',
+  });
 
   final String name;
   final String phone;
   final String address;
+  final String photoPath;
 
   Map<String, dynamic> toJson() => {
     'name': name,
     'phone': phone,
     'address': address,
+    'photoPath': photoPath,
   };
 
   factory CustomerProfile.fromJson(Map<String, dynamic> json) {
@@ -404,6 +424,7 @@ class CustomerProfile {
       name: json['name'] as String? ?? '',
       phone: json['phone'] as String? ?? '',
       address: json['address'] as String? ?? '',
+      photoPath: json['photoPath'] as String? ?? '',
     );
   }
 }
@@ -420,6 +441,16 @@ Future<void> callCompany() async {
     Uri.parse('tel:$companyPhone'),
     mode: LaunchMode.externalApplication,
   );
+}
+
+Future<String?> pickLocalImage() async {
+  final picker = ImagePicker();
+  final image = await picker.pickImage(
+    source: ImageSource.gallery,
+    imageQuality: 72,
+    maxWidth: 1600,
+  );
+  return image?.path;
 }
 
 class FirebaseBackend {
@@ -925,6 +956,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
   String propertyType = 'Apartment';
   String selectedDay = 'Tomorrow';
   String selectedTime = 'Morning';
+  List<String> photoPaths = [];
   final addressController = TextEditingController();
   final notesController = TextEditingController();
 
@@ -966,6 +998,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
       notes: notesController.text.trim(),
       status: 'Request sent',
       createdAt: DateTime.now(),
+      photoPaths: photoPaths,
     );
 
     widget.onBookingCreated(booking);
@@ -1011,6 +1044,12 @@ class _QuoteScreenState extends State<QuoteScreen> {
         backgroundColor: AppTheme.green,
       ),
     );
+  }
+
+  Future<void> addPhoto() async {
+    final path = await pickLocalImage();
+    if (path == null) return;
+    setState(() => photoPaths = [...photoPaths, path]);
   }
 
   Widget currentStep(BuildContext context) {
@@ -1131,6 +1170,18 @@ class _QuoteScreenState extends State<QuoteScreen> {
                 prefixIcon: Icon(Iconsax.note_text),
               ),
             ),
+            const SizedBox(height: 14),
+            PhotoPickerCard(
+              photoPaths: photoPaths,
+              onAdd: addPhoto,
+              onRemove: (path) {
+                setState(() {
+                  photoPaths = photoPaths
+                      .where((item) => item != path)
+                      .toList();
+                });
+              },
+            ),
           ],
         );
       default:
@@ -1177,6 +1228,13 @@ class _QuoteScreenState extends State<QuoteScreen> {
                 icon: Iconsax.note_text,
                 label: 'Notes',
                 value: notesController.text.trim(),
+              ),
+            if (photoPaths.isNotEmpty)
+              ReviewRow(
+                icon: Iconsax.gallery,
+                label: 'Photos',
+                value:
+                    '${photoPaths.length} photo${photoPaths.length == 1 ? '' : 's'} attached',
               ),
           ],
         );
@@ -1363,6 +1421,16 @@ class _BookingsScreenState extends State<BookingsScreen> {
                     label: 'Notes',
                     value: booking.notes,
                   ),
+                if (booking.photoPaths.isNotEmpty) ...[
+                  ReviewRow(
+                    icon: Iconsax.gallery,
+                    label: 'Photos',
+                    value:
+                        '${booking.photoPaths.length} photo${booking.photoPaths.length == 1 ? '' : 's'} attached',
+                  ),
+                  PhotoStrip(photoPaths: booking.photoPaths),
+                  const SizedBox(height: 10),
+                ],
                 const SizedBox(height: 10),
                 BookingTimeline(status: booking.status),
                 const SizedBox(height: 18),
@@ -1681,15 +1749,7 @@ class ProfileScreen extends StatelessWidget {
               decoration: surface(),
               child: Row(
                 children: [
-                  Container(
-                    width: 68,
-                    height: 68,
-                    decoration: BoxDecoration(
-                      color: AppTheme.mint,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Iconsax.user, color: AppTheme.green, size: 30),
-                  ),
+                  ProfileAvatar(photoPath: profile.photoPath, size: 68),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(
@@ -1841,6 +1901,7 @@ class ProfileScreen extends StatelessWidget {
     final nameController = TextEditingController(text: profile.name);
     final phoneController = TextEditingController(text: profile.phone);
     final addressController = TextEditingController(text: profile.address);
+    var nextPhotoPath = profile.photoPath;
 
     showModalBottomSheet<void>(
       context: context,
@@ -1850,76 +1911,119 @@ class ProfileScreen extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              20,
-              14,
-              20,
-              MediaQuery.viewInsetsOf(context).bottom + 24,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 42,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: AppTheme.line,
-                      borderRadius: BorderRadius.circular(99),
-                    ),
-                  ),
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return SafeArea(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  20,
+                  14,
+                  20,
+                  MediaQuery.viewInsetsOf(context).bottom + 24,
                 ),
-                const SizedBox(height: 18),
-                Text(
-                  'Edit profile',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Name',
-                    prefixIcon: Icon(Iconsax.user),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: phoneController,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    labelText: 'Phone',
-                    prefixIcon: Icon(Iconsax.call),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: addressController,
-                  decoration: const InputDecoration(
-                    labelText: 'Default address',
-                    prefixIcon: Icon(Iconsax.location),
-                  ),
-                ),
-                const SizedBox(height: 18),
-                PrimaryButton(
-                  label: 'Save profile',
-                  icon: Iconsax.tick_circle,
-                  onTap: () {
-                    onProfileChanged(
-                      CustomerProfile(
-                        name: nameController.text.trim(),
-                        phone: phoneController.text.trim(),
-                        address: addressController.text.trim(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 42,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: AppTheme.line,
+                          borderRadius: BorderRadius.circular(99),
+                        ),
                       ),
-                    );
-                    Navigator.of(context).pop();
-                  },
+                    ),
+                    const SizedBox(height: 18),
+                    Text(
+                      'Edit profile',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    Center(
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: () async {
+                          final path = await pickLocalImage();
+                          if (path == null) return;
+                          setSheetState(() => nextPhotoPath = path);
+                        },
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            ProfileAvatar(photoPath: nextPhotoPath, size: 86),
+                            Positioned(
+                              right: -2,
+                              bottom: -2,
+                              child: Container(
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  color: AppTheme.green,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Iconsax.camera,
+                                  color: Colors.white,
+                                  size: 17,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Name',
+                        prefixIcon: Icon(Iconsax.user),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        labelText: 'Phone',
+                        prefixIcon: Icon(Iconsax.call),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: addressController,
+                      decoration: const InputDecoration(
+                        labelText: 'Default address',
+                        prefixIcon: Icon(Iconsax.location),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    PrimaryButton(
+                      label: 'Save profile',
+                      icon: Iconsax.tick_circle,
+                      onTap: () {
+                        onProfileChanged(
+                          CustomerProfile(
+                            name: nameController.text.trim(),
+                            phone: phoneController.text.trim(),
+                            address: addressController.text.trim(),
+                            photoPath: nextPhotoPath,
+                          ),
+                        );
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
@@ -2178,6 +2282,157 @@ class ReviewRow extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ProfileAvatar extends StatelessWidget {
+  const ProfileAvatar({required this.photoPath, required this.size, super.key});
+
+  final String photoPath;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasPhoto = photoPath.isNotEmpty && File(photoPath).existsSync();
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: AppTheme.mint,
+        shape: BoxShape.circle,
+        border: Border.all(color: AppTheme.line),
+        image: hasPhoto
+            ? DecorationImage(
+                image: FileImage(File(photoPath)),
+                fit: BoxFit.cover,
+              )
+            : null,
+      ),
+      child: hasPhoto
+          ? null
+          : Icon(Iconsax.user, color: AppTheme.green, size: size * .42),
+    );
+  }
+}
+
+class PhotoPickerCard extends StatelessWidget {
+  const PhotoPickerCard({
+    required this.photoPaths,
+    required this.onAdd,
+    required this.onRemove,
+    super.key,
+  });
+
+  final List<String> photoPaths;
+  final VoidCallback onAdd;
+  final ValueChanged<String> onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: surface(color: AppTheme.mint),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Iconsax.gallery_add, color: AppTheme.green, size: 20),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Photos for quote',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              TextButton.icon(
+                onPressed: onAdd,
+                icon: const Icon(Iconsax.add, size: 17),
+                label: const Text('Add'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Add stains, rooms, windows, sofa, or access photos for a clearer quote.',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          if (photoPaths.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            PhotoStrip(photoPaths: photoPaths, onRemove: onRemove),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class PhotoStrip extends StatelessWidget {
+  const PhotoStrip({required this.photoPaths, this.onRemove, super.key});
+
+  final List<String> photoPaths;
+  final ValueChanged<String>? onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 82,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: photoPaths.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 10),
+        itemBuilder: (context, index) {
+          final path = photoPaths[index];
+          final exists = File(path).existsSync();
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 82,
+                height: 82,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: AppTheme.line),
+                  image: exists
+                      ? DecorationImage(
+                          image: FileImage(File(path)),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
+                ),
+                child: exists
+                    ? null
+                    : Icon(Iconsax.gallery, color: AppTheme.green),
+              ),
+              if (onRemove != null)
+                Positioned(
+                  right: -6,
+                  top: -6,
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    onTap: () => onRemove!(path),
+                    child: Container(
+                      width: 26,
+                      height: 26,
+                      decoration: BoxDecoration(
+                        color: AppTheme.green,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                      child: const Icon(
+                        Iconsax.close_circle,
+                        color: Colors.white,
+                        size: 15,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
       ),
     );
   }
