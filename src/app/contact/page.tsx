@@ -1,4 +1,6 @@
 import { CtaButtons } from "@/components/cta-buttons";
+import { ContactForm } from "@/components/contact-form";
+import { JsonLd, breadcrumbSchema } from "@/components/seo";
 import { services, site } from "@/lib/content";
 
 export const metadata = {
@@ -36,6 +38,7 @@ export default async function ContactPage({ searchParams }: { searchParams?: Pro
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <JsonLd data={breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Contact", url: "/contact" }])} />
       <section className="section hero-gradient">
         <div className="container grid gap-10 lg:grid-cols-[.8fr_1fr] lg:items-center">
           <div>
@@ -83,37 +86,7 @@ export default async function ContactPage({ searchParams }: { searchParams?: Pro
               </div>
             </div>
           </div>
-          <form className="card grid gap-4 bg-[#f7fff0] p-5 sm:p-6" action="/api/contact" method="post">
-            <label className="grid gap-1.5 text-sm font-medium text-emerald-950">
-              Name
-              <input className="rounded-lg border border-emerald-950/10 bg-white p-3 font-normal text-slate-800" name="name" placeholder="Your name" autoComplete="name" required />
-            </label>
-            <label className="grid gap-1.5 text-sm font-medium text-emerald-950">
-              Email
-              <input className="rounded-lg border border-emerald-950/10 bg-white p-3 font-normal text-slate-800" name="email" type="email" placeholder="you@example.com" autoComplete="email" required />
-            </label>
-            <label className="grid gap-1.5 text-sm font-medium text-emerald-950">
-              Phone
-              <input className="rounded-lg border border-emerald-950/10 bg-white p-3 font-normal text-slate-800" name="phone" placeholder="+971 55 223 2850" autoComplete="tel" required />
-            </label>
-            <label className="grid gap-1.5 text-sm font-medium text-emerald-950">
-              Service type
-              <select className="rounded-lg border border-emerald-950/10 bg-white p-3 font-normal text-slate-800" name="serviceType" defaultValue="" required>
-                <option value="">Choose a service</option>
-                {services.map((service) => <option key={service.slug}>{service.name}</option>)}
-                <option>Other</option>
-              </select>
-            </label>
-            <label className="grid gap-1.5 text-sm font-medium text-emerald-950">
-              Address / Area
-              <input className="rounded-lg border border-emerald-950/10 bg-white p-3 font-normal text-slate-800" name="area" placeholder="Al Reem, Khalifa City, Al Danah..." autoComplete="street-address" />
-            </label>
-            <label className="grid gap-1.5 text-sm font-medium text-emerald-950">
-              Message
-              <textarea className="min-h-32 rounded-lg border border-emerald-950/10 bg-white p-3 font-normal text-slate-800" name="message" placeholder="Property size, preferred date/time, special requests, photos if available..." required />
-            </label>
-            <button className="btn-primary" type="submit">Get free quote</button>
-          </form>
+          <ContactForm services={services} />
         </div>
       </section>
 

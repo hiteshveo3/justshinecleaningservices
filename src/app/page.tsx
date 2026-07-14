@@ -4,7 +4,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { AppWindowIcon, BrushCleaningIcon, CheckmarkCircle02Icon, CleaningBucketIcon, CleanIcon, Clock01Icon, CustomerService01Icon, Location01Icon, OfficeIcon, Sofa01Icon, StarIcon, VacuumCleanerIcon, WhatsappBusinessIcon } from "@hugeicons/core-free-icons";
 import { CtaButtons } from "@/components/cta-buttons";
 import { FaqAccordion } from "@/components/faq-accordion";
-import { JsonLd, localBusinessSchema } from "@/components/seo";
+import { JsonLd, breadcrumbSchema } from "@/components/seo";
 import { faqs, servicePriceLabel, services, site, testimonials } from "@/lib/content";
 
 const serviceIcons = [CleaningBucketIcon, CleanIcon, OfficeIcon, VacuumCleanerIcon, Sofa01Icon, AppWindowIcon, BrushCleaningIcon];
@@ -62,7 +62,7 @@ function serviceWhatsappHref(serviceName: string, priceLabel: string, duration: 
 export default function Home() {
   return (
     <>
-      <JsonLd data={localBusinessSchema} />
+      <JsonLd data={breadcrumbSchema([{ name: "Home", url: "/" }])} />
       <section className="bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
           <div>

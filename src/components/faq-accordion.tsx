@@ -33,6 +33,10 @@ function FaqRow({ item, id, open, onToggle }: { item: FaqItem; id: string; open:
   const [showFull, setShowFull] = useState(false);
   const isLong = item.a.length > 950;
   const answer = isLong && !showFull ? `${item.a.slice(0, 900).trim()}...` : item.a;
+  const handleToggle = () => {
+    if (!open) window.gtag?.("event", "faq_expanded", { question: item.q });
+    onToggle();
+  };
 
   return (
     <div className="scroll-mt-24 rounded-xl border border-emerald-950/10 bg-[#f6fff0] transition hover:border-emerald-900/20 hover:bg-[#f3ffe8]" id={id}>
@@ -40,7 +44,7 @@ function FaqRow({ item, id, open, onToggle }: { item: FaqItem; id: string; open:
         className="flex w-full cursor-pointer items-center justify-between gap-4 p-5 text-left font-medium text-emerald-950"
         type="button"
         aria-expanded={open}
-        onClick={onToggle}
+        onClick={handleToggle}
       >
         <span className="flex items-center gap-3">
           <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-white text-emerald-800 ring-1 ring-emerald-950/10">

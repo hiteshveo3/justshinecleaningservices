@@ -1,4 +1,5 @@
 import { ServicesIndex } from "@/components/services-index";
+import { JsonLd, breadcrumbSchema } from "@/components/seo";
 import { getServices } from "@/lib/data";
 
 export const metadata = {
@@ -11,8 +12,10 @@ export default async function ServicesPage() {
   const serviceCount = services.length;
 
   return (
-    <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
+    <>
+      <JsonLd data={breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Services", url: "/services" }])} />
+      <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
         <div className="rounded-3xl bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] p-5 ring-1 ring-emerald-950/10 sm:p-8 lg:p-10">
           <p className="eyebrow">Services</p>
           <h1 className="mt-4 max-w-4xl text-3xl font-semibold leading-tight text-emerald-950 sm:text-4xl lg:text-[2.65rem]">Find the right cleaning service in Abu Dhabi</h1>
@@ -31,7 +34,8 @@ export default async function ServicesPage() {
           </div>
         </div>
         <ServicesIndex services={services} />
-      </div>
-    </section>
+        </div>
+      </section>
+    </>
   );
 }

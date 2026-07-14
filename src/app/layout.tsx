@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
+import { AnalyticsEvents } from "@/components/analytics-events";
 import { BottomCta } from "@/components/bottom-cta";
 import { GoToTop } from "@/components/go-to-top";
 import { Header, Footer } from "@/components/layout";
+import { MobileStickyCta } from "@/components/mobile-sticky-cta";
+import { JsonLd, localBusinessSchema } from "@/components/seo";
+import { WebVitals } from "@/components/web-vitals";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -25,10 +29,15 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
+        <a className="skip-link" href="#main-content">Skip to main content</a>
+        <WebVitals />
+        <AnalyticsEvents />
+        <JsonLd data={localBusinessSchema} />
         <Header />
-        <main className="min-h-screen">{children}</main>
+        <main className="min-h-screen" id="main-content" tabIndex={-1}>{children}</main>
         <BottomCta />
         <Footer />
+        <MobileStickyCta />
         <GoToTop />
       </body>
     </html>

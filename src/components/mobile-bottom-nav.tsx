@@ -32,7 +32,7 @@ export function MobileBottomNav() {
           <MobileNavLink href="/services" icon={ServiceIcon} label="Services" active={pathname.startsWith("/services")} />
           <MobileNavLink href="/blog" icon={NewsIcon} label="Blog" active={pathname.startsWith("/blog")} />
           <MobileNavLink href="/contact" icon={Contact01Icon} label="Contact" active={pathname === "/contact"} />
-          <button className="mobile-nav-item" type="button" onClick={() => setOpen(true)} aria-haspopup="dialog" aria-expanded={open}>
+          <button className="mobile-nav-item" type="button" onClick={() => setOpen(true)} aria-label="Open more navigation" aria-haspopup="dialog" aria-expanded={open}>
             <span className="mobile-nav-icon inline-flex h-8 w-8 items-center justify-center rounded-xl border border-emerald-900/10 bg-lime-100 text-emerald-900">
               <HugeiconsIcon icon={MoreHorizontalCircle01Icon} className="icon" size={21} color="currentColor" strokeWidth={2.2} />
             </span>

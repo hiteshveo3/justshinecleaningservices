@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CtaButtons } from "@/components/cta-buttons";
 import { FaqAccordion } from "@/components/faq-accordion";
-import { JsonLd } from "@/components/seo";
+import { JsonLd, breadcrumbSchema } from "@/components/seo";
 import { getService, getServices } from "@/lib/data";
 import { servicePriceLabel, site, type Service } from "@/lib/content";
 import { faqCategories, type FaqItem } from "@/lib/faq-data";
@@ -60,6 +60,11 @@ export default async function ServicePage({ params }: Props) {
   return (
     <>
       <JsonLd data={schema} />
+      <JsonLd data={breadcrumbSchema([
+        { name: "Home", url: "/" },
+        { name: "Services", url: "/services" },
+        { name: service.name, url: `/services/${service.slug}` },
+      ])} />
       <section className="bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
           <div>
