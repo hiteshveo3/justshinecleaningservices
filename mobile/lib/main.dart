@@ -20,13 +20,13 @@ class JustShineBookingApp extends StatelessWidget {
 }
 
 class AppTheme {
-  static const ink = Color(0xFF111827);
-  static const green = Color(0xFF0F766E);
-  static const lime = Color(0xFFE0F2FE);
-  static const mint = Color(0xFFF0FDFA);
-  static const wash = Color(0xFFF8FAFC);
-  static const line = Color(0xFFE2E8F0);
-  static const slate = Color(0xFF64748B);
+  static const ink = Color(0xFF1F2937);
+  static const green = Color(0xFF2563EB);
+  static const lime = Color(0xFFFFF1D6);
+  static const mint = Color(0xFFF2F7FF);
+  static const wash = Color(0xFFF6F7F9);
+  static const line = Color(0xFFD9E2EC);
+  static const slate = Color(0xFF5F6B7A);
 
   static ThemeData light() {
     const family = 'Roboto';
@@ -242,7 +242,7 @@ class HomeScreen extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
             gradient: const LinearGradient(
-              colors: [Color(0xFFFFFFFF), Color(0xFFE0F2FE), Color(0xFFCCFBF1)],
+              colors: [Color(0xFFFFFFFF), Color(0xFFF2F7FF), Color(0xFFFFF1D6)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
