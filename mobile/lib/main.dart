@@ -175,16 +175,16 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   int index = 0;
 
-  final pages = const [
-    HomeScreen(),
-    QuoteScreen(),
-    BookingsScreen(),
-    ChatScreen(),
-    ProfileScreen(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      HomeScreen(onBook: () => setState(() => index = 1)),
+      QuoteScreen(onBookingCreated: () => setState(() => index = 2)),
+      const BookingsScreen(),
+      const ChatScreen(),
+      const ProfileScreen(),
+    ];
+
     return Scaffold(
       body: SafeArea(child: pages[index]),
       bottomNavigationBar: NavigationBar(
@@ -203,7 +203,7 @@ class _AppShellState extends State<AppShell> {
           NavigationDestination(
             icon: Icon(Iconsax.document_text),
             selectedIcon: Icon(Iconsax.document_text_copy),
-            label: 'Quote',
+            label: 'Book',
           ),
           NavigationDestination(
             icon: Icon(Iconsax.calendar_tick),
@@ -227,7 +227,9 @@ class _AppShellState extends State<AppShell> {
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({required this.onBook, super.key});
+
+  final VoidCallback onBook;
 
   @override
   Widget build(BuildContext context) {
@@ -264,9 +266,9 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: PrimaryButton(
-                      label: 'Get quote',
+                      label: 'Book now',
                       icon: Iconsax.document_text,
-                      onTap: () {},
+                      onTap: onBook,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -286,7 +288,9 @@ class HomeScreen extends StatelessWidget {
 }
 
 class QuoteScreen extends StatefulWidget {
-  const QuoteScreen({super.key});
+  const QuoteScreen({required this.onBookingCreated, super.key});
+
+  final VoidCallback onBookingCreated;
 
   @override
   State<QuoteScreen> createState() => _QuoteScreenState();
@@ -294,73 +298,277 @@ class QuoteScreen extends StatefulWidget {
 
 class _QuoteScreenState extends State<QuoteScreen> {
   int selected = 0;
+  int step = 0;
+  String propertyType = 'Apartment';
+  String selectedDay = 'Tomorrow';
+  String selectedTime = 'Morning';
+  final addressController = TextEditingController();
+  final notesController = TextEditingController();
+
+  static const totalSteps = 4;
+  static const propertyTypes = ['Apartment', 'Villa', 'Office', 'Restaurant'];
+  static const dayOptions = ['Today', 'Tomorrow', 'This week'];
+  static const timeOptions = ['Morning', 'Afternoon', 'Evening'];
+
+  @override
+  void dispose() {
+    addressController.dispose();
+    notesController.dispose();
+    super.dispose();
+  }
+
+  void nextStep() {
+    if (!validateStep()) return;
+    if (step < totalSteps - 1) {
+      setState(() => step += 1);
+      return;
+    }
+
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text('Booking request ready'),
+        content: Text(
+          'Your ${services[selected].name.toLowerCase()} request is ready. Next we will connect it with Firebase and WhatsApp confirmation.',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              widget.onBookingCreated();
+            },
+            child: const Text('View bookings'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool validateStep() {
+    if (step == 1 && addressController.text.trim().length < 4) {
+      showMessage('Please add your address or area.');
+      return false;
+    }
+    return true;
+  }
+
+  void showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppTheme.green,
+      ),
+    );
+  }
+
+  Widget currentStep(BuildContext context) {
+    switch (step) {
+      case 0:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Choose your cleaning service',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Pick the main service. You can add notes or photos later.',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 16),
+            ...List.generate(services.length, (i) {
+              return SelectableServiceCard(
+                service: services[i],
+                selected: selected == i,
+                onTap: () => setState(() => selected = i),
+              );
+            }),
+          ],
+        );
+      case 1:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Where should we come?',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Add a clear area, building, villa number, or landmark.',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: addressController,
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(
+                labelText: 'Address or area',
+                hintText: 'Al Danah, Al Reem, Khalifa City...',
+                prefixIcon: Icon(Iconsax.location),
+              ),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              'Property type',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: propertyTypes.map((type) {
+                return BookingChip(
+                  label: type,
+                  selected: propertyType == type,
+                  onTap: () => setState(() => propertyType = type),
+                );
+              }).toList(),
+            ),
+          ],
+        );
+      case 2:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Pick timing',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Choose a preferred window. The team will confirm exact availability.',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 18),
+            Text('Day', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: dayOptions.map((day) {
+                return BookingChip(
+                  label: day,
+                  selected: selectedDay == day,
+                  onTap: () => setState(() => selectedDay = day),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 20),
+            Text('Time', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: timeOptions.map((time) {
+                return BookingChip(
+                  label: time,
+                  selected: selectedTime == time,
+                  onTap: () => setState(() => selectedTime = time),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 18),
+            TextField(
+              controller: notesController,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                labelText: 'Notes for the team',
+                hintText: 'Rooms, stains, access details, pets, parking...',
+                prefixIcon: Icon(Iconsax.note_text),
+              ),
+            ),
+          ],
+        );
+      default:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Review booking request',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Check details before sending. Payment and Firebase save will be connected next.',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 16),
+            ReviewRow(
+              icon: services[selected].icon,
+              label: 'Service',
+              value: services[selected].name,
+            ),
+            ReviewRow(
+              icon: Iconsax.receipt_text,
+              label: 'Starting price',
+              value: services[selected].price,
+            ),
+            ReviewRow(
+              icon: Iconsax.location,
+              label: 'Address',
+              value: addressController.text.trim(),
+            ),
+            ReviewRow(
+              icon: Iconsax.building,
+              label: 'Property',
+              value: propertyType,
+            ),
+            ReviewRow(
+              icon: Iconsax.calendar_1,
+              label: 'Timing',
+              value: '$selectedDay, $selectedTime',
+            ),
+            if (notesController.text.trim().isNotEmpty)
+              ReviewRow(
+                icon: Iconsax.note_text,
+                label: 'Notes',
+                value: notesController.text.trim(),
+              ),
+          ],
+        );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return AppScroll(
-      title: 'New quote',
-      subtitle: 'Three simple steps',
+      title: 'Book service',
+      subtitle: 'Step ${step + 1} of $totalSteps',
       children: [
-        const ProgressLabel(current: 1, total: 3),
-        const SizedBox(height: 18),
-        Text(
-          'What do you need cleaned?',
-          style: Theme.of(context).textTheme.headlineMedium,
-        ),
-        const SizedBox(height: 14),
-        Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: List.generate(services.length, (i) {
-            final active = selected == i;
-            return ChoiceChip(
-              selected: active,
-              label: Text(services[i].name),
-              avatar: Icon(
-                services[i].icon,
-                size: 17,
-                color: active ? AppTheme.ink : AppTheme.green,
-              ),
-              selectedColor: AppTheme.lime,
-              backgroundColor: Colors.white,
-              side: const BorderSide(color: AppTheme.line),
-              labelStyle: const TextStyle(
-                fontWeight: FontWeight.w300,
-                color: AppTheme.ink,
-              ),
-              onSelected: (_) => setState(() => selected = i),
-            );
-          }),
-        ),
-        const SizedBox(height: 24),
-        TextField(
-          decoration: const InputDecoration(
-            labelText: 'Address or area',
-            prefixIcon: Icon(Iconsax.location),
-          ),
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          decoration: const InputDecoration(
-            labelText: 'Preferred date and time',
-            prefixIcon: Icon(Iconsax.calendar_1),
-          ),
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          maxLines: 3,
-          decoration: const InputDecoration(
-            labelText: 'Notes for the team',
-            prefixIcon: Icon(Iconsax.note_text),
-          ),
-        ),
-        const SizedBox(height: 18),
+        ProgressLabel(current: step + 1, total: totalSteps),
+        const SizedBox(height: 20),
+        currentStep(context),
+        const SizedBox(height: 16),
         QuoteSummary(service: services[selected]),
         const SizedBox(height: 18),
-        PrimaryButton(
-          label: 'Continue booking',
-          icon: Iconsax.arrow_right_3,
-          onTap: () {},
+        Row(
+          children: [
+            if (step > 0) ...[
+              Expanded(
+                child: SecondaryButton(
+                  label: 'Back',
+                  icon: Iconsax.arrow_left_2,
+                  onTap: () => setState(() => step -= 1),
+                ),
+              ),
+              const SizedBox(width: 12),
+            ],
+            Expanded(
+              flex: 2,
+              child: PrimaryButton(
+                label: step == totalSteps - 1 ? 'Send request' : 'Continue',
+                icon: step == totalSteps - 1
+                    ? Iconsax.send_2
+                    : Iconsax.arrow_right_3,
+                onTap: nextStep,
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -612,6 +820,85 @@ class ServiceCard extends StatelessWidget {
   }
 }
 
+class SelectableServiceCard extends StatelessWidget {
+  const SelectableServiceCard({
+    required this.service,
+    required this.selected,
+    required this.onTap,
+    super.key,
+  });
+
+  final CleaningService service;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Material(
+        color: selected ? AppTheme.mint : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: selected ? AppTheme.green : AppTheme.line,
+                width: selected ? 1.4 : 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                IconBox(icon: service.icon, filled: selected),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        service.name,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        service.detail,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      service.price,
+                      style: const TextStyle(
+                        color: AppTheme.green,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Icon(
+                      selected ? Iconsax.tick_circle : Iconsax.arrow_right_3,
+                      color: selected ? AppTheme.green : AppTheme.slate,
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class QuoteSummary extends StatelessWidget {
   const QuoteSummary({required this.service, super.key});
 
@@ -636,9 +923,48 @@ class QuoteSummary extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${service.name} · ${service.price}',
+                  '${service.name} - ${service.price}',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ReviewRow extends StatelessWidget {
+  const ReviewRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    super.key,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: surface(color: AppTheme.mint),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppTheme.green, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: Theme.of(context).textTheme.bodyMedium),
+                const SizedBox(height: 2),
+                Text(value, style: Theme.of(context).textTheme.titleMedium),
               ],
             ),
           ),
@@ -892,6 +1218,35 @@ class PrimaryButton extends StatelessWidget {
   }
 }
 
+class SecondaryButton extends StatelessWidget {
+  const SecondaryButton({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+    super.key,
+  });
+
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton.icon(
+      onPressed: onTap,
+      icon: Icon(icon, size: 18),
+      label: Text(label),
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size.fromHeight(54),
+        foregroundColor: AppTheme.green,
+        side: const BorderSide(color: AppTheme.green),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        textStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
+      ),
+    );
+  }
+}
+
 class PrimaryIcon extends StatelessWidget {
   const PrimaryIcon({required this.icon, required this.onTap, super.key});
 
@@ -906,6 +1261,42 @@ class PrimaryIcon extends StatelessWidget {
       style: IconButton.styleFrom(
         backgroundColor: AppTheme.green,
         foregroundColor: Colors.white,
+      ),
+    );
+  }
+}
+
+class BookingChip extends StatelessWidget {
+  const BookingChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    super.key,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(99),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+        decoration: BoxDecoration(
+          color: selected ? AppTheme.lime.withValues(alpha: .7) : Colors.white,
+          borderRadius: BorderRadius.circular(99),
+          border: Border.all(color: selected ? AppTheme.green : AppTheme.line),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: selected ? AppTheme.ink : AppTheme.slate,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
       ),
     );
   }

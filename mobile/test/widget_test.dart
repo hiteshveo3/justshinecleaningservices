@@ -7,7 +7,7 @@ void main() {
 
     expect(find.text('Just Shine Cleaning Services'), findsOneWidget);
     expect(find.text('Home'), findsOneWidget);
-    expect(find.text('Quote'), findsOneWidget);
+    expect(find.text('Book'), findsOneWidget);
     expect(find.text('Bookings'), findsOneWidget);
     expect(find.text('Chat'), findsOneWidget);
     expect(find.text('Profile'), findsOneWidget);
