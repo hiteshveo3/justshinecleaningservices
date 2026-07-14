@@ -282,6 +282,26 @@ class BookingRequest {
   final String status;
   final DateTime createdAt;
 
+  BookingRequest copyWith({
+    String? day,
+    String? time,
+    String? notes,
+    String? status,
+  }) {
+    return BookingRequest(
+      id: id,
+      serviceName: serviceName,
+      price: price,
+      address: address,
+      propertyType: propertyType,
+      day: day ?? this.day,
+      time: time ?? this.time,
+      notes: notes ?? this.notes,
+      status: status ?? this.status,
+      createdAt: createdAt,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -509,6 +529,33 @@ class _AppShellState extends State<AppShell> {
     saveMessages();
   }
 
+  void updateBooking(
+    BookingRequest booking, {
+    required String status,
+    String? day,
+    String? time,
+    String? message,
+  }) {
+    final updated = booking.copyWith(status: status, day: day, time: time);
+    setState(() {
+      bookings = bookings
+          .map((item) => item.id == booking.id ? updated : item)
+          .toList();
+      messages = [
+        AppMessage(
+          text:
+              message ?? '${updated.serviceName} ${updated.id} is now $status.',
+          mine: false,
+          createdAt: DateTime.now(),
+          bookingId: updated.id,
+        ),
+        ...messages,
+      ];
+    });
+    saveBookings();
+    saveMessages();
+  }
+
   void addMessage(String text) {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return;
@@ -536,6 +583,8 @@ class _AppShellState extends State<AppShell> {
       BookingsScreen(
         bookings: bookings,
         onBook: () => setState(() => index = 1),
+        onOpenChat: () => setState(() => index = 3),
+        onBookingChanged: updateBooking,
       ),
       ChatScreen(messages: messages, onMessageSent: addMessage),
       ProfileScreen(
@@ -1063,11 +1112,22 @@ class BookingsScreen extends StatelessWidget {
   const BookingsScreen({
     required this.bookings,
     required this.onBook,
+    required this.onOpenChat,
+    required this.onBookingChanged,
     super.key,
   });
 
   final List<BookingRequest> bookings;
   final VoidCallback onBook;
+  final VoidCallback onOpenChat;
+  final void Function(
+    BookingRequest booking, {
+    required String status,
+    String? day,
+    String? time,
+    String? message,
+  })
+  onBookingChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -1157,6 +1217,34 @@ class BookingsScreen extends StatelessWidget {
                 const SizedBox(height: 10),
                 BookingTimeline(status: booking.status),
                 const SizedBox(height: 18),
+                if (booking.status != 'Cancelled') ...[
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SecondaryButton(
+                          label: 'Reschedule',
+                          icon: Iconsax.calendar_edit,
+                          onTap: () {
+                            Navigator.of(context).pop();
+                            showRescheduleSheet(context, booking);
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: SecondaryButton(
+                          label: 'Cancel',
+                          icon: Iconsax.close_circle,
+                          onTap: () {
+                            Navigator.of(context).pop();
+                            confirmCancel(context, booking);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                ],
                 Row(
                   children: [
                     Expanded(
@@ -1169,9 +1257,12 @@ class BookingsScreen extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: PrimaryButton(
-                        label: 'WhatsApp',
-                        icon: Iconsax.send_2,
-                        onTap: () => openWhatsApp(booking.whatsAppMessage),
+                        label: 'Support',
+                        icon: Iconsax.message,
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          onOpenChat();
+                        },
                       ),
                     ),
                   ],
@@ -1181,6 +1272,136 @@ class BookingsScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  void showRescheduleSheet(BuildContext context, BookingRequest booking) {
+    var nextDay = booking.day;
+    var nextTime = booking.time;
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 42,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: AppTheme.line,
+                          borderRadius: BorderRadius.circular(99),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    Text(
+                      'Reschedule booking',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Pick a new preferred window. The team will confirm availability.',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    const SizedBox(height: 18),
+                    Text('Day', style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: _QuoteScreenState.dayOptions.map((day) {
+                        return BookingChip(
+                          label: day,
+                          selected: nextDay == day,
+                          onTap: () => setSheetState(() => nextDay = day),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 18),
+                    Text(
+                      'Time',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: _QuoteScreenState.timeOptions.map((time) {
+                        return BookingChip(
+                          label: time,
+                          selected: nextTime == time,
+                          onTap: () => setSheetState(() => nextTime = time),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 20),
+                    PrimaryButton(
+                      label: 'Save new timing',
+                      icon: Iconsax.tick_circle,
+                      onTap: () {
+                        onBookingChanged(
+                          booking,
+                          status: 'Reschedule requested',
+                          day: nextDay,
+                          time: nextTime,
+                          message:
+                              '${booking.id} reschedule requested for $nextDay, $nextTime.',
+                        );
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void confirmCancel(BuildContext context, BookingRequest booking) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text('Cancel booking?'),
+        content: Text(
+          'This will mark ${booking.id} as cancelled on this device.',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Keep booking'),
+          ),
+          TextButton(
+            onPressed: () {
+              onBookingChanged(
+                booking,
+                status: 'Cancelled',
+                message:
+                    '${booking.serviceName} ${booking.id} has been cancelled.',
+              );
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel booking'),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -1801,6 +2022,7 @@ class BookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final muted = booking.status == 'Cancelled';
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Material(
@@ -1841,7 +2063,9 @@ class BookingCard extends StatelessWidget {
                 const SizedBox(height: 14),
                 Text(
                   booking.address,
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: muted ? AppTheme.slate : null,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -1905,12 +2129,17 @@ class BookingTimeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final steps = [
-      'Request sent',
-      'Team confirms',
-      'Cleaner assigned',
-      'Completed',
-    ];
+    final steps = status == 'Cancelled'
+        ? ['Request sent', 'Cancelled']
+        : [
+            'Request sent',
+            if (status == 'Reschedule requested') 'Reschedule requested',
+            'Team confirms',
+            'Cleaner assigned',
+            'Completed',
+          ];
+    final statusIndex = steps.indexOf(status);
+    final activeIndex = statusIndex < 0 ? 0 : statusIndex;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: surface(),
@@ -1923,7 +2152,7 @@ class BookingTimeline extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           ...List.generate(steps.length, (index) {
-            final active = index == 0 || steps[index] == status;
+            final active = index <= activeIndex;
             return Padding(
               padding: EdgeInsets.only(
                 bottom: index == steps.length - 1 ? 0 : 10,
