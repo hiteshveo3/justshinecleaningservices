@@ -330,6 +330,38 @@ class BookingRequest {
   }
 }
 
+class AppMessage {
+  const AppMessage({
+    required this.text,
+    required this.mine,
+    required this.createdAt,
+    this.bookingId,
+  });
+
+  final String text;
+  final bool mine;
+  final DateTime createdAt;
+  final String? bookingId;
+
+  Map<String, dynamic> toJson() => {
+    'text': text,
+    'mine': mine,
+    'createdAt': createdAt.toIso8601String(),
+    'bookingId': bookingId,
+  };
+
+  factory AppMessage.fromJson(Map<String, dynamic> json) {
+    return AppMessage(
+      text: json['text'] as String? ?? '',
+      mine: json['mine'] as bool? ?? false,
+      createdAt:
+          DateTime.tryParse(json['createdAt'] as String? ?? '') ??
+          DateTime.now(),
+      bookingId: json['bookingId'] as String?,
+    );
+  }
+}
+
 class CustomerProfile {
   const CustomerProfile({this.name = '', this.phone = '', this.address = ''});
 
@@ -377,10 +409,12 @@ class _AppShellState extends State<AppShell> {
   int index = 0;
   int paletteIndex = 0;
   List<BookingRequest> bookings = [];
+  List<AppMessage> messages = [];
   CustomerProfile profile = const CustomerProfile();
 
   static const paletteKey = 'just_shine_palette';
   static const bookingsKey = 'just_shine_bookings';
+  static const messagesKey = 'just_shine_messages';
   static const profileKey = 'just_shine_profile';
 
   @override
@@ -393,6 +427,7 @@ class _AppShellState extends State<AppShell> {
     final prefs = await SharedPreferences.getInstance();
     final savedPalette = prefs.getInt(paletteKey) ?? 0;
     final savedBookings = prefs.getString(bookingsKey);
+    final savedMessages = prefs.getString(messagesKey);
     final savedProfile = prefs.getString(profileKey);
 
     if (!mounted) return;
@@ -406,6 +441,14 @@ class _AppShellState extends State<AppShell> {
               .map(BookingRequest.fromJson)
               .toList();
         }
+        if (savedMessages != null) {
+          final decoded = jsonDecode(savedMessages) as List<dynamic>;
+          messages = decoded
+              .whereType<Map<String, dynamic>>()
+              .map(AppMessage.fromJson)
+              .where((message) => message.text.trim().isNotEmpty)
+              .toList();
+        }
         if (savedProfile != null) {
           profile = CustomerProfile.fromJson(
             jsonDecode(savedProfile) as Map<String, dynamic>,
@@ -413,6 +456,7 @@ class _AppShellState extends State<AppShell> {
         }
       } catch (_) {
         bookings = [];
+        messages = [];
         profile = const CustomerProfile();
       }
     });
@@ -423,6 +467,14 @@ class _AppShellState extends State<AppShell> {
     await prefs.setString(
       bookingsKey,
       jsonEncode(bookings.map((booking) => booking.toJson()).toList()),
+    );
+  }
+
+  Future<void> saveMessages() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      messagesKey,
+      jsonEncode(messages.map((message) => message.toJson()).toList()),
     );
   }
 
@@ -441,9 +493,32 @@ class _AppShellState extends State<AppShell> {
   void addBooking(BookingRequest booking) {
     setState(() {
       bookings = [booking, ...bookings];
+      messages = [
+        AppMessage(
+          text:
+              'Your ${booking.serviceName.toLowerCase()} request ${booking.id} has been received. Our team will confirm availability shortly.',
+          mine: false,
+          createdAt: DateTime.now(),
+          bookingId: booking.id,
+        ),
+        ...messages,
+      ];
       index = 2;
     });
     saveBookings();
+    saveMessages();
+  }
+
+  void addMessage(String text) {
+    final trimmed = text.trim();
+    if (trimmed.isEmpty) return;
+    setState(() {
+      messages = [
+        AppMessage(text: trimmed, mine: true, createdAt: DateTime.now()),
+        ...messages,
+      ];
+    });
+    saveMessages();
   }
 
   @override
@@ -451,13 +526,18 @@ class _AppShellState extends State<AppShell> {
     AppTheme.usePalette(paletteIndex);
 
     final pages = [
-      HomeScreen(onBook: () => setState(() => index = 1)),
+      HomeScreen(
+        bookings: bookings,
+        messages: messages,
+        onBook: () => setState(() => index = 1),
+        onOpenMessages: () => setState(() => index = 3),
+      ),
       QuoteScreen(profile: profile, onBookingCreated: addBooking),
       BookingsScreen(
         bookings: bookings,
         onBook: () => setState(() => index = 1),
       ),
-      const ChatScreen(),
+      ChatScreen(messages: messages, onMessageSent: addMessage),
       ProfileScreen(
         profile: profile,
         onProfileChanged: saveProfile,
@@ -511,15 +591,27 @@ class _AppShellState extends State<AppShell> {
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({required this.onBook, super.key});
+  const HomeScreen({
+    required this.bookings,
+    required this.messages,
+    required this.onBook,
+    required this.onOpenMessages,
+    super.key,
+  });
 
+  final List<BookingRequest> bookings;
+  final List<AppMessage> messages;
   final VoidCallback onBook;
+  final VoidCallback onOpenMessages;
 
   @override
   Widget build(BuildContext context) {
     return AppScroll(
       title: 'Just Shine Cleaning Services',
-      trailing: const RoundIcon(Iconsax.notification),
+      trailing: RoundIcon(
+        Iconsax.notification,
+        onTap: () => showNotifications(context),
+      ),
       children: [
         Container(
           padding: const EdgeInsets.all(22),
@@ -568,6 +660,82 @@ class HomeScreen extends StatelessWidget {
         const SizedBox(height: 12),
         ...services.take(4).map((service) => ServiceCard(service: service)),
       ],
+    );
+  }
+
+  void showNotifications(BuildContext context) {
+    final items = [
+      if (bookings.isEmpty && messages.isEmpty)
+        const NoticeItem(
+          icon: Iconsax.notification,
+          title: 'No updates yet',
+          body: 'Booking and support updates will appear here.',
+        ),
+      ...bookings
+          .take(3)
+          .map(
+            (booking) => NoticeItem(
+              icon: Iconsax.calendar_tick,
+              title: '${booking.serviceName} request',
+              body: '${booking.status} - ${booking.day}, ${booking.time}',
+            ),
+          ),
+      ...messages
+          .take(3)
+          .map(
+            (message) => NoticeItem(
+              icon: Iconsax.message,
+              title: message.mine ? 'Message sent' : 'Support update',
+              body: message.text,
+            ),
+          ),
+    ];
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 42,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppTheme.line,
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  'Notifications',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 12),
+                ...items,
+                const SizedBox(height: 10),
+                PrimaryButton(
+                  label: 'Open messages',
+                  icon: Iconsax.message,
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    onOpenMessages();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -810,7 +978,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Check details before sending. Payment and Firebase save will be connected next.',
+              'Check your details before sending. Our team will confirm the final availability and price.',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 16),
@@ -1017,11 +1185,40 @@ class BookingsScreen extends StatelessWidget {
   }
 }
 
-class ChatScreen extends StatelessWidget {
-  const ChatScreen({super.key});
+class ChatScreen extends StatefulWidget {
+  const ChatScreen({
+    required this.messages,
+    required this.onMessageSent,
+    super.key,
+  });
+
+  final List<AppMessage> messages;
+  final ValueChanged<String> onMessageSent;
+
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  final controller = TextEditingController();
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  void send() {
+    final text = controller.text.trim();
+    if (text.isEmpty) return;
+    widget.onMessageSent(text);
+    controller.clear();
+    FocusScope.of(context).unfocus();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final orderedMessages = widget.messages.reversed.toList();
     return AppScroll(
       title: 'Messages',
       children: [
@@ -1029,14 +1226,24 @@ class ChatScreen extends StatelessWidget {
           icon: Iconsax.message_question,
           title: 'Support replies',
           body:
-              'Your booking messages will appear here. Booking details stay in the booking card, chat stays clean.',
+              'Ask about bookings, arrival time, access notes, or service details.',
         ),
         const SizedBox(height: 14),
-        ChatBubble(text: 'Hi, I need home cleaning in Al Danah.', mine: true),
-        ChatBubble(
-          text: 'Sure. Please share preferred time and apartment size.',
-          mine: false,
-        ),
+        if (orderedMessages.isEmpty)
+          EmptyState(
+            icon: Iconsax.message_text,
+            title: 'No messages yet',
+            body:
+                'Send a support message or create a booking. Replies and booking updates will appear here.',
+            actionLabel: 'WhatsApp support',
+            onAction: () => openWhatsApp(
+              'Hi Just Shine Cleaning Services, I need help with a booking.',
+            ),
+          )
+        else
+          ...orderedMessages.map(
+            (message) => ChatBubble(text: message.text, mine: message.mine),
+          ),
         const SizedBox(height: 18),
         Container(
           padding: const EdgeInsets.all(10),
@@ -1047,16 +1254,21 @@ class ChatScreen extends StatelessWidget {
           ),
           child: Row(
             children: [
-              const RoundIcon(Iconsax.paperclip_2),
+              RoundIcon(Iconsax.call_calling, onTap: callCompany),
               const SizedBox(width: 8),
-              const Expanded(
+              Expanded(
                 child: TextField(
+                  controller: controller,
+                  minLines: 1,
+                  maxLines: 4,
+                  textInputAction: TextInputAction.send,
+                  onSubmitted: (_) => send(),
                   decoration: InputDecoration.collapsed(
                     hintText: 'Type a message',
                   ),
                 ),
               ),
-              PrimaryIcon(icon: Iconsax.send_2, onTap: () {}),
+              PrimaryIcon(icon: Iconsax.send_2, onTap: send),
             ],
           ),
         ),
@@ -1144,22 +1356,94 @@ class ProfileScreen extends StatelessWidget {
           onChanged: onPaletteChanged,
         ),
         const SizedBox(height: 14),
-        const SettingsTile(
+        SettingsTile(
           icon: Iconsax.location,
           title: 'Saved addresses',
           subtitle: 'Home, office, villa',
+          onTap: () => showInfoSheet(
+            context,
+            icon: Iconsax.location,
+            title: 'Saved address',
+            body: profile.address.isEmpty
+                ? 'Add your default address from the profile card. More saved addresses will be available after Firebase login is connected.'
+                : profile.address,
+          ),
         ),
-        const SettingsTile(
+        SettingsTile(
           icon: Iconsax.notification,
           title: 'Notifications',
           subtitle: 'Booking, payment, chat alerts',
+          onTap: () => showInfoSheet(
+            context,
+            icon: Iconsax.notification,
+            title: 'Notifications',
+            body:
+                'Local booking and support updates are enabled. Push notifications will be enabled after Firebase Cloud Messaging keys are added.',
+          ),
         ),
-        const SettingsTile(
+        SettingsTile(
           icon: Iconsax.security_safe,
           title: 'Privacy',
-          subtitle: 'Download/delete data later',
+          subtitle: 'Local data and privacy controls',
+          onTap: () => showInfoSheet(
+            context,
+            icon: Iconsax.security_safe,
+            title: 'Privacy',
+            body:
+                'This preview stores bookings, messages, profile, and palette only on this phone. Cloud sync starts after Firebase setup.',
+          ),
         ),
       ],
+    );
+  }
+
+  void showInfoSheet(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String body,
+  }) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 42,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppTheme.line,
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                IconBox(icon: icon, filled: true),
+                const SizedBox(height: 14),
+                Text(title, style: Theme.of(context).textTheme.headlineMedium),
+                const SizedBox(height: 10),
+                Text(body, style: Theme.of(context).textTheme.bodyLarge),
+                const SizedBox(height: 18),
+                PrimaryButton(
+                  label: 'Done',
+                  icon: Iconsax.tick_circle,
+                  onTap: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -1743,33 +2027,95 @@ class SettingsTile extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
+    this.onTap,
     super.key,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: surface(),
+            child: Row(
+              children: [
+                IconBox(icon: icon),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Text(
+                        subtitle,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Iconsax.arrow_right_3, size: 18, color: AppTheme.slate),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class NoticeItem extends StatelessWidget {
+  const NoticeItem({
+    required this.icon,
+    required this.title,
+    required this.body,
+    super.key,
+  });
+
+  final IconData icon;
+  final String title;
+  final String body;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: surface(),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: surface(color: AppTheme.mint),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          IconBox(icon: icon),
-          const SizedBox(width: 14),
+          Icon(icon, color: AppTheme.green, size: 20),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title, style: Theme.of(context).textTheme.titleMedium),
-                Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
+                const SizedBox(height: 3),
+                Text(
+                  body,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
               ],
             ),
           ),
-          Icon(Iconsax.arrow_right_3, size: 18, color: AppTheme.slate),
         ],
       ),
     );
