@@ -684,6 +684,7 @@ class _AppShellState extends State<AppShell> {
   List<BookingRequest> bookings = [];
   List<AppMessage> messages = [];
   CustomerProfile profile = const CustomerProfile();
+  BookingRequest? draftBooking;
   String cloudStatus = 'Starting local mode';
 
   static const paletteKey = 'just_shine_palette';
@@ -791,6 +792,7 @@ class _AppShellState extends State<AppShell> {
   void addBooking(BookingRequest booking) {
     setState(() {
       bookings = [booking, ...bookings];
+      draftBooking = null;
       messages = [
         AppMessage(
           text:
@@ -846,6 +848,20 @@ class _AppShellState extends State<AppShell> {
     saveMessages();
   }
 
+  void openNewBooking() {
+    setState(() {
+      draftBooking = null;
+      index = 1;
+    });
+  }
+
+  void repeatBooking(BookingRequest booking) {
+    setState(() {
+      draftBooking = booking;
+      index = 1;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     AppTheme.usePalette(paletteIndex);
@@ -854,15 +870,21 @@ class _AppShellState extends State<AppShell> {
       HomeScreen(
         bookings: bookings,
         messages: messages,
-        onBook: () => setState(() => index = 1),
+        onBook: openNewBooking,
         onOpenMessages: () => setState(() => index = 3),
       ),
-      QuoteScreen(profile: profile, onBookingCreated: addBooking),
+      QuoteScreen(
+        key: ValueKey(draftBooking?.id ?? 'new-booking'),
+        profile: profile,
+        initialBooking: draftBooking,
+        onBookingCreated: addBooking,
+      ),
       BookingsScreen(
         bookings: bookings,
-        onBook: () => setState(() => index = 1),
+        onBook: openNewBooking,
         onOpenChat: () => setState(() => index = 3),
         onBookingChanged: updateBooking,
+        onRepeatBooking: repeatBooking,
       ),
       ChatScreen(messages: messages, onMessageSent: addMessage),
       ProfileScreen(
@@ -1073,10 +1095,12 @@ class QuoteScreen extends StatefulWidget {
   const QuoteScreen({
     required this.profile,
     required this.onBookingCreated,
+    this.initialBooking,
     super.key,
   });
 
   final CustomerProfile profile;
+  final BookingRequest? initialBooking;
   final ValueChanged<BookingRequest> onBookingCreated;
 
   @override
@@ -1120,6 +1144,26 @@ class _QuoteScreenState extends State<QuoteScreen> {
   @override
   void initState() {
     super.initState();
+    final draft = widget.initialBooking;
+    if (draft != null) {
+      final serviceIndex = services.indexWhere(
+        (service) => service.name == draft.serviceName,
+      );
+      selected = serviceIndex < 0 ? 0 : serviceIndex;
+      propertyType = draft.propertyType;
+      selectedDay = draft.day;
+      selectedTime = draft.time;
+      frequency = draft.frequency;
+      paymentPreference = draft.paymentPreference;
+      rooms = draft.rooms;
+      bathrooms = draft.bathrooms;
+      selectedAddons = [...draft.addons];
+      latitude = draft.latitude;
+      longitude = draft.longitude;
+      addressController.text = draft.address;
+      notesController.text = draft.notes;
+      return;
+    }
     if (widget.profile.address.isNotEmpty) {
       addressController.text = widget.profile.address;
     }
@@ -1553,9 +1597,18 @@ class _QuoteScreenState extends State<QuoteScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScroll(
-      title: 'Book service',
+      title: widget.initialBooking == null ? 'Book service' : 'Book again',
       subtitle: 'Step ${step + 1} of $totalSteps',
       children: [
+        if (widget.initialBooking != null) ...[
+          NoticeCard(
+            icon: Iconsax.refresh,
+            title: 'Repeated booking',
+            body:
+                'We copied the previous booking details. Review timing and send a fresh request.',
+          ),
+          const SizedBox(height: 14),
+        ],
         ProgressLabel(current: step + 1, total: totalSteps),
         const SizedBox(height: 20),
         currentStep(context),
@@ -1603,12 +1656,14 @@ class BookingsScreen extends StatefulWidget {
     required this.onBook,
     required this.onOpenChat,
     required this.onBookingChanged,
+    required this.onRepeatBooking,
     super.key,
   });
 
   final List<BookingRequest> bookings;
   final VoidCallback onBook;
   final VoidCallback onOpenChat;
+  final ValueChanged<BookingRequest> onRepeatBooking;
   final void Function(
     BookingRequest booking, {
     required String status,
@@ -1784,6 +1839,15 @@ class _BookingsScreenState extends State<BookingsScreen> {
                 const SizedBox(height: 10),
                 BookingTimeline(status: booking.status),
                 const SizedBox(height: 18),
+                PrimaryButton(
+                  label: 'Book again',
+                  icon: Iconsax.refresh,
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    widget.onRepeatBooking(booking);
+                  },
+                ),
+                const SizedBox(height: 12),
                 if (booking.status != 'Cancelled') ...[
                   Row(
                     children: [
