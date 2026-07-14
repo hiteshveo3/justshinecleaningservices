@@ -20,13 +20,13 @@ class JustShineBookingApp extends StatelessWidget {
 }
 
 class AppTheme {
-  static const ink = Color(0xFF053B2C);
-  static const green = Color(0xFF075D3F);
-  static const lime = Color(0xFFD9FF35);
-  static const mint = Color(0xFFF3FFEC);
-  static const wash = Color(0xFFFAFCF7);
-  static const line = Color(0xFFDDEAD4);
-  static const slate = Color(0xFF526171);
+  static const ink = Color(0xFF111827);
+  static const green = Color(0xFF0F766E);
+  static const lime = Color(0xFFE0F2FE);
+  static const mint = Color(0xFFF0FDFA);
+  static const wash = Color(0xFFF8FAFC);
+  static const line = Color(0xFFE2E8F0);
+  static const slate = Color(0xFF64748B);
 
   static ThemeData light() {
     const family = 'Roboto';
@@ -191,7 +191,7 @@ class _AppShellState extends State<AppShell> {
         height: 74,
         selectedIndex: index,
         backgroundColor: Colors.white,
-        indicatorColor: AppTheme.lime.withValues(alpha: .38),
+        indicatorColor: AppTheme.lime,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         onDestinationSelected: (value) => setState(() => index = value),
         destinations: const [
@@ -242,7 +242,7 @@ class HomeScreen extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
             gradient: const LinearGradient(
-              colors: [Color(0xFFF7FFE8), Color(0xFFD9FF35), Color(0xFFC8F8D4)],
+              colors: [Color(0xFFFFFFFF), Color(0xFFE0F2FE), Color(0xFFCCFBF1)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -1340,7 +1340,7 @@ class IconBox extends StatelessWidget {
       height: 48,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: filled ? AppTheme.lime.withValues(alpha: .45) : AppTheme.mint,
+        color: filled ? AppTheme.lime : AppTheme.mint,
         border: Border.all(color: AppTheme.line),
       ),
       child: Icon(icon, color: AppTheme.green, size: 22),
@@ -1358,7 +1358,7 @@ class Pill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
-        color: AppTheme.lime.withValues(alpha: .48),
+        color: AppTheme.lime,
         borderRadius: BorderRadius.circular(99),
       ),
       child: Text(
