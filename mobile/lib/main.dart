@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:just_shine_booking/firebase_options.dart';
@@ -263,6 +264,27 @@ const services = [
 
 const companyPhone = '+971552232850';
 
+int estimateAmount(CleaningService service, String propertyType) {
+  final base = switch (service.name) {
+    'Home Cleaning' => 30,
+    'Deep Cleaning' => 100,
+    'Villa Cleaning' => 100,
+    'Office Cleaning' => 50,
+    'Sofa Cleaning' => 80,
+    'Carpet Cleaning' => 100,
+    _ => 50,
+  };
+  final units = switch (service.name) {
+    'Sofa Cleaning' => 3,
+    'Carpet Cleaning' => 1,
+    'Villa Cleaning' => propertyType == 'Villa' ? 5 : 4,
+    'Deep Cleaning' => propertyType == 'Villa' ? 6 : 4,
+    'Office Cleaning' => 4,
+    _ => propertyType == 'Villa' ? 5 : 3,
+  };
+  return base * units;
+}
+
 class BookingRequest {
   const BookingRequest({
     required this.id,
@@ -276,6 +298,8 @@ class BookingRequest {
     required this.status,
     required this.createdAt,
     this.photoPaths = const [],
+    this.latitude,
+    this.longitude,
   });
 
   final String id;
@@ -289,6 +313,10 @@ class BookingRequest {
   final String status;
   final DateTime createdAt;
   final List<String> photoPaths;
+  final double? latitude;
+  final double? longitude;
+
+  bool get hasLocation => latitude != null && longitude != null;
 
   BookingRequest copyWith({
     String? day,
@@ -296,6 +324,8 @@ class BookingRequest {
     String? notes,
     String? status,
     List<String>? photoPaths,
+    double? latitude,
+    double? longitude,
   }) {
     return BookingRequest(
       id: id,
@@ -309,6 +339,8 @@ class BookingRequest {
       status: status ?? this.status,
       createdAt: createdAt,
       photoPaths: photoPaths ?? this.photoPaths,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
     );
   }
 
@@ -325,6 +357,8 @@ class BookingRequest {
       'status': status,
       'createdAt': createdAt.toIso8601String(),
       'photoPaths': photoPaths,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 
@@ -349,6 +383,8 @@ class BookingRequest {
               ?.whereType<String>()
               .toList() ??
           const [],
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
     );
   }
 
@@ -359,6 +395,8 @@ class BookingRequest {
       'Service: $serviceName',
       'Price: $price',
       'Address: $address',
+      if (hasLocation)
+        'Pinned location: https://www.google.com/maps/search/?api=1&query=$latitude,$longitude',
       'Property: $propertyType',
       'Timing: $day, $time',
       if (notes.isNotEmpty) 'Notes: $notes',
@@ -441,6 +479,13 @@ Future<void> callCompany() async {
     Uri.parse('tel:$companyPhone'),
     mode: LaunchMode.externalApplication,
   );
+}
+
+Future<void> openMaps(double latitude, double longitude) async {
+  final uri = Uri.parse(
+    'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude',
+  );
+  await launchUrl(uri, mode: LaunchMode.externalApplication);
 }
 
 Future<String?> pickLocalImage() async {
@@ -957,6 +1002,9 @@ class _QuoteScreenState extends State<QuoteScreen> {
   String selectedDay = 'Tomorrow';
   String selectedTime = 'Morning';
   List<String> photoPaths = [];
+  double? latitude;
+  double? longitude;
+  bool locating = false;
   final addressController = TextEditingController();
   final notesController = TextEditingController();
 
@@ -999,6 +1047,8 @@ class _QuoteScreenState extends State<QuoteScreen> {
       status: 'Request sent',
       createdAt: DateTime.now(),
       photoPaths: photoPaths,
+      latitude: latitude,
+      longitude: longitude,
     );
 
     widget.onBookingCreated(booking);
@@ -1052,6 +1102,46 @@ class _QuoteScreenState extends State<QuoteScreen> {
     setState(() => photoPaths = [...photoPaths, path]);
   }
 
+  Future<void> useCurrentLocation() async {
+    setState(() => locating = true);
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        showMessage('Please enable location services first.');
+        return;
+      }
+
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        showMessage('Location permission is needed to pin your address.');
+        return;
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 12),
+        ),
+      );
+      setState(() {
+        latitude = position.latitude;
+        longitude = position.longitude;
+        if (addressController.text.trim().isEmpty) {
+          addressController.text = 'Current location pinned';
+        }
+      });
+      showMessage('Location pinned for this booking.');
+    } catch (_) {
+      showMessage('Could not get location. Please try again.');
+    } finally {
+      if (mounted) setState(() => locating = false);
+    }
+  }
+
   Widget currentStep(BuildContext context) {
     switch (step) {
       case 0:
@@ -1099,6 +1189,13 @@ class _QuoteScreenState extends State<QuoteScreen> {
                 hintText: 'Al Danah, Al Reem, Khalifa City...',
                 prefixIcon: Icon(Iconsax.location),
               ),
+            ),
+            const SizedBox(height: 12),
+            LocationPinCard(
+              latitude: latitude,
+              longitude: longitude,
+              loading: locating,
+              onTap: useCurrentLocation,
             ),
             const SizedBox(height: 14),
             Text(
@@ -1213,6 +1310,13 @@ class _QuoteScreenState extends State<QuoteScreen> {
               label: 'Address',
               value: addressController.text.trim(),
             ),
+            if (latitude != null && longitude != null)
+              ReviewRow(
+                icon: Iconsax.location_tick,
+                label: 'Pinned location',
+                value:
+                    '${latitude!.toStringAsFixed(5)}, ${longitude!.toStringAsFixed(5)}',
+              ),
             ReviewRow(
               icon: Iconsax.building,
               label: 'Property',
@@ -1251,7 +1355,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
         const SizedBox(height: 20),
         currentStep(context),
         const SizedBox(height: 16),
-        QuoteSummary(service: services[selected]),
+        QuoteSummary(service: services[selected], propertyType: propertyType),
         const SizedBox(height: 18),
         Row(
           children: [
@@ -1410,6 +1514,13 @@ class _BookingsScreenState extends State<BookingsScreen> {
                   label: 'Address',
                   value: booking.address,
                 ),
+                if (booking.hasLocation)
+                  ReviewRow(
+                    icon: Iconsax.location,
+                    label: 'Pinned location',
+                    value:
+                        '${booking.latitude!.toStringAsFixed(5)}, ${booking.longitude!.toStringAsFixed(5)}',
+                  ),
                 ReviewRow(
                   icon: Iconsax.calendar_1,
                   label: 'Timing',
@@ -1466,9 +1577,16 @@ class _BookingsScreenState extends State<BookingsScreen> {
                   children: [
                     Expanded(
                       child: SecondaryButton(
-                        label: 'Call',
-                        icon: Iconsax.call_calling,
-                        onTap: callCompany,
+                        label: booking.hasLocation ? 'Maps' : 'Call',
+                        icon: booking.hasLocation
+                            ? Iconsax.location
+                            : Iconsax.call_calling,
+                        onTap: booking.hasLocation
+                            ? () => openMaps(
+                                booking.latitude!,
+                                booking.longitude!,
+                              )
+                            : callCompany,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -2213,12 +2331,18 @@ class SelectableServiceCard extends StatelessWidget {
 }
 
 class QuoteSummary extends StatelessWidget {
-  const QuoteSummary({required this.service, super.key});
+  const QuoteSummary({
+    required this.service,
+    required this.propertyType,
+    super.key,
+  });
 
   final CleaningService service;
+  final String propertyType;
 
   @override
   Widget build(BuildContext context) {
+    final estimate = estimateAmount(service, propertyType);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: surface(color: AppTheme.mint),
@@ -2236,8 +2360,13 @@ class QuoteSummary extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${service.name} - ${service.price}',
+                  '${service.name} - from AED $estimate',
                   style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  'Final quote depends on size, condition, and add-ons.',
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
             ),
@@ -2313,6 +2442,69 @@ class ProfileAvatar extends StatelessWidget {
       child: hasPhoto
           ? null
           : Icon(Iconsax.user, color: AppTheme.green, size: size * .42),
+    );
+  }
+}
+
+class LocationPinCard extends StatelessWidget {
+  const LocationPinCard({
+    required this.latitude,
+    required this.longitude,
+    required this.loading,
+    required this.onTap,
+    super.key,
+  });
+
+  final double? latitude;
+  final double? longitude;
+  final bool loading;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final pinned = latitude != null && longitude != null;
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: surface(color: AppTheme.mint),
+      child: Row(
+        children: [
+          IconBox(icon: Iconsax.location, filled: pinned),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  pinned ? 'Location pinned' : 'Pin current location',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  pinned
+                      ? '${latitude!.toStringAsFixed(5)}, ${longitude!.toStringAsFixed(5)}'
+                      : 'Use GPS to help the team find your building faster.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          loading
+              ? SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppTheme.green,
+                  ),
+                )
+              : TextButton.icon(
+                  onPressed: onTap,
+                  icon: Icon(pinned ? Iconsax.refresh : Iconsax.location),
+                  label: Text(pinned ? 'Update' : 'Use'),
+                ),
+        ],
+      ),
     );
   }
 }
