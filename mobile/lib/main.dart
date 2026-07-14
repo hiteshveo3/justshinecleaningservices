@@ -20,13 +20,24 @@ class JustShineBookingApp extends StatelessWidget {
 }
 
 class AppTheme {
-  static const ink = Color(0xFF1F2937);
-  static const green = Color(0xFF2563EB);
-  static const lime = Color(0xFFFFF1D6);
-  static const mint = Color(0xFFF2F7FF);
-  static const wash = Color(0xFFF6F7F9);
-  static const line = Color(0xFFD9E2EC);
-  static const slate = Color(0xFF5F6B7A);
+  static Color ink = palettes.first.ink;
+  static Color green = palettes.first.primary;
+  static Color lime = palettes.first.accent;
+  static Color mint = palettes.first.surfaceTint;
+  static Color wash = palettes.first.background;
+  static Color line = palettes.first.line;
+  static Color slate = palettes.first.slate;
+
+  static void usePalette(int index) {
+    final palette = palettes[index];
+    ink = palette.ink;
+    green = palette.primary;
+    lime = palette.accent;
+    mint = palette.surfaceTint;
+    wash = palette.background;
+    line = palette.line;
+    slate = palette.slate;
+  }
 
   static ThemeData light() {
     const family = 'Roboto';
@@ -41,7 +52,7 @@ class AppTheme {
         surface: Colors.white,
       ),
       fontFamily: family,
-      textTheme: const TextTheme(
+      textTheme: TextTheme(
         displaySmall: TextStyle(
           fontSize: 34,
           height: 1.06,
@@ -97,25 +108,100 @@ class AppTheme {
         fillColor: Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: line),
+          borderSide: BorderSide(color: line),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: line),
+          borderSide: BorderSide(color: line),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: green, width: 1.4),
+          borderSide: BorderSide(color: green, width: 1.4),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 18,
           vertical: 16,
         ),
-        labelStyle: const TextStyle(color: slate, fontWeight: FontWeight.w300),
+        labelStyle: TextStyle(color: slate, fontWeight: FontWeight.w300),
       ),
     );
   }
 }
+
+class AppPalette {
+  const AppPalette({
+    required this.name,
+    required this.primary,
+    required this.accent,
+    required this.surfaceTint,
+    required this.background,
+    required this.ink,
+    required this.slate,
+    required this.line,
+  });
+
+  final String name;
+  final Color primary;
+  final Color accent;
+  final Color surfaceTint;
+  final Color background;
+  final Color ink;
+  final Color slate;
+  final Color line;
+}
+
+const palettes = [
+  AppPalette(
+    name: 'Classic Blue',
+    primary: Color(0xFF2563EB),
+    accent: Color(0xFFEAF2FF),
+    surfaceTint: Color(0xFFF5F8FF),
+    background: Color(0xFFF7F8FA),
+    ink: Color(0xFF1F2937),
+    slate: Color(0xFF5F6B7A),
+    line: Color(0xFFDCE4EE),
+  ),
+  AppPalette(
+    name: 'Warm Sand',
+    primary: Color(0xFFB45309),
+    accent: Color(0xFFFFF3E0),
+    surfaceTint: Color(0xFFFFFAF3),
+    background: Color(0xFFFAF8F4),
+    ink: Color(0xFF2B2723),
+    slate: Color(0xFF6F665C),
+    line: Color(0xFFE9DED1),
+  ),
+  AppPalette(
+    name: 'Graphite',
+    primary: Color(0xFF334155),
+    accent: Color(0xFFEFF3F7),
+    surfaceTint: Color(0xFFF8FAFC),
+    background: Color(0xFFF3F5F7),
+    ink: Color(0xFF111827),
+    slate: Color(0xFF64748B),
+    line: Color(0xFFD8DEE8),
+  ),
+  AppPalette(
+    name: 'Soft Rose',
+    primary: Color(0xFFBE4B61),
+    accent: Color(0xFFFFEEF2),
+    surfaceTint: Color(0xFFFFF7F8),
+    background: Color(0xFFFAF7F8),
+    ink: Color(0xFF2E2428),
+    slate: Color(0xFF735F66),
+    line: Color(0xFFEAD7DD),
+  ),
+  AppPalette(
+    name: 'Clean Indigo',
+    primary: Color(0xFF4F6FAD),
+    accent: Color(0xFFEFF4FF),
+    surfaceTint: Color(0xFFF6F8FD),
+    background: Color(0xFFF7F8FB),
+    ink: Color(0xFF202636),
+    slate: Color(0xFF667085),
+    line: Color(0xFFDDE3EF),
+  ),
+];
 
 class CleaningService {
   const CleaningService(this.name, this.price, this.detail, this.icon);
@@ -174,53 +260,62 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   int index = 0;
+  int paletteIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    AppTheme.usePalette(paletteIndex);
+
     final pages = [
       HomeScreen(onBook: () => setState(() => index = 1)),
       QuoteScreen(onBookingCreated: () => setState(() => index = 2)),
       const BookingsScreen(),
       const ChatScreen(),
-      const ProfileScreen(),
+      ProfileScreen(
+        paletteIndex: paletteIndex,
+        onPaletteChanged: (value) => setState(() => paletteIndex = value),
+      ),
     ];
 
-    return Scaffold(
-      body: SafeArea(child: pages[index]),
-      bottomNavigationBar: NavigationBar(
-        height: 74,
-        selectedIndex: index,
-        backgroundColor: Colors.white,
-        indicatorColor: AppTheme.lime,
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        onDestinationSelected: (value) => setState(() => index = value),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Iconsax.home_2),
-            selectedIcon: Icon(Iconsax.home_2_copy),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Iconsax.document_text),
-            selectedIcon: Icon(Iconsax.document_text_copy),
-            label: 'Book',
-          ),
-          NavigationDestination(
-            icon: Icon(Iconsax.calendar_tick),
-            selectedIcon: Icon(Iconsax.calendar_tick_copy),
-            label: 'Bookings',
-          ),
-          NavigationDestination(
-            icon: Icon(Iconsax.message),
-            selectedIcon: Icon(Iconsax.message_copy),
-            label: 'Chat',
-          ),
-          NavigationDestination(
-            icon: Icon(Iconsax.user),
-            selectedIcon: Icon(Iconsax.user_copy),
-            label: 'Profile',
-          ),
-        ],
+    return Theme(
+      data: AppTheme.light(),
+      child: Scaffold(
+        body: SafeArea(child: pages[index]),
+        bottomNavigationBar: NavigationBar(
+          height: 74,
+          selectedIndex: index,
+          backgroundColor: Colors.white,
+          indicatorColor: AppTheme.lime,
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+          onDestinationSelected: (value) => setState(() => index = value),
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Iconsax.home_2),
+              selectedIcon: Icon(Iconsax.home_2_copy),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: Icon(Iconsax.document_text),
+              selectedIcon: Icon(Iconsax.document_text_copy),
+              label: 'Book',
+            ),
+            NavigationDestination(
+              icon: Icon(Iconsax.calendar_tick),
+              selectedIcon: Icon(Iconsax.calendar_tick_copy),
+              label: 'Bookings',
+            ),
+            NavigationDestination(
+              icon: Icon(Iconsax.message),
+              selectedIcon: Icon(Iconsax.message_copy),
+              label: 'Chat',
+            ),
+            NavigationDestination(
+              icon: Icon(Iconsax.user),
+              selectedIcon: Icon(Iconsax.user_copy),
+              label: 'Profile',
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -241,11 +336,8 @@ class HomeScreen extends StatelessWidget {
           padding: const EdgeInsets.all(22),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
-            gradient: const LinearGradient(
-              colors: [Color(0xFFFFFFFF), Color(0xFFF2F7FF), Color(0xFFFFF1D6)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            color: AppTheme.mint,
+            border: Border.all(color: AppTheme.line),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -650,7 +742,14 @@ class ChatScreen extends StatelessWidget {
 }
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({
+    required this.paletteIndex,
+    required this.onPaletteChanged,
+    super.key,
+  });
+
+  final int paletteIndex;
+  final ValueChanged<int> onPaletteChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -665,15 +764,11 @@ class ProfileScreen extends StatelessWidget {
               Container(
                 width: 68,
                 height: 68,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: AppTheme.mint,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Iconsax.user,
-                  color: AppTheme.green,
-                  size: 30,
-                ),
+                child: Icon(Iconsax.user, color: AppTheme.green, size: 30),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -692,9 +787,14 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Iconsax.edit_2, color: AppTheme.green),
+              Icon(Iconsax.edit_2, color: AppTheme.green),
             ],
           ),
+        ),
+        const SizedBox(height: 14),
+        PaletteSettings(
+          selectedIndex: paletteIndex,
+          onChanged: onPaletteChanged,
         ),
         const SizedBox(height: 14),
         const SettingsTile(
@@ -809,7 +909,7 @@ class ServiceCard extends StatelessWidget {
           const SizedBox(width: 10),
           Text(
             service.price,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.green,
               fontWeight: FontWeight.w400,
             ),
@@ -877,7 +977,7 @@ class SelectableServiceCard extends StatelessWidget {
                   children: [
                     Text(
                       service.price,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppTheme.green,
                         fontWeight: FontWeight.w400,
                       ),
@@ -1123,8 +1223,135 @@ class SettingsTile extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Iconsax.arrow_right_3, size: 18, color: AppTheme.slate),
+          Icon(Iconsax.arrow_right_3, size: 18, color: AppTheme.slate),
         ],
+      ),
+    );
+  }
+}
+
+class PaletteSettings extends StatelessWidget {
+  const PaletteSettings({
+    required this.selectedIndex,
+    required this.onChanged,
+    super.key,
+  });
+
+  final int selectedIndex;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: surface(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const IconBox(icon: Iconsax.color_swatch),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'App color palette',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Text(
+                      'Switch and compare the look',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          ...List.generate(palettes.length, (index) {
+            final palette = palettes[index];
+            final selected = selectedIndex == index;
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: index == palettes.length - 1 ? 0 : 10,
+              ),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(18),
+                onTap: () => onChanged(index),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: selected ? palette.surfaceTint : Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: selected ? palette.primary : AppTheme.line,
+                      width: selected ? 1.4 : 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      PaletteSwatch(palette: palette),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          palette.name,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ),
+                      Icon(
+                        selected ? Iconsax.tick_circle : Iconsax.arrow_right_3,
+                        color: selected ? palette.primary : AppTheme.slate,
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+}
+
+class PaletteSwatch extends StatelessWidget {
+  const PaletteSwatch({required this.palette, super.key});
+
+  final AppPalette palette;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 58,
+      height: 28,
+      child: Stack(
+        children: [
+          Positioned(left: 0, child: SwatchDot(color: palette.primary)),
+          Positioned(left: 16, child: SwatchDot(color: palette.accent)),
+          Positioned(left: 32, child: SwatchDot(color: palette.surfaceTint)),
+        ],
+      ),
+    );
+  }
+}
+
+class SwatchDot extends StatelessWidget {
+  const SwatchDot({required this.color, super.key});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 28,
+      height: 28,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: color,
+        border: Border.all(color: AppTheme.line),
       ),
     );
   }
@@ -1146,7 +1373,7 @@ class SectionHeader extends StatelessWidget {
         if (action != null)
           Text(
             action!,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.green,
               fontWeight: FontWeight.w400,
             ),
@@ -1169,10 +1396,7 @@ class ProgressLabel extends StatelessWidget {
       children: [
         Text(
           'Step $current/$total',
-          style: const TextStyle(
-            color: AppTheme.green,
-            fontWeight: FontWeight.w400,
-          ),
+          style: TextStyle(color: AppTheme.green, fontWeight: FontWeight.w400),
         ),
         const SizedBox(height: 8),
         ClipRRect(
@@ -1239,7 +1463,7 @@ class SecondaryButton extends StatelessWidget {
       style: OutlinedButton.styleFrom(
         minimumSize: const Size.fromHeight(54),
         foregroundColor: AppTheme.green,
-        side: const BorderSide(color: AppTheme.green),
+        side: BorderSide(color: AppTheme.green),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         textStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
       ),
@@ -1363,7 +1587,7 @@ class Pill extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           color: AppTheme.green,
           fontSize: 12,
           fontWeight: FontWeight.w400,
