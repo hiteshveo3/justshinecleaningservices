@@ -1,11 +1,15 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:just_shine_booking/firebase_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const JustShineBookingApp());
 }
 
@@ -418,6 +422,91 @@ Future<void> callCompany() async {
   );
 }
 
+class FirebaseBackend {
+  FirebaseBackend._();
+
+  static bool ready = false;
+  static String status = 'Local mode';
+  static String? deviceId;
+
+  static Future<void> initialize(SharedPreferences prefs) async {
+    deviceId = prefs.getString('just_shine_device_id');
+    if (deviceId == null) {
+      deviceId = 'device_${DateTime.now().millisecondsSinceEpoch}';
+      await prefs.setString('just_shine_device_id', deviceId!);
+    }
+
+    if (!DefaultFirebaseOptions.isConfigured) {
+      ready = false;
+      status = 'Firebase config needed';
+      return;
+    }
+
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      ready = true;
+      status = 'Cloud sync ready';
+    } catch (error) {
+      ready = false;
+      status = 'Cloud sync paused';
+    }
+  }
+
+  static DocumentReference<Map<String, dynamic>> get customerDoc {
+    return FirebaseFirestore.instance
+        .collection('mobile_customers')
+        .doc(deviceId);
+  }
+
+  static Future<void> saveProfile(CustomerProfile profile) async {
+    if (!ready || deviceId == null) return;
+    await customerDoc.set({
+      'profile': profile.toJson(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
+
+  static Future<void> saveBooking(BookingRequest booking) async {
+    if (!ready || deviceId == null) return;
+    await customerDoc.collection('bookings').doc(booking.id).set({
+      ...booking.toJson(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
+
+  static Future<void> saveMessage(AppMessage message) async {
+    if (!ready || deviceId == null) return;
+    final id =
+        '${message.createdAt.millisecondsSinceEpoch}_${message.mine ? 'customer' : 'support'}';
+    await customerDoc.collection('messages').doc(id).set({
+      ...message.toJson(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
+
+  static Future<void> syncAll({
+    required CustomerProfile profile,
+    required List<BookingRequest> bookings,
+    required List<AppMessage> messages,
+  }) async {
+    if (!ready) return;
+    try {
+      await saveProfile(profile);
+      for (final booking in bookings) {
+        await saveBooking(booking);
+      }
+      for (final message in messages) {
+        await saveMessage(message);
+      }
+      status = 'Cloud sync ready';
+    } catch (_) {
+      status = 'Cloud sync paused';
+    }
+  }
+}
+
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
 
@@ -431,6 +520,7 @@ class _AppShellState extends State<AppShell> {
   List<BookingRequest> bookings = [];
   List<AppMessage> messages = [];
   CustomerProfile profile = const CustomerProfile();
+  String cloudStatus = 'Starting local mode';
 
   static const paletteKey = 'just_shine_palette';
   static const bookingsKey = 'just_shine_bookings';
@@ -445,6 +535,7 @@ class _AppShellState extends State<AppShell> {
 
   Future<void> loadLocalState() async {
     final prefs = await SharedPreferences.getInstance();
+    await FirebaseBackend.initialize(prefs);
     final savedPalette = prefs.getInt(paletteKey) ?? 0;
     final savedBookings = prefs.getString(bookingsKey);
     final savedMessages = prefs.getString(messagesKey);
@@ -453,6 +544,7 @@ class _AppShellState extends State<AppShell> {
     if (!mounted) return;
     setState(() {
       paletteIndex = savedPalette.clamp(0, palettes.length - 1);
+      cloudStatus = FirebaseBackend.status;
       try {
         if (savedBookings != null) {
           final decoded = jsonDecode(savedBookings) as List<dynamic>;
@@ -480,6 +572,17 @@ class _AppShellState extends State<AppShell> {
         profile = const CustomerProfile();
       }
     });
+    syncAllToCloud();
+  }
+
+  Future<void> syncAllToCloud() async {
+    await FirebaseBackend.syncAll(
+      profile: profile,
+      bookings: bookings,
+      messages: messages,
+    );
+    if (!mounted) return;
+    setState(() => cloudStatus = FirebaseBackend.status);
   }
 
   Future<void> saveBookings() async {
@@ -488,6 +591,11 @@ class _AppShellState extends State<AppShell> {
       bookingsKey,
       jsonEncode(bookings.map((booking) => booking.toJson()).toList()),
     );
+    for (final booking in bookings) {
+      await FirebaseBackend.saveBooking(booking);
+    }
+    if (!mounted) return;
+    setState(() => cloudStatus = FirebaseBackend.status);
   }
 
   Future<void> saveMessages() async {
@@ -496,11 +604,17 @@ class _AppShellState extends State<AppShell> {
       messagesKey,
       jsonEncode(messages.map((message) => message.toJson()).toList()),
     );
+    if (messages.isNotEmpty) {
+      await FirebaseBackend.saveMessage(messages.first);
+    }
+    if (!mounted) return;
+    setState(() => cloudStatus = FirebaseBackend.status);
   }
 
   Future<void> saveProfile(CustomerProfile nextProfile) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(profileKey, jsonEncode(nextProfile.toJson()));
+    await FirebaseBackend.saveProfile(nextProfile);
     setState(() => profile = nextProfile);
   }
 
@@ -592,6 +706,8 @@ class _AppShellState extends State<AppShell> {
         onProfileChanged: saveProfile,
         paletteIndex: paletteIndex,
         onPaletteChanged: changePalette,
+        cloudStatus: cloudStatus,
+        onSyncNow: syncAllToCloud,
       ),
     ];
 
@@ -1108,7 +1224,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
   }
 }
 
-class BookingsScreen extends StatelessWidget {
+class BookingsScreen extends StatefulWidget {
   const BookingsScreen({
     required this.bookings,
     required this.onBook,
@@ -1130,11 +1246,30 @@ class BookingsScreen extends StatelessWidget {
   onBookingChanged;
 
   @override
+  State<BookingsScreen> createState() => _BookingsScreenState();
+}
+
+class _BookingsScreenState extends State<BookingsScreen> {
+  String filter = 'All';
+
+  List<BookingRequest> get filteredBookings {
+    if (filter == 'All') return widget.bookings;
+    if (filter == 'Active') {
+      return widget.bookings
+          .where((booking) => booking.status != 'Cancelled')
+          .toList();
+    }
+    return widget.bookings
+        .where((booking) => booking.status == filter)
+        .toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AppScroll(
       title: 'Bookings',
       trailing: const RoundIcon(Iconsax.refresh),
-      children: bookings.isEmpty
+      children: widget.bookings.isEmpty
           ? [
               EmptyState(
                 icon: Iconsax.calendar_add,
@@ -1142,16 +1277,30 @@ class BookingsScreen extends StatelessWidget {
                 body:
                     'Create your first cleaning booking request. It will appear here with status and next steps.',
                 actionLabel: 'Book a service',
-                onAction: onBook,
+                onAction: widget.onBook,
               ),
             ]
           : [
-              ...bookings.map(
-                (booking) => BookingCard(
-                  booking: booking,
-                  onTap: () => showBookingDetails(context, booking),
-                ),
+              BookingFilters(
+                selected: filter,
+                onChanged: (value) => setState(() => filter = value),
               ),
+              const SizedBox(height: 12),
+              if (filteredBookings.isEmpty)
+                EmptyState(
+                  icon: Iconsax.filter,
+                  title: 'Nothing in $filter',
+                  body: 'Try another filter or create a new booking request.',
+                  actionLabel: 'Book a service',
+                  onAction: widget.onBook,
+                )
+              else
+                ...filteredBookings.map(
+                  (booking) => BookingCard(
+                    booking: booking,
+                    onTap: () => showBookingDetails(context, booking),
+                  ),
+                ),
             ],
     );
   }
@@ -1261,7 +1410,7 @@ class BookingsScreen extends StatelessWidget {
                         icon: Iconsax.message,
                         onTap: () {
                           Navigator.of(context).pop();
-                          onOpenChat();
+                          widget.onOpenChat();
                         },
                       ),
                     ),
@@ -1352,7 +1501,7 @@ class BookingsScreen extends StatelessWidget {
                       label: 'Save new timing',
                       icon: Iconsax.tick_circle,
                       onTap: () {
-                        onBookingChanged(
+                        widget.onBookingChanged(
                           booking,
                           status: 'Reschedule requested',
                           day: nextDay,
@@ -1390,7 +1539,7 @@ class BookingsScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              onBookingChanged(
+              widget.onBookingChanged(
                 booking,
                 status: 'Cancelled',
                 message:
@@ -1504,6 +1653,8 @@ class ProfileScreen extends StatelessWidget {
     required this.onProfileChanged,
     required this.paletteIndex,
     required this.onPaletteChanged,
+    required this.cloudStatus,
+    required this.onSyncNow,
     super.key,
   });
 
@@ -1511,6 +1662,8 @@ class ProfileScreen extends StatelessWidget {
   final ValueChanged<CustomerProfile> onProfileChanged;
   final int paletteIndex;
   final ValueChanged<int> onPaletteChanged;
+  final String cloudStatus;
+  final VoidCallback onSyncNow;
 
   @override
   Widget build(BuildContext context) {
@@ -1577,6 +1730,22 @@ class ProfileScreen extends StatelessWidget {
           onChanged: onPaletteChanged,
         ),
         const SizedBox(height: 14),
+        SettingsTile(
+          icon: FirebaseBackend.ready ? Iconsax.tick_circle : Iconsax.cloud,
+          title: 'Firebase sync',
+          subtitle: cloudStatus,
+          onTap: () {
+            onSyncNow();
+            showInfoSheet(
+              context,
+              icon: FirebaseBackend.ready ? Iconsax.tick_circle : Iconsax.cloud,
+              title: 'Firebase sync',
+              body: FirebaseBackend.ready
+                  ? 'Cloud sync is enabled for this device. Bookings, profile, and messages are saved under your Firebase project.'
+                  : 'Add the Android app in Firebase project just-shine-cleaning-app, then paste API key, app ID, and sender ID in firebase_options.dart.',
+            );
+          },
+        ),
         SettingsTile(
           icon: Iconsax.location,
           title: 'Saved addresses',
@@ -2117,6 +2286,44 @@ class EmptyState extends StatelessWidget {
             onTap: onAction,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class BookingFilters extends StatelessWidget {
+  const BookingFilters({
+    required this.selected,
+    required this.onChanged,
+    super.key,
+  });
+
+  final String selected;
+  final ValueChanged<String> onChanged;
+
+  static const options = [
+    'All',
+    'Active',
+    'Request sent',
+    'Reschedule requested',
+    'Cancelled',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: options.map((option) {
+          return Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: BookingChip(
+              label: option,
+              selected: selected == option,
+              onTap: () => onChanged(option),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
