@@ -262,9 +262,32 @@ const services = [
   ),
 ];
 
+class ServiceAddon {
+  const ServiceAddon(this.name, this.price, this.icon);
+
+  final String name;
+  final int price;
+  final IconData icon;
+}
+
+const serviceAddons = [
+  ServiceAddon('Inside fridge', 40, Iconsax.box),
+  ServiceAddon('Inside oven', 45, Iconsax.element_3),
+  ServiceAddon('Balcony wash', 55, Iconsax.sun),
+  ServiceAddon('Window cleaning', 60, Iconsax.grid_2),
+  ServiceAddon('Pet odor treatment', 75, Iconsax.pet),
+  ServiceAddon('Disinfection', 90, Iconsax.shield_tick),
+];
+
 const companyPhone = '+971552232850';
 
-int estimateAmount(CleaningService service, String propertyType) {
+int estimateAmount(
+  CleaningService service,
+  String propertyType, {
+  int rooms = 3,
+  int bathrooms = 2,
+  List<String> addons = const [],
+}) {
   final base = switch (service.name) {
     'Home Cleaning' => 30,
     'Deep Cleaning' => 100,
@@ -280,9 +303,12 @@ int estimateAmount(CleaningService service, String propertyType) {
     'Villa Cleaning' => propertyType == 'Villa' ? 5 : 4,
     'Deep Cleaning' => propertyType == 'Villa' ? 6 : 4,
     'Office Cleaning' => 4,
-    _ => propertyType == 'Villa' ? 5 : 3,
+    _ => (rooms + bathrooms).clamp(2, 9),
   };
-  return base * units;
+  final addonTotal = serviceAddons
+      .where((addon) => addons.contains(addon.name))
+      .fold<int>(0, (total, addon) => total + addon.price);
+  return (base * units) + addonTotal;
 }
 
 class BookingRequest {
@@ -297,6 +323,10 @@ class BookingRequest {
     required this.notes,
     required this.status,
     required this.createdAt,
+    required this.estimatedTotal,
+    this.rooms = 3,
+    this.bathrooms = 2,
+    this.addons = const [],
     this.photoPaths = const [],
     this.latitude,
     this.longitude,
@@ -312,6 +342,10 @@ class BookingRequest {
   final String notes;
   final String status;
   final DateTime createdAt;
+  final int estimatedTotal;
+  final int rooms;
+  final int bathrooms;
+  final List<String> addons;
   final List<String> photoPaths;
   final double? latitude;
   final double? longitude;
@@ -323,6 +357,10 @@ class BookingRequest {
     String? time,
     String? notes,
     String? status,
+    int? estimatedTotal,
+    int? rooms,
+    int? bathrooms,
+    List<String>? addons,
     List<String>? photoPaths,
     double? latitude,
     double? longitude,
@@ -338,6 +376,10 @@ class BookingRequest {
       notes: notes ?? this.notes,
       status: status ?? this.status,
       createdAt: createdAt,
+      estimatedTotal: estimatedTotal ?? this.estimatedTotal,
+      rooms: rooms ?? this.rooms,
+      bathrooms: bathrooms ?? this.bathrooms,
+      addons: addons ?? this.addons,
       photoPaths: photoPaths ?? this.photoPaths,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
@@ -356,6 +398,10 @@ class BookingRequest {
       'notes': notes,
       'status': status,
       'createdAt': createdAt.toIso8601String(),
+      'estimatedTotal': estimatedTotal,
+      'rooms': rooms,
+      'bathrooms': bathrooms,
+      'addons': addons,
       'photoPaths': photoPaths,
       'latitude': latitude,
       'longitude': longitude,
@@ -378,6 +424,12 @@ class BookingRequest {
       createdAt:
           DateTime.tryParse(json['createdAt'] as String? ?? '') ??
           DateTime.now(),
+      estimatedTotal: (json['estimatedTotal'] as num?)?.toInt() ?? 0,
+      rooms: (json['rooms'] as num?)?.toInt() ?? 3,
+      bathrooms: (json['bathrooms'] as num?)?.toInt() ?? 2,
+      addons:
+          (json['addons'] as List<dynamic>?)?.whereType<String>().toList() ??
+          const [],
       photoPaths:
           (json['photoPaths'] as List<dynamic>?)
               ?.whereType<String>()
@@ -393,12 +445,15 @@ class BookingRequest {
       'Hi Just Shine Cleaning Services, I need booking confirmation.',
       'Booking ID: $id',
       'Service: $serviceName',
-      'Price: $price',
+      'Starting price: $price',
+      if (estimatedTotal > 0) 'Estimated total: AED $estimatedTotal',
       'Address: $address',
       if (hasLocation)
         'Pinned location: https://www.google.com/maps/search/?api=1&query=$latitude,$longitude',
       'Property: $propertyType',
       'Timing: $day, $time',
+      'Rooms/Bathrooms: $rooms / $bathrooms',
+      if (addons.isNotEmpty) 'Add-ons: ${addons.join(', ')}',
       if (notes.isNotEmpty) 'Notes: $notes',
       if (photoPaths.isNotEmpty) 'Photos attached in app: ${photoPaths.length}',
     ].join('\n');
@@ -1001,6 +1056,9 @@ class _QuoteScreenState extends State<QuoteScreen> {
   String propertyType = 'Apartment';
   String selectedDay = 'Tomorrow';
   String selectedTime = 'Morning';
+  int rooms = 3;
+  int bathrooms = 2;
+  List<String> selectedAddons = [];
   List<String> photoPaths = [];
   double? latitude;
   double? longitude;
@@ -1046,6 +1104,16 @@ class _QuoteScreenState extends State<QuoteScreen> {
       notes: notesController.text.trim(),
       status: 'Request sent',
       createdAt: DateTime.now(),
+      estimatedTotal: estimateAmount(
+        services[selected],
+        propertyType,
+        rooms: rooms,
+        bathrooms: bathrooms,
+        addons: selectedAddons,
+      ),
+      rooms: rooms,
+      bathrooms: bathrooms,
+      addons: selectedAddons,
       photoPaths: photoPaths,
       latitude: latitude,
       longitude: longitude,
@@ -1214,6 +1282,22 @@ class _QuoteScreenState extends State<QuoteScreen> {
                 );
               }).toList(),
             ),
+            const SizedBox(height: 18),
+            QuantitySelector(
+              title: 'Rooms',
+              value: rooms,
+              min: 1,
+              max: 8,
+              onChanged: (value) => setState(() => rooms = value),
+            ),
+            const SizedBox(height: 12),
+            QuantitySelector(
+              title: 'Bathrooms',
+              value: bathrooms,
+              min: 1,
+              max: 6,
+              onChanged: (value) => setState(() => bathrooms = value),
+            ),
           ],
         );
       case 2:
@@ -1279,6 +1363,11 @@ class _QuoteScreenState extends State<QuoteScreen> {
                 });
               },
             ),
+            const SizedBox(height: 14),
+            AddonPicker(
+              selected: selectedAddons,
+              onChanged: (value) => setState(() => selectedAddons = value),
+            ),
           ],
         );
       default:
@@ -1323,9 +1412,26 @@ class _QuoteScreenState extends State<QuoteScreen> {
               value: propertyType,
             ),
             ReviewRow(
+              icon: Iconsax.home_2,
+              label: 'Rooms / bathrooms',
+              value: '$rooms rooms, $bathrooms bathrooms',
+            ),
+            ReviewRow(
               icon: Iconsax.calendar_1,
               label: 'Timing',
               value: '$selectedDay, $selectedTime',
+            ),
+            if (selectedAddons.isNotEmpty)
+              ReviewRow(
+                icon: Iconsax.add_circle,
+                label: 'Add-ons',
+                value: selectedAddons.join(', '),
+              ),
+            ReviewRow(
+              icon: Iconsax.money,
+              label: 'Estimated total',
+              value:
+                  'AED ${estimateAmount(services[selected], propertyType, rooms: rooms, bathrooms: bathrooms, addons: selectedAddons)}',
             ),
             if (notesController.text.trim().isNotEmpty)
               ReviewRow(
@@ -1355,7 +1461,13 @@ class _QuoteScreenState extends State<QuoteScreen> {
         const SizedBox(height: 20),
         currentStep(context),
         const SizedBox(height: 16),
-        QuoteSummary(service: services[selected], propertyType: propertyType),
+        QuoteSummary(
+          service: services[selected],
+          propertyType: propertyType,
+          rooms: rooms,
+          bathrooms: bathrooms,
+          addons: selectedAddons,
+        ),
         const SizedBox(height: 18),
         Row(
           children: [
@@ -1509,6 +1621,12 @@ class _BookingsScreenState extends State<BookingsScreen> {
                   label: 'Starting price',
                   value: booking.price,
                 ),
+                if (booking.estimatedTotal > 0)
+                  ReviewRow(
+                    icon: Iconsax.money,
+                    label: 'Estimated total',
+                    value: 'AED ${booking.estimatedTotal}',
+                  ),
                 ReviewRow(
                   icon: Iconsax.location,
                   label: 'Address',
@@ -1526,6 +1644,18 @@ class _BookingsScreenState extends State<BookingsScreen> {
                   label: 'Timing',
                   value: '${booking.day}, ${booking.time}',
                 ),
+                ReviewRow(
+                  icon: Iconsax.home_2,
+                  label: 'Rooms / bathrooms',
+                  value:
+                      '${booking.rooms} rooms, ${booking.bathrooms} bathrooms',
+                ),
+                if (booking.addons.isNotEmpty)
+                  ReviewRow(
+                    icon: Iconsax.add_circle,
+                    label: 'Add-ons',
+                    value: booking.addons.join(', '),
+                  ),
                 if (booking.notes.isNotEmpty)
                   ReviewRow(
                     icon: Iconsax.note_text,
@@ -2334,15 +2464,27 @@ class QuoteSummary extends StatelessWidget {
   const QuoteSummary({
     required this.service,
     required this.propertyType,
+    required this.rooms,
+    required this.bathrooms,
+    required this.addons,
     super.key,
   });
 
   final CleaningService service;
   final String propertyType;
+  final int rooms;
+  final int bathrooms;
+  final List<String> addons;
 
   @override
   Widget build(BuildContext context) {
-    final estimate = estimateAmount(service, propertyType);
+    final estimate = estimateAmount(
+      service,
+      propertyType,
+      rooms: rooms,
+      bathrooms: bathrooms,
+      addons: addons,
+    );
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: surface(color: AppTheme.mint),
@@ -3296,6 +3438,187 @@ class BookingChip extends StatelessWidget {
             fontWeight: FontWeight.w400,
           ),
         ),
+      ),
+    );
+  }
+}
+
+class QuantitySelector extends StatelessWidget {
+  const QuantitySelector({
+    required this.title,
+    required this.value,
+    required this.min,
+    required this.max,
+    required this.onChanged,
+    super.key,
+  });
+
+  final String title;
+  final int value;
+  final int min;
+  final int max;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: surface(),
+      child: Row(
+        children: [
+          IconBox(icon: Iconsax.minus_square),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(title, style: Theme.of(context).textTheme.titleMedium),
+          ),
+          RoundStepButton(
+            icon: Iconsax.minus,
+            enabled: value > min,
+            onTap: () => onChanged(value - 1),
+          ),
+          SizedBox(
+            width: 44,
+            child: Center(
+              child: Text(
+                '$value',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+          ),
+          RoundStepButton(
+            icon: Iconsax.add,
+            enabled: value < max,
+            onTap: () => onChanged(value + 1),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class RoundStepButton extends StatelessWidget {
+  const RoundStepButton({
+    required this.icon,
+    required this.enabled,
+    required this.onTap,
+    super.key,
+  });
+
+  final IconData icon;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      customBorder: const CircleBorder(),
+      onTap: enabled ? onTap : null,
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: enabled ? AppTheme.mint : Colors.white,
+          border: Border.all(color: AppTheme.line),
+        ),
+        child: Icon(
+          icon,
+          size: 18,
+          color: enabled
+              ? AppTheme.green
+              : AppTheme.slate.withValues(alpha: .5),
+        ),
+      ),
+    );
+  }
+}
+
+class AddonPicker extends StatelessWidget {
+  const AddonPicker({
+    required this.selected,
+    required this.onChanged,
+    super.key,
+  });
+
+  final List<String> selected;
+  final ValueChanged<List<String>> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: surface(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Iconsax.add_square, color: AppTheme.green, size: 20),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Add-ons',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              Text(
+                selected.isEmpty ? 'Optional' : '${selected.length} selected',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...serviceAddons.map((addon) {
+            final active = selected.contains(addon.name);
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(18),
+                onTap: () {
+                  if (active) {
+                    onChanged(
+                      selected.where((item) => item != addon.name).toList(),
+                    );
+                  } else {
+                    onChanged([...selected, addon.name]);
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: active ? AppTheme.mint : Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: active ? AppTheme.green : AppTheme.line,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(addon.icon, color: AppTheme.green, size: 20),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          addon.name,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ),
+                      Text(
+                        '+AED ${addon.price}',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        active ? Iconsax.tick_circle : Iconsax.add_circle,
+                        color: active ? AppTheme.green : AppTheme.slate,
+                        size: 19,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+        ],
       ),
     );
   }
