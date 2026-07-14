@@ -498,18 +498,21 @@ class CustomerProfile {
     this.phone = '',
     this.address = '',
     this.photoPath = '',
+    this.savedAddresses = const [],
   });
 
   final String name;
   final String phone;
   final String address;
   final String photoPath;
+  final List<String> savedAddresses;
 
   Map<String, dynamic> toJson() => {
     'name': name,
     'phone': phone,
     'address': address,
     'photoPath': photoPath,
+    'savedAddresses': savedAddresses,
   };
 
   factory CustomerProfile.fromJson(Map<String, dynamic> json) {
@@ -518,7 +521,22 @@ class CustomerProfile {
       phone: json['phone'] as String? ?? '',
       address: json['address'] as String? ?? '',
       photoPath: json['photoPath'] as String? ?? '',
+      savedAddresses:
+          (json['savedAddresses'] as List<dynamic>?)
+              ?.whereType<String>()
+              .toList() ??
+          const [],
     );
+  }
+
+  List<String> get allAddresses {
+    final addresses = [
+      if (address.trim().isNotEmpty) address.trim(),
+      ...savedAddresses
+          .map((item) => item.trim())
+          .where((item) => item.isNotEmpty),
+    ];
+    return addresses.toSet().toList();
   }
 }
 
@@ -1258,6 +1276,16 @@ class _QuoteScreenState extends State<QuoteScreen> {
                 prefixIcon: Icon(Iconsax.location),
               ),
             ),
+            if (widget.profile.allAddresses.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              SavedAddressPicker(
+                addresses: widget.profile.allAddresses,
+                selected: addressController.text.trim(),
+                onSelected: (address) {
+                  setState(() => addressController.text = address);
+                },
+              ),
+            ],
             const SizedBox(height: 12),
             LocationPinCard(
               latitude: latitude,
@@ -2057,15 +2085,10 @@ class ProfileScreen extends StatelessWidget {
         SettingsTile(
           icon: Iconsax.location,
           title: 'Saved addresses',
-          subtitle: 'Home, office, villa',
-          onTap: () => showInfoSheet(
-            context,
-            icon: Iconsax.location,
-            title: 'Saved address',
-            body: profile.address.isEmpty
-                ? 'Add your default address from the profile card. More saved addresses will be available after Firebase login is connected.'
-                : profile.address,
-          ),
+          subtitle: profile.allAddresses.isEmpty
+              ? 'Add home, office, villa'
+              : '${profile.allAddresses.length} saved',
+          onTap: () => showAddressManager(context),
         ),
         SettingsTile(
           icon: Iconsax.notification,
@@ -2140,6 +2163,135 @@ class ProfileScreen extends StatelessWidget {
               ],
             ),
           ),
+        );
+      },
+    );
+  }
+
+  void showAddressManager(BuildContext context) {
+    final controller = TextEditingController();
+    var addresses = profile.allAddresses;
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            void saveAddresses(List<String> nextAddresses) {
+              final clean = nextAddresses
+                  .map((item) => item.trim())
+                  .where((item) => item.isNotEmpty)
+                  .toSet()
+                  .toList();
+              addresses = clean;
+              onProfileChanged(
+                CustomerProfile(
+                  name: profile.name,
+                  phone: profile.phone,
+                  address: clean.isEmpty ? '' : clean.first,
+                  photoPath: profile.photoPath,
+                  savedAddresses: clean.skip(1).toList(),
+                ),
+              );
+            }
+
+            return SafeArea(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  20,
+                  14,
+                  20,
+                  MediaQuery.viewInsetsOf(context).bottom + 24,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 42,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: AppTheme.line,
+                          borderRadius: BorderRadius.circular(99),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    Text(
+                      'Saved addresses',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    const SizedBox(height: 12),
+                    if (addresses.isEmpty)
+                      Text(
+                        'Add your home, office, villa, or frequent cleaning locations.',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      )
+                    else
+                      ...addresses.map(
+                        (address) => Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.all(14),
+                          decoration: surface(color: AppTheme.mint),
+                          child: Row(
+                            children: [
+                              Icon(Iconsax.location, color: AppTheme.green),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  address,
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  setSheetState(() {
+                                    saveAddresses(
+                                      addresses
+                                          .where((item) => item != address)
+                                          .toList(),
+                                    );
+                                  });
+                                },
+                                icon: const Icon(Iconsax.close_circle),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: controller,
+                      decoration: const InputDecoration(
+                        labelText: 'Add address',
+                        hintText: 'Building, area, landmark...',
+                        prefixIcon: Icon(Iconsax.location_add),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    PrimaryButton(
+                      label: 'Save address',
+                      icon: Iconsax.add_circle,
+                      onTap: () {
+                        final text = controller.text.trim();
+                        if (text.isEmpty) return;
+                        setSheetState(() {
+                          saveAddresses([...addresses, text]);
+                          controller.clear();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );
@@ -2262,6 +2414,7 @@ class ProfileScreen extends StatelessWidget {
                             phone: phoneController.text.trim(),
                             address: addressController.text.trim(),
                             photoPath: nextPhotoPath,
+                            savedAddresses: profile.savedAddresses,
                           ),
                         );
                         Navigator.of(context).pop();
@@ -2645,6 +2798,61 @@ class LocationPinCard extends StatelessWidget {
                   icon: Icon(pinned ? Iconsax.refresh : Iconsax.location),
                   label: Text(pinned ? 'Update' : 'Use'),
                 ),
+        ],
+      ),
+    );
+  }
+}
+
+class SavedAddressPicker extends StatelessWidget {
+  const SavedAddressPicker({
+    required this.addresses,
+    required this.selected,
+    required this.onSelected,
+    super.key,
+  });
+
+  final List<String> addresses;
+  final String selected;
+  final ValueChanged<String> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: surface(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Iconsax.location_tick, color: AppTheme.green, size: 20),
+              const SizedBox(width: 10),
+              Text(
+                'Saved addresses',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: addresses.map((address) {
+                final active = selected == address;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: BookingChip(
+                    label: address.length > 22
+                        ? '${address.substring(0, 22)}...'
+                        : address,
+                    selected: active,
+                    onTap: () => onSelected(address),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
         ],
       ),
     );
