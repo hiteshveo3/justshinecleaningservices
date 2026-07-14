@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const JustShineBookingApp());
@@ -251,6 +255,117 @@ const services = [
   ),
 ];
 
+const companyPhone = '+971552232850';
+
+class BookingRequest {
+  const BookingRequest({
+    required this.id,
+    required this.serviceName,
+    required this.price,
+    required this.address,
+    required this.propertyType,
+    required this.day,
+    required this.time,
+    required this.notes,
+    required this.status,
+    required this.createdAt,
+  });
+
+  final String id;
+  final String serviceName;
+  final String price;
+  final String address;
+  final String propertyType;
+  final String day;
+  final String time;
+  final String notes;
+  final String status;
+  final DateTime createdAt;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'serviceName': serviceName,
+      'price': price,
+      'address': address,
+      'propertyType': propertyType,
+      'day': day,
+      'time': time,
+      'notes': notes,
+      'status': status,
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
+
+  factory BookingRequest.fromJson(Map<String, dynamic> json) {
+    return BookingRequest(
+      id:
+          json['id'] as String? ??
+          'BK-${DateTime.now().millisecondsSinceEpoch}',
+      serviceName: json['serviceName'] as String? ?? 'Cleaning service',
+      price: json['price'] as String? ?? 'Quote',
+      address: json['address'] as String? ?? '',
+      propertyType: json['propertyType'] as String? ?? 'Property',
+      day: json['day'] as String? ?? 'Preferred day',
+      time: json['time'] as String? ?? 'Preferred time',
+      notes: json['notes'] as String? ?? '',
+      status: json['status'] as String? ?? 'Request sent',
+      createdAt:
+          DateTime.tryParse(json['createdAt'] as String? ?? '') ??
+          DateTime.now(),
+    );
+  }
+
+  String get whatsAppMessage {
+    return [
+      'Hi Just Shine Cleaning Services, I need booking confirmation.',
+      'Booking ID: $id',
+      'Service: $serviceName',
+      'Price: $price',
+      'Address: $address',
+      'Property: $propertyType',
+      'Timing: $day, $time',
+      if (notes.isNotEmpty) 'Notes: $notes',
+    ].join('\n');
+  }
+}
+
+class CustomerProfile {
+  const CustomerProfile({this.name = '', this.phone = '', this.address = ''});
+
+  final String name;
+  final String phone;
+  final String address;
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'phone': phone,
+    'address': address,
+  };
+
+  factory CustomerProfile.fromJson(Map<String, dynamic> json) {
+    return CustomerProfile(
+      name: json['name'] as String? ?? '',
+      phone: json['phone'] as String? ?? '',
+      address: json['address'] as String? ?? '',
+    );
+  }
+}
+
+Future<void> openWhatsApp(String message) async {
+  final uri = Uri.parse(
+    'https://wa.me/${companyPhone.replaceAll('+', '')}?text=${Uri.encodeComponent(message)}',
+  );
+  await launchUrl(uri, mode: LaunchMode.externalApplication);
+}
+
+Future<void> callCompany() async {
+  await launchUrl(
+    Uri.parse('tel:$companyPhone'),
+    mode: LaunchMode.externalApplication,
+  );
+}
+
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
 
@@ -261,6 +376,75 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   int index = 0;
   int paletteIndex = 0;
+  List<BookingRequest> bookings = [];
+  CustomerProfile profile = const CustomerProfile();
+
+  static const paletteKey = 'just_shine_palette';
+  static const bookingsKey = 'just_shine_bookings';
+  static const profileKey = 'just_shine_profile';
+
+  @override
+  void initState() {
+    super.initState();
+    loadLocalState();
+  }
+
+  Future<void> loadLocalState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedPalette = prefs.getInt(paletteKey) ?? 0;
+    final savedBookings = prefs.getString(bookingsKey);
+    final savedProfile = prefs.getString(profileKey);
+
+    if (!mounted) return;
+    setState(() {
+      paletteIndex = savedPalette.clamp(0, palettes.length - 1);
+      try {
+        if (savedBookings != null) {
+          final decoded = jsonDecode(savedBookings) as List<dynamic>;
+          bookings = decoded
+              .whereType<Map<String, dynamic>>()
+              .map(BookingRequest.fromJson)
+              .toList();
+        }
+        if (savedProfile != null) {
+          profile = CustomerProfile.fromJson(
+            jsonDecode(savedProfile) as Map<String, dynamic>,
+          );
+        }
+      } catch (_) {
+        bookings = [];
+        profile = const CustomerProfile();
+      }
+    });
+  }
+
+  Future<void> saveBookings() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      bookingsKey,
+      jsonEncode(bookings.map((booking) => booking.toJson()).toList()),
+    );
+  }
+
+  Future<void> saveProfile(CustomerProfile nextProfile) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(profileKey, jsonEncode(nextProfile.toJson()));
+    setState(() => profile = nextProfile);
+  }
+
+  Future<void> changePalette(int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(paletteKey, value);
+    setState(() => paletteIndex = value);
+  }
+
+  void addBooking(BookingRequest booking) {
+    setState(() {
+      bookings = [booking, ...bookings];
+      index = 2;
+    });
+    saveBookings();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -268,12 +452,17 @@ class _AppShellState extends State<AppShell> {
 
     final pages = [
       HomeScreen(onBook: () => setState(() => index = 1)),
-      QuoteScreen(onBookingCreated: () => setState(() => index = 2)),
-      const BookingsScreen(),
+      QuoteScreen(profile: profile, onBookingCreated: addBooking),
+      BookingsScreen(
+        bookings: bookings,
+        onBook: () => setState(() => index = 1),
+      ),
       const ChatScreen(),
       ProfileScreen(
+        profile: profile,
+        onProfileChanged: saveProfile,
         paletteIndex: paletteIndex,
-        onPaletteChanged: (value) => setState(() => paletteIndex = value),
+        onPaletteChanged: changePalette,
       ),
     ];
 
@@ -364,7 +553,11 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const RoundIcon(Iconsax.call_calling, filled: true),
+                  RoundIcon(
+                    Iconsax.call_calling,
+                    filled: true,
+                    onTap: callCompany,
+                  ),
                 ],
               ),
             ],
@@ -380,9 +573,14 @@ class HomeScreen extends StatelessWidget {
 }
 
 class QuoteScreen extends StatefulWidget {
-  const QuoteScreen({required this.onBookingCreated, super.key});
+  const QuoteScreen({
+    required this.profile,
+    required this.onBookingCreated,
+    super.key,
+  });
 
-  final VoidCallback onBookingCreated;
+  final CustomerProfile profile;
+  final ValueChanged<BookingRequest> onBookingCreated;
 
   @override
   State<QuoteScreen> createState() => _QuoteScreenState();
@@ -403,6 +601,14 @@ class _QuoteScreenState extends State<QuoteScreen> {
   static const timeOptions = ['Morning', 'Afternoon', 'Evening'];
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.profile.address.isNotEmpty) {
+      addressController.text = widget.profile.address;
+    }
+  }
+
+  @override
   void dispose() {
     addressController.dispose();
     notesController.dispose();
@@ -416,22 +622,40 @@ class _QuoteScreenState extends State<QuoteScreen> {
       return;
     }
 
+    final booking = BookingRequest(
+      id: 'JS-${DateTime.now().millisecondsSinceEpoch.toString().substring(5)}',
+      serviceName: services[selected].name,
+      price: services[selected].price,
+      address: addressController.text.trim(),
+      propertyType: propertyType,
+      day: selectedDay,
+      time: selectedTime,
+      notes: notesController.text.trim(),
+      status: 'Request sent',
+      createdAt: DateTime.now(),
+    );
+
+    widget.onBookingCreated(booking);
+
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
-        title: const Text('Booking request ready'),
+        title: const Text('Booking request sent'),
         content: Text(
-          'Your ${services[selected].name.toLowerCase()} request is ready. Next we will connect it with Firebase and WhatsApp confirmation.',
+          '${booking.id} is saved in your bookings. You can also send the details on WhatsApp for faster confirmation.',
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              widget.onBookingCreated();
             },
             child: const Text('View bookings'),
+          ),
+          TextButton(
+            onPressed: () => openWhatsApp(booking.whatsAppMessage),
+            child: const Text('WhatsApp'),
           ),
         ],
       ),
@@ -668,27 +892,127 @@ class _QuoteScreenState extends State<QuoteScreen> {
 }
 
 class BookingsScreen extends StatelessWidget {
-  const BookingsScreen({super.key});
+  const BookingsScreen({
+    required this.bookings,
+    required this.onBook,
+    super.key,
+  });
+
+  final List<BookingRequest> bookings;
+  final VoidCallback onBook;
 
   @override
   Widget build(BuildContext context) {
     return AppScroll(
       title: 'Bookings',
       trailing: const RoundIcon(Iconsax.refresh),
-      children: const [
-        BookingCard(
-          title: 'Home Cleaning',
-          status: 'Draft',
-          meta: 'Al Danah, Abu Dhabi',
-          time: 'Tomorrow, Morning',
-        ),
-        BookingCard(
-          title: 'Sofa Cleaning',
-          status: 'Quote sent',
-          meta: '3 seats, stain treatment',
-          time: 'Awaiting confirmation',
-        ),
-      ],
+      children: bookings.isEmpty
+          ? [
+              EmptyState(
+                icon: Iconsax.calendar_add,
+                title: 'No bookings yet',
+                body:
+                    'Create your first cleaning booking request. It will appear here with status and next steps.',
+                actionLabel: 'Book a service',
+                onAction: onBook,
+              ),
+            ]
+          : [
+              ...bookings.map(
+                (booking) => BookingCard(
+                  booking: booking,
+                  onTap: () => showBookingDetails(context, booking),
+                ),
+              ),
+            ],
+    );
+  }
+
+  void showBookingDetails(BuildContext context, BookingRequest booking) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 42,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppTheme.line,
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  booking.serviceName,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '${booking.id} - ${booking.status}',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 18),
+                ReviewRow(
+                  icon: Iconsax.receipt_text,
+                  label: 'Starting price',
+                  value: booking.price,
+                ),
+                ReviewRow(
+                  icon: Iconsax.location,
+                  label: 'Address',
+                  value: booking.address,
+                ),
+                ReviewRow(
+                  icon: Iconsax.calendar_1,
+                  label: 'Timing',
+                  value: '${booking.day}, ${booking.time}',
+                ),
+                if (booking.notes.isNotEmpty)
+                  ReviewRow(
+                    icon: Iconsax.note_text,
+                    label: 'Notes',
+                    value: booking.notes,
+                  ),
+                const SizedBox(height: 10),
+                BookingTimeline(status: booking.status),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    Expanded(
+                      child: SecondaryButton(
+                        label: 'Call',
+                        icon: Iconsax.call_calling,
+                        onTap: callCompany,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: PrimaryButton(
+                        label: 'WhatsApp',
+                        icon: Iconsax.send_2,
+                        onTap: () => openWhatsApp(booking.whatsAppMessage),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -743,11 +1067,15 @@ class ChatScreen extends StatelessWidget {
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({
+    required this.profile,
+    required this.onProfileChanged,
     required this.paletteIndex,
     required this.onPaletteChanged,
     super.key,
   });
 
+  final CustomerProfile profile;
+  final ValueChanged<CustomerProfile> onProfileChanged;
   final int paletteIndex;
   final ValueChanged<int> onPaletteChanged;
 
@@ -756,39 +1084,58 @@ class ProfileScreen extends StatelessWidget {
     return AppScroll(
       title: 'Profile',
       children: [
-        Container(
-          padding: const EdgeInsets.all(18),
-          decoration: surface(),
-          child: Row(
-            children: [
-              Container(
-                width: 68,
-                height: 68,
-                decoration: BoxDecoration(
-                  color: AppTheme.mint,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(Iconsax.user, color: AppTheme.green, size: 30),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Customer profile',
-                      style: Theme.of(context).textTheme.titleLarge,
+        Material(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(24),
+            onTap: () => showEditProfile(context),
+            child: Container(
+              padding: const EdgeInsets.all(18),
+              decoration: surface(),
+              child: Row(
+                children: [
+                  Container(
+                    width: 68,
+                    height: 68,
+                    decoration: BoxDecoration(
+                      color: AppTheme.mint,
+                      shape: BoxShape.circle,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Add name, photo, phone, and saved addresses.',
-                      style: Theme.of(context).textTheme.bodyMedium,
+                    child: Icon(Iconsax.user, color: AppTheme.green, size: 30),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          profile.name.isEmpty
+                              ? 'Customer profile'
+                              : profile.name,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          profile.phone.isEmpty
+                              ? 'Add name, phone, and default address.'
+                              : profile.phone,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        if (profile.address.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            profile.address,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  Icon(Iconsax.edit_2, color: AppTheme.green),
+                ],
               ),
-              Icon(Iconsax.edit_2, color: AppTheme.green),
-            ],
+            ),
           ),
         ),
         const SizedBox(height: 14),
@@ -813,6 +1160,94 @@ class ProfileScreen extends StatelessWidget {
           subtitle: 'Download/delete data later',
         ),
       ],
+    );
+  }
+
+  void showEditProfile(BuildContext context) {
+    final nameController = TextEditingController(text: profile.name);
+    final phoneController = TextEditingController(text: profile.phone);
+    final addressController = TextEditingController(text: profile.address);
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              20,
+              14,
+              20,
+              MediaQuery.viewInsetsOf(context).bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 42,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppTheme.line,
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  'Edit profile',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Name',
+                    prefixIcon: Icon(Iconsax.user),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: phoneController,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(
+                    labelText: 'Phone',
+                    prefixIcon: Icon(Iconsax.call),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: addressController,
+                  decoration: const InputDecoration(
+                    labelText: 'Default address',
+                    prefixIcon: Icon(Iconsax.location),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                PrimaryButton(
+                  label: 'Save profile',
+                  icon: Iconsax.tick_circle,
+                  onTap: () {
+                    onProfileChanged(
+                      CustomerProfile(
+                        name: nameController.text.trim(),
+                        phone: phoneController.text.trim(),
+                        address: addressController.text.trim(),
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -1075,45 +1510,156 @@ class ReviewRow extends StatelessWidget {
 }
 
 class BookingCard extends StatelessWidget {
-  const BookingCard({
+  const BookingCard({required this.booking, required this.onTap, super.key});
+
+  final BookingRequest booking;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(18),
+            decoration: surface(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const IconBox(icon: Iconsax.calendar_tick),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            booking.serviceName,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            booking.id,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Pill(booking.status),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  booking.address,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '${booking.day}, ${booking.time} - ${booking.price}',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class EmptyState extends StatelessWidget {
+  const EmptyState({
+    required this.icon,
     required this.title,
-    required this.status,
-    required this.meta,
-    required this.time,
+    required this.body,
+    required this.actionLabel,
+    required this.onAction,
     super.key,
   });
 
+  final IconData icon;
   final String title;
-  final String status;
-  final String meta;
-  final String time;
+  final String body;
+  final String actionLabel;
+  final VoidCallback onAction;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(22),
+      decoration: surface(color: AppTheme.mint),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          IconBox(icon: icon, filled: true),
+          const SizedBox(height: 16),
+          Text(title, style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 8),
+          Text(body, style: Theme.of(context).textTheme.bodyLarge),
+          const SizedBox(height: 18),
+          PrimaryButton(
+            label: actionLabel,
+            icon: Iconsax.arrow_right_3,
+            onTap: onAction,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class BookingTimeline extends StatelessWidget {
+  const BookingTimeline({required this.status, super.key});
+
+  final String status;
+
+  @override
+  Widget build(BuildContext context) {
+    final steps = [
+      'Request sent',
+      'Team confirms',
+      'Cleaner assigned',
+      'Completed',
+    ];
+    return Container(
+      padding: const EdgeInsets.all(16),
       decoration: surface(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const IconBox(icon: Iconsax.calendar_tick),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ),
-              Pill(status),
-            ],
+          Text(
+            'Booking timeline',
+            style: Theme.of(context).textTheme.titleMedium,
           ),
-          const SizedBox(height: 14),
-          Text(meta, style: Theme.of(context).textTheme.bodyLarge),
-          const SizedBox(height: 6),
-          Text(time, style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: 12),
+          ...List.generate(steps.length, (index) {
+            final active = index == 0 || steps[index] == status;
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: index == steps.length - 1 ? 0 : 10,
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    active ? Iconsax.tick_circle : Iconsax.record_circle,
+                    size: 20,
+                    color: active ? AppTheme.green : AppTheme.slate,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    steps[index],
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            );
+          }),
         ],
       ),
     );
@@ -1527,25 +2073,30 @@ class BookingChip extends StatelessWidget {
 }
 
 class RoundIcon extends StatelessWidget {
-  const RoundIcon(this.icon, {this.filled = false, super.key});
+  const RoundIcon(this.icon, {this.filled = false, this.onTap, super.key});
 
   final IconData icon;
   final bool filled;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 48,
-      height: 48,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: filled ? AppTheme.green : Colors.white,
-        border: filled ? null : Border.all(color: AppTheme.line),
-      ),
-      child: Icon(
-        icon,
-        color: filled ? Colors.white : AppTheme.green,
-        size: 21,
+    return InkWell(
+      customBorder: const CircleBorder(),
+      onTap: onTap,
+      child: Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: filled ? AppTheme.green : Colors.white,
+          border: filled ? null : Border.all(color: AppTheme.line),
+        ),
+        child: Icon(
+          icon,
+          color: filled ? Colors.white : AppTheme.green,
+          size: 21,
+        ),
       ),
     );
   }
