@@ -327,6 +327,8 @@ class BookingRequest {
     this.rooms = 3,
     this.bathrooms = 2,
     this.addons = const [],
+    this.frequency = 'One-time',
+    this.paymentPreference = 'Cash after service',
     this.photoPaths = const [],
     this.latitude,
     this.longitude,
@@ -346,6 +348,8 @@ class BookingRequest {
   final int rooms;
   final int bathrooms;
   final List<String> addons;
+  final String frequency;
+  final String paymentPreference;
   final List<String> photoPaths;
   final double? latitude;
   final double? longitude;
@@ -361,6 +365,8 @@ class BookingRequest {
     int? rooms,
     int? bathrooms,
     List<String>? addons,
+    String? frequency,
+    String? paymentPreference,
     List<String>? photoPaths,
     double? latitude,
     double? longitude,
@@ -380,6 +386,8 @@ class BookingRequest {
       rooms: rooms ?? this.rooms,
       bathrooms: bathrooms ?? this.bathrooms,
       addons: addons ?? this.addons,
+      frequency: frequency ?? this.frequency,
+      paymentPreference: paymentPreference ?? this.paymentPreference,
       photoPaths: photoPaths ?? this.photoPaths,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
@@ -402,6 +410,8 @@ class BookingRequest {
       'rooms': rooms,
       'bathrooms': bathrooms,
       'addons': addons,
+      'frequency': frequency,
+      'paymentPreference': paymentPreference,
       'photoPaths': photoPaths,
       'latitude': latitude,
       'longitude': longitude,
@@ -430,6 +440,9 @@ class BookingRequest {
       addons:
           (json['addons'] as List<dynamic>?)?.whereType<String>().toList() ??
           const [],
+      frequency: json['frequency'] as String? ?? 'One-time',
+      paymentPreference:
+          json['paymentPreference'] as String? ?? 'Cash after service',
       photoPaths:
           (json['photoPaths'] as List<dynamic>?)
               ?.whereType<String>()
@@ -453,6 +466,8 @@ class BookingRequest {
       'Property: $propertyType',
       'Timing: $day, $time',
       'Rooms/Bathrooms: $rooms / $bathrooms',
+      'Frequency: $frequency',
+      'Payment preference: $paymentPreference',
       if (addons.isNotEmpty) 'Add-ons: ${addons.join(', ')}',
       if (notes.isNotEmpty) 'Notes: $notes',
       if (photoPaths.isNotEmpty) 'Photos attached in app: ${photoPaths.length}',
@@ -1074,6 +1089,8 @@ class _QuoteScreenState extends State<QuoteScreen> {
   String propertyType = 'Apartment';
   String selectedDay = 'Tomorrow';
   String selectedTime = 'Morning';
+  String frequency = 'One-time';
+  String paymentPreference = 'Cash after service';
   int rooms = 3;
   int bathrooms = 2;
   List<String> selectedAddons = [];
@@ -1088,6 +1105,17 @@ class _QuoteScreenState extends State<QuoteScreen> {
   static const propertyTypes = ['Apartment', 'Villa', 'Office', 'Restaurant'];
   static const dayOptions = ['Today', 'Tomorrow', 'This week'];
   static const timeOptions = ['Morning', 'Afternoon', 'Evening'];
+  static const frequencyOptions = [
+    'One-time',
+    'Weekly',
+    'Bi-weekly',
+    'Monthly',
+  ];
+  static const paymentOptions = [
+    'Cash after service',
+    'Card payment link',
+    'Bank transfer',
+  ];
 
   @override
   void initState() {
@@ -1132,6 +1160,8 @@ class _QuoteScreenState extends State<QuoteScreen> {
       rooms: rooms,
       bathrooms: bathrooms,
       addons: selectedAddons,
+      frequency: frequency,
+      paymentPreference: paymentPreference,
       photoPaths: photoPaths,
       latitude: latitude,
       longitude: longitude,
@@ -1369,6 +1399,37 @@ class _QuoteScreenState extends State<QuoteScreen> {
                 );
               }).toList(),
             ),
+            const SizedBox(height: 20),
+            Text('Frequency', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: frequencyOptions.map((option) {
+                return BookingChip(
+                  label: option,
+                  selected: frequency == option,
+                  onTap: () => setState(() => frequency = option),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Payment preference',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: paymentOptions.map((option) {
+                return BookingChip(
+                  label: option,
+                  selected: paymentPreference == option,
+                  onTap: () => setState(() => paymentPreference = option),
+                );
+              }).toList(),
+            ),
             const SizedBox(height: 18),
             TextField(
               controller: notesController,
@@ -1448,6 +1509,16 @@ class _QuoteScreenState extends State<QuoteScreen> {
               icon: Iconsax.calendar_1,
               label: 'Timing',
               value: '$selectedDay, $selectedTime',
+            ),
+            ReviewRow(
+              icon: Iconsax.repeat,
+              label: 'Frequency',
+              value: frequency,
+            ),
+            ReviewRow(
+              icon: Iconsax.card,
+              label: 'Payment',
+              value: paymentPreference,
             ),
             if (selectedAddons.isNotEmpty)
               ReviewRow(
@@ -1671,6 +1742,16 @@ class _BookingsScreenState extends State<BookingsScreen> {
                   icon: Iconsax.calendar_1,
                   label: 'Timing',
                   value: '${booking.day}, ${booking.time}',
+                ),
+                ReviewRow(
+                  icon: Iconsax.repeat,
+                  label: 'Frequency',
+                  value: booking.frequency,
+                ),
+                ReviewRow(
+                  icon: Iconsax.card,
+                  label: 'Payment',
+                  value: booking.paymentPreference,
                 ),
                 ReviewRow(
                   icon: Iconsax.home_2,
