@@ -208,15 +208,39 @@ export default async function ServicePage({ params }: Props) {
               </div>
             </section>
 
-            <section className="rounded-3xl bg-[#f3ffe8] p-5 ring-1 ring-emerald-950/10 sm:p-6">
+            <section className="rounded-3xl bg-[#f7ffef] p-5 ring-1 ring-emerald-950/10 sm:p-6">
               <p className="eyebrow">Scope</p>
-              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">What is included</h2>
-              <div className="mt-5 grid gap-4 md:grid-cols-2">
-                {pageContent.included.map((item) => (
-                  <div className="rounded-xl border border-emerald-950/10 bg-white/80 p-4" key={item}>
-                    <p className="text-sm font-medium leading-6 text-emerald-950">{item}</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">What is included, and what is an add-on</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700 sm:text-base">Clear scope helps avoid surprises. These are typical inclusions and exclusions; final scope is confirmed before booking.</p>
+              <div className="mt-5 grid gap-4 lg:grid-cols-2">
+                <article className="rounded-2xl bg-white p-4 ring-1 ring-emerald-950/10">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-lg font-medium text-emerald-950">Included in this service</h3>
+                    <span className="rounded-lg bg-lime-300 px-3 py-1 text-xs font-medium text-emerald-950">AED scope</span>
                   </div>
-                ))}
+                  <div className="mt-4 grid gap-2">
+                    {pageContent.included.map((item) => (
+                      <div className="grid grid-cols-[1.75rem_1fr] gap-3 rounded-xl bg-[#f8fff3] p-3 ring-1 ring-emerald-950/8" key={item}>
+                        <span className="grid size-7 place-items-center rounded-lg bg-lime-300 text-sm font-medium text-emerald-950">✓</span>
+                        <p className="text-sm font-medium leading-6 text-emerald-950">{item}</p>
+                      </div>
+                    ))}
+                  </div>
+                </article>
+                <article className="rounded-2xl bg-white p-4 ring-1 ring-emerald-950/10">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-lg font-medium text-emerald-950">Quoted separately if needed</h3>
+                    <span className="rounded-lg bg-[#eef8df] px-3 py-1 text-xs font-medium text-emerald-900">Add-ons</span>
+                  </div>
+                  <div className="mt-4 grid gap-2">
+                    {pageContent.notIncluded.map((item) => (
+                      <div className="grid grid-cols-[1.75rem_1fr] gap-3 rounded-xl bg-[#fbfff7] p-3 ring-1 ring-emerald-950/8" key={item}>
+                        <span className="grid size-7 place-items-center rounded-lg bg-white text-sm font-medium text-emerald-900 ring-1 ring-emerald-950/10">+</span>
+                        <p className="text-sm leading-6 text-slate-700">{item}</p>
+                      </div>
+                    ))}
+                  </div>
+                </article>
               </div>
             </section>
 
@@ -366,7 +390,7 @@ export default async function ServicePage({ params }: Props) {
               </div>
             </section>
 
-            <section className="rounded-3xl bg-white p-5 ring-1 ring-emerald-950/10 sm:p-6" id="comparison">
+            <section className="rounded-3xl bg-[#fbfff7] p-5 ring-1 ring-emerald-950/10 sm:p-6" id="comparison">
               <p className="eyebrow">Comparison</p>
               <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
@@ -376,31 +400,34 @@ export default async function ServicePage({ params }: Props) {
                 <Link className="inline-flex min-h-11 w-fit items-center justify-center rounded-lg bg-lime-300 px-4 text-sm font-medium text-emerald-950" href="/testimonials">View reviews</Link>
               </div>
 
-              <div className="mt-5 overflow-hidden rounded-2xl border border-emerald-950/10 bg-[#f7ffef]">
+              <div className="mt-5 overflow-hidden rounded-2xl border border-emerald-950/10 bg-white">
                 <div className="hidden lg:grid lg:grid-cols-[1.1fr_repeat(4,minmax(0,1fr))]">
                   {["Feature", "Just Shine", "Premium providers", "Budget apps", "Freelance cleaners"].map((heading) => (
-                    <div className={`px-4 py-3 text-sm font-medium text-emerald-950 ${heading === "Just Shine" ? "bg-lime-300" : "bg-[#eaffcf]"}`} key={heading}>{heading}</div>
+                    <div className={`px-4 py-3 text-sm font-medium text-emerald-950 ${heading === "Just Shine" ? "bg-lime-300" : "bg-[#eef8df]"}`} key={heading}>{heading}</div>
                   ))}
                   {pageContent.comparison.rows.map((row) => (
                     <div className="contents" key={row.feature}>
-                      <div className="border-t border-emerald-950/10 bg-white/65 px-4 py-3 text-sm font-medium text-emerald-950">{row.feature}</div>
-                      <div className="border-t border-emerald-950/10 bg-[#efffd4] px-4 py-3 text-sm font-medium leading-6 text-emerald-950">{row.justShine}</div>
-                      <div className="border-t border-emerald-950/10 bg-white/65 px-4 py-3 text-sm leading-6 text-slate-700">{row.premium}</div>
-                      <div className="border-t border-emerald-950/10 bg-white/45 px-4 py-3 text-sm leading-6 text-slate-700">{row.budget}</div>
-                      <div className="border-t border-emerald-950/10 bg-white/65 px-4 py-3 text-sm leading-6 text-slate-700">{row.freelance}</div>
+                      <div className="border-t border-emerald-950/10 bg-[#fbfff7] px-4 py-3 text-sm font-medium text-emerald-950">{row.feature}</div>
+                      <div className="border-t border-emerald-950/10 bg-[#efffcf] px-4 py-3 text-sm font-medium leading-6 text-emerald-950">{row.justShine}</div>
+                      <div className="border-t border-emerald-950/10 bg-white px-4 py-3 text-sm leading-6 text-slate-700">{row.premium}</div>
+                      <div className="border-t border-emerald-950/10 bg-[#fbfff7] px-4 py-3 text-sm leading-6 text-slate-700">{row.budget}</div>
+                      <div className="border-t border-emerald-950/10 bg-white px-4 py-3 text-sm leading-6 text-slate-700">{row.freelance}</div>
                     </div>
                   ))}
                 </div>
 
-                <div className="grid gap-3 p-3 lg:hidden">
+                <div className="grid gap-3 bg-[#f7ffef] p-3 lg:hidden">
                   {pageContent.comparison.rows.map((row) => (
-                    <article className="rounded-xl bg-[#f8fff3] p-4 ring-1 ring-emerald-950/10" key={row.feature}>
-                      <h3 className="text-base font-medium text-emerald-950">{row.feature}</h3>
-                      <div className="mt-3 grid gap-2 text-sm leading-6 text-slate-700">
-                        <p><span className="font-medium text-emerald-900">Just Shine:</span> {row.justShine}</p>
-                        <p><span className="font-medium text-slate-700">Premium providers:</span> {row.premium}</p>
-                        <p><span className="font-medium text-slate-700">Budget apps:</span> {row.budget}</p>
-                        <p><span className="font-medium text-slate-700">Freelance cleaners:</span> {row.freelance}</p>
+                    <article className="overflow-hidden rounded-xl bg-white ring-1 ring-emerald-950/10" key={row.feature}>
+                      <h3 className="bg-[#eef8df] px-4 py-3 text-base font-medium text-emerald-950">{row.feature}</h3>
+                      <div className="grid gap-2 p-3 text-sm leading-6 text-slate-700">
+                        <div className="rounded-xl bg-[#efffcf] p-3 ring-1 ring-emerald-950/10">
+                          <p className="mb-1 inline-flex rounded-lg bg-lime-300 px-2 py-1 text-xs font-medium text-emerald-950">Just Shine</p>
+                          <p className="font-medium text-emerald-950">{row.justShine}</p>
+                        </div>
+                        <div className="rounded-xl bg-[#fbfff7] p-3"><span className="font-medium text-slate-800">Premium providers:</span> {row.premium}</div>
+                        <div className="rounded-xl bg-[#fbfff7] p-3"><span className="font-medium text-slate-800">Budget apps:</span> {row.budget}</div>
+                        <div className="rounded-xl bg-[#fbfff7] p-3"><span className="font-medium text-slate-800">Freelance cleaners:</span> {row.freelance}</div>
                       </div>
                     </article>
                   ))}
@@ -508,6 +535,19 @@ function getServicePageContent(service: Service) {
       "Final walkthrough guidance so you know what was cleaned and what may need add-ons.",
       "Flexible booking for Abu Dhabi homes, villas, apartments, offices, and commercial spaces.",
     ],
+    notIncluded: isHomeCleaning
+      ? [
+        "Deep kitchen appliance cleaning, heavy grease removal, grout scrubbing, and hidden-area reset.",
+        "Carpet shampooing, sofa cleaning, mattress cleaning, or upholstery steam cleaning.",
+        "Exterior window work, balcony deep washing, garden, parking, or exterior villa areas.",
+        "Pest control, post-construction residue, move-in/move-out reset, or heavy furniture moving.",
+      ]
+      : [
+        "Tasks outside the agreed scope, timing, access, or property condition shared before booking.",
+        "Specialist add-ons such as sofa, carpet, pest control, windows, or post-construction cleaning unless included in the quote.",
+        "Heavy furniture moving, delicate restoration, repair work, or permanent stain removal guarantees.",
+        "Extra rooms, outdoor zones, or urgent same-day extensions beyond the confirmed service plan.",
+      ],
     bestFor: [
       { title: "Regular maintenance", text: `${name} is useful when you want a cleaner space without spending your own time on detailed cleaning.` },
       { title: "Before guests or inspections", text: "Book before visitors, handovers, office checks, events, or property viewings for a more polished space." },
