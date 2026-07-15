@@ -32,7 +32,7 @@ export function CtaButtons({
       <a
         onClick={() => track("call_click")}
         href={`tel:${site.tel}`}
-        className="inline-flex min-h-[2.85rem] w-full items-center justify-center gap-2 rounded-lg bg-[#0b4f2f] px-4 text-sm font-medium text-white transition hover:bg-[#063d25] hover:-translate-y-0.5"
+        className="inline-flex min-h-[2.85rem] w-full items-center justify-center gap-2 rounded-lg bg-white px-4 text-sm font-medium text-emerald-950 ring-1 ring-emerald-950/15 transition hover:bg-[#f8fff3] hover:-translate-y-0.5"
       >
         <HugeiconsIcon icon={CallIcon} className="icon" size={19} color="currentColor" strokeWidth={2} aria-hidden="true" />
         <span className="sm:hidden">Call now</span>

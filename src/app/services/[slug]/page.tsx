@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { AddCircleIcon, Calendar03Icon, CheckmarkCircle02Icon, CleaningBucketIcon, CustomerService01Icon, SparklesIcon, WhatsappBusinessIcon } from "@hugeicons/core-free-icons";
 import { CtaButtons } from "@/components/cta-buttons";
 import { FaqAccordion } from "@/components/faq-accordion";
 import { JsonLd, breadcrumbSchema } from "@/components/seo";
@@ -215,13 +217,20 @@ export default async function ServicePage({ params }: Props) {
               <div className="mt-5 grid gap-4 lg:grid-cols-2">
                 <article className="rounded-2xl bg-white p-4 ring-1 ring-emerald-950/10">
                   <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-lg font-medium text-emerald-950">Included in this service</h3>
+                    <h3 className="flex items-center gap-2 text-lg font-medium text-emerald-950">
+                      <span className="grid size-9 place-items-center rounded-lg bg-lime-300 text-emerald-950">
+                        <HugeiconsIcon icon={CheckmarkCircle02Icon} className="icon" size={19} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
+                      </span>
+                      Included in this service
+                    </h3>
                     <span className="rounded-lg bg-lime-300 px-3 py-1 text-xs font-medium text-emerald-950">AED scope</span>
                   </div>
                   <div className="mt-4 grid gap-2">
                     {pageContent.included.map((item) => (
                       <div className="grid grid-cols-[1.75rem_1fr] gap-3 rounded-xl bg-[#f8fff3] p-3 ring-1 ring-emerald-950/8" key={item}>
-                        <span className="grid size-7 place-items-center rounded-lg bg-lime-300 text-sm font-medium text-emerald-950">✓</span>
+                        <span className="grid size-7 place-items-center rounded-lg bg-lime-300 text-emerald-950">
+                          <HugeiconsIcon icon={CheckmarkCircle02Icon} className="icon" size={15} color="currentColor" strokeWidth={2} aria-hidden="true" />
+                        </span>
                         <p className="text-sm font-medium leading-6 text-emerald-950">{item}</p>
                       </div>
                     ))}
@@ -229,13 +238,20 @@ export default async function ServicePage({ params }: Props) {
                 </article>
                 <article className="rounded-2xl bg-white p-4 ring-1 ring-emerald-950/10">
                   <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-lg font-medium text-emerald-950">Quoted separately if needed</h3>
+                    <h3 className="flex items-center gap-2 text-lg font-medium text-emerald-950">
+                      <span className="grid size-9 place-items-center rounded-lg bg-[#eef8df] text-emerald-900 ring-1 ring-emerald-950/10">
+                        <HugeiconsIcon icon={AddCircleIcon} className="icon" size={19} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
+                      </span>
+                      Quoted separately if needed
+                    </h3>
                     <span className="rounded-lg bg-[#eef8df] px-3 py-1 text-xs font-medium text-emerald-900">Add-ons</span>
                   </div>
                   <div className="mt-4 grid gap-2">
                     {pageContent.notIncluded.map((item) => (
                       <div className="grid grid-cols-[1.75rem_1fr] gap-3 rounded-xl bg-[#fbfff7] p-3 ring-1 ring-emerald-950/8" key={item}>
-                        <span className="grid size-7 place-items-center rounded-lg bg-white text-sm font-medium text-emerald-900 ring-1 ring-emerald-950/10">+</span>
+                        <span className="grid size-7 place-items-center rounded-lg bg-white text-emerald-900 ring-1 ring-emerald-950/10">
+                          <HugeiconsIcon icon={AddCircleIcon} className="icon" size={15} color="currentColor" strokeWidth={2} aria-hidden="true" />
+                        </span>
                         <p className="text-sm leading-6 text-slate-700">{item}</p>
                       </div>
                     ))}
@@ -319,10 +335,15 @@ export default async function ServicePage({ params }: Props) {
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Pick the right cleaning rhythm</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700 sm:text-base">Not every home needs the same schedule. Use this as a quick guide before you ask for a quote.</p>
               <div className="mt-5 grid gap-4 md:grid-cols-3">
-                {pageContent.planGuide.map((plan) => (
+                {pageContent.planGuide.map((plan, index) => (
                   <article className={`rounded-2xl p-5 ring-1 ring-emerald-950/10 ${plan.recommended ? "bg-[#efffcf]" : "bg-[#fbfff7]"}`} key={plan.title}>
                     <div className="flex items-start justify-between gap-3">
-                      <h3 className="text-lg font-medium text-emerald-950">{plan.title}</h3>
+                      <div className="flex items-center gap-3">
+                        <span className={`grid size-10 place-items-center rounded-xl text-emerald-950 ring-1 ring-emerald-950/10 ${plan.recommended ? "bg-lime-300" : "bg-white"}`}>
+                          <HugeiconsIcon icon={[Calendar03Icon, SparklesIcon, CleaningBucketIcon][index] || Calendar03Icon} className="icon" size={20} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
+                        </span>
+                        <h3 className="text-lg font-medium text-emerald-950">{plan.title}</h3>
+                      </div>
                       {plan.recommended && <span className="rounded-lg bg-lime-300 px-2 py-1 text-xs font-medium text-emerald-950">Best value</span>}
                     </div>
                     <p className="mt-3 text-sm leading-6 text-slate-700">{plan.text}</p>
@@ -339,7 +360,12 @@ export default async function ServicePage({ params }: Props) {
               <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 {pageContent.process.map((step, index) => (
                   <article className="relative rounded-2xl border border-emerald-950/10 bg-white p-4" key={step.title}>
-                    <span className="inline-flex size-9 items-center justify-center rounded-lg bg-lime-300 text-sm font-medium text-emerald-950">0{index + 1}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex size-9 items-center justify-center rounded-lg bg-lime-300 text-emerald-950">
+                        <HugeiconsIcon icon={[WhatsappBusinessIcon, CustomerService01Icon, CleaningBucketIcon, CheckmarkCircle02Icon][index] || SparklesIcon} className="icon" size={18} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
+                      </span>
+                      <span className="rounded-lg bg-[#eef8df] px-2 py-1 text-xs font-medium text-emerald-900">Step 0{index + 1}</span>
+                    </div>
                     <h3 className="mt-3 text-base font-medium text-emerald-950">{step.title}</h3>
                     <p className="mt-2 text-sm leading-6 text-slate-700">{step.text}</p>
                   </article>
