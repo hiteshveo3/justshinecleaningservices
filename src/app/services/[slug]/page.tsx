@@ -260,6 +260,32 @@ export default async function ServicePage({ params }: Props) {
               </div>
             </section>
 
+            <section className="rounded-3xl bg-white p-5 ring-1 ring-emerald-950/10 sm:p-6">
+              <p className="eyebrow">Room checklist</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">What gets attention room by room</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700 sm:text-base">Use this as a practical checklist. The final order can be adjusted around your priority rooms, timing, and property condition.</p>
+              <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                {pageContent.roomChecklist.map((room, index) => (
+                  <article className="rounded-2xl bg-[#fbfff7] p-4 ring-1 ring-emerald-950/10" key={room.title}>
+                    <div className="flex items-center gap-3">
+                      <span className="grid size-10 place-items-center rounded-xl bg-lime-300 text-emerald-950">
+                        <HugeiconsIcon icon={[CleaningBucketIcon, SparklesIcon, CheckmarkCircle02Icon, CustomerService01Icon][index] || CleaningBucketIcon} className="icon" size={20} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
+                      </span>
+                      <h3 className="text-base font-medium text-emerald-950">{room.title}</h3>
+                    </div>
+                    <ul className="mt-4 grid gap-2">
+                      {room.items.map((item) => (
+                        <li className="flex gap-2 text-sm leading-6 text-slate-700" key={item}>
+                          <span className="mt-2 size-1.5 shrink-0 rounded-full bg-lime-400" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            </section>
+
             {pricing && (
               <section className="rounded-3xl bg-white p-5 ring-1 ring-emerald-950/10 sm:p-6" id="pricing">
                 <p className="eyebrow">Tiered pricing</p>
@@ -436,6 +462,22 @@ export default async function ServicePage({ params }: Props) {
               </div>
             </section>
 
+            <section className="rounded-3xl bg-white p-5 ring-1 ring-emerald-950/10 sm:p-6">
+              <p className="eyebrow">Service promise</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">A cleaner visit with fewer surprises</h2>
+              <div className="mt-5 grid gap-4 md:grid-cols-3">
+                {pageContent.promise.map((item, index) => (
+                  <article className="rounded-2xl bg-[#f7ffef] p-5 ring-1 ring-emerald-950/10" key={item.title}>
+                    <span className="grid size-10 place-items-center rounded-xl bg-white text-emerald-950 ring-1 ring-emerald-950/10">
+                      <HugeiconsIcon icon={[CustomerService01Icon, CheckmarkCircle02Icon, WhatsappBusinessIcon][index] || SparklesIcon} className="icon" size={20} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
+                    </span>
+                    <h3 className="mt-4 text-lg font-medium text-emerald-950">{item.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-700">{item.text}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+
             <section className="rounded-3xl bg-[#fbfff7] p-5 ring-1 ring-emerald-950/10 sm:p-6" id="comparison">
               <p className="eyebrow">Comparison</p>
               <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -594,6 +636,19 @@ function getServicePageContent(service: Service) {
         "Heavy furniture moving, delicate restoration, repair work, or permanent stain removal guarantees.",
         "Extra rooms, outdoor zones, or urgent same-day extensions beyond the confirmed service plan.",
       ],
+    roomChecklist: isHomeCleaning
+      ? [
+        { title: "Bedrooms", items: ["Accessible dusting and surface wipe-down", "Floor sweeping or mopping", "Bedside and wardrobe exterior attention"] },
+        { title: "Living areas", items: ["Tables, shelves, TV area, and visible surfaces", "Sofa-side dust and floor care", "General tidying of accessible areas"] },
+        { title: "Bathrooms", items: ["Sink, mirror, toilet, and shower surface cleaning", "Floor cleaning and bin emptying", "Light hard-water mark attention"] },
+        { title: "Kitchen", items: ["Countertops, sink, stovetop surface, and exterior cabinets", "Visible appliance exterior wipe-down", "Floor cleaning and daily-use area refresh"] },
+      ]
+      : [
+        { title: "Priority areas", items: ["Confirmed rooms and surfaces handled first", "Photos used to clarify scope", "High-use zones checked before start"] },
+        { title: "Surface care", items: ["Method matched to material where possible", "Visible buildup and marks assessed", "Add-ons suggested when specialist tools are needed"] },
+        { title: "Timing", items: ["Visit length depends on size and condition", "Extra areas quoted before extension", "Recurring plans available for repeat needs"] },
+        { title: "Review", items: ["Final walkthrough guidance", "Missed-priority feedback handled quickly", "Next service suggestions if needed"] },
+      ],
     bestFor: [
       { title: "Regular maintenance", text: `${name} is useful when you want a cleaner space without spending your own time on detailed cleaning.` },
       { title: "Before guests or inspections", text: "Book before visitors, handovers, office checks, events, or property viewings for a more polished space." },
@@ -663,6 +718,11 @@ function getServicePageContent(service: Service) {
       { title: "Surface-aware cleaning", text: "Marble, tile, glass, wood, fabric, and commercial surfaces need different methods to avoid damage." },
       { title: "Abu Dhabi dust awareness", text: "Fine sand, AC airflow, and humidity affect cleaning frequency, especially for villas and soft furnishings." },
       { title: "Practical follow-up", text: "For recurring needs, ask about weekly, bi-weekly, monthly, or quarterly cleaning plans." },
+    ],
+    promise: [
+      { title: "Scope before arrival", text: "We confirm service type, location, timing, access, and priority areas before the visit so the team arrives with a clearer plan." },
+      { title: "Useful final review", text: "After cleaning, review the result and share quick feedback while details are still fresh. This helps resolve small misses faster." },
+      { title: "Direct WhatsApp support", text: "Questions, photos, timing changes, add-ons, and recurring plans can be handled directly through Call or WhatsApp." },
     ],
     comparison,
   };
