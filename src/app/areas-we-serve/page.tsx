@@ -6,6 +6,7 @@ import { CleaningBucketIcon, Location01Icon, MapsLocation01Icon, SparklesIcon, W
 import { CtaButtons } from "@/components/cta-buttons";
 import { JsonLd, breadcrumbSchema } from "@/components/seo";
 import { services, site } from "@/lib/content";
+import { cleaningGuides } from "@/lib/guides";
 import { abuDhabiLocations } from "@/lib/locations";
 
 export const metadata: Metadata = {
@@ -116,7 +117,9 @@ export default function AreasWeServePage() {
                     <HugeiconsIcon icon={MapsLocation01Icon} className="icon" size={22} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
                   </span>
                   <div>
-                    <h3 className="text-lg font-medium text-emerald-950">{location.name}</h3>
+                    <h3 className="text-lg font-medium text-emerald-950">
+                      <Link className="hover:underline" href={`/areas/${location.slug}`}>{location.name}</Link>
+                    </h3>
                     <p className="mt-1 text-sm leading-6 text-slate-700">{location.areaType}</p>
                   </div>
                 </div>
@@ -125,10 +128,13 @@ export default function AreasWeServePage() {
                   <p className="mt-1 text-sm leading-6 text-slate-700">{location.challenge}</p>
                 </div>
                 <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                  <Link className="rounded-lg bg-lime-300 px-3 py-2 text-center text-sm font-medium text-emerald-950" href={`/areas/${location.slug}`}>
+                    Area guide
+                  </Link>
                   <Link className="rounded-lg bg-emerald-900 px-3 py-2 text-center text-sm font-medium text-white" href={`/services/deep-cleaning/${location.slug}`}>
                     Deep cleaning
                   </Link>
-                  <Link className="rounded-lg bg-white px-3 py-2 text-center text-sm font-medium text-emerald-950 ring-1 ring-emerald-950/10" href={`/services/home-cleaning/${location.slug}`}>
+                  <Link className="rounded-lg bg-white px-3 py-2 text-center text-sm font-medium text-emerald-950 ring-1 ring-emerald-950/10 sm:col-span-2" href={`/services/home-cleaning/${location.slug}`}>
                     Home cleaning
                   </Link>
                 </div>
@@ -167,6 +173,22 @@ export default function AreasWeServePage() {
                   ))}
                 </div>
               </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <p className="eyebrow">Cleaning guides</p>
+          <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Helpful guides before you book</h2>
+          <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            {cleaningGuides.map((guide) => (
+              <Link className="rounded-2xl bg-[#fbfff7] p-4 ring-1 ring-emerald-950/10 transition hover:bg-[#f3ffe8]" href={`/guides/${guide.slug}`} key={guide.slug}>
+                <p className="text-xs font-medium uppercase tracking-[0.08em] text-emerald-700">{guide.eyebrow}</p>
+                <h3 className="mt-3 text-base font-medium leading-6 text-emerald-950">{guide.title}</h3>
+                <p className="mt-2 text-xs leading-5 text-slate-600">{guide.readingTime}</p>
+              </Link>
             ))}
           </div>
         </div>
