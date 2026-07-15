@@ -10,6 +10,7 @@ import { JsonLd, breadcrumbSchema } from "@/components/seo";
 import { getService, getServices } from "@/lib/data";
 import { servicePriceLabel, site, type Service } from "@/lib/content";
 import { faqCategories, type FaqItem } from "@/lib/faq-data";
+import { abuDhabiLocations } from "@/lib/locations";
 import { pricingServices } from "@/lib/pricing";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -549,6 +550,23 @@ export default async function ServicePage({ params }: Props) {
                 ))}
               </div>
               <p className="mt-4 text-xs leading-5 text-slate-500">Comparison is based on common booking models in Abu Dhabi. Exact inclusions, pricing, and availability can change by company, property size, and service condition.</p>
+            </section>
+
+            <section className="rounded-3xl bg-[#f8fff3] p-5 ring-1 ring-emerald-950/10 sm:p-6">
+              <p className="eyebrow">Service areas</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Book {service.name} across Abu Dhabi</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700 sm:text-base">Choose your area to view a local service page with property guidance, scope, pricing notes, and WhatsApp booking for that location.</p>
+              <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {abuDhabiLocations.map((location) => (
+                  <Link
+                    className="rounded-xl bg-white px-4 py-3 text-sm font-medium text-emerald-950 ring-1 ring-emerald-950/10 transition hover:bg-lime-50"
+                    href={`/services/${service.slug}/${location.slug}`}
+                    key={location.slug}
+                  >
+                    {service.name} in {location.name}
+                  </Link>
+                ))}
+              </div>
             </section>
 
             <section className="rounded-3xl bg-[#f8fff3] p-5 ring-1 ring-emerald-950/10 sm:p-6">
