@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { comparisonPages } from "@/lib/comparisons";
 import { posts, services, site } from "@/lib/content";
 import { cleaningGuides } from "@/lib/guides";
+import { localGuidePages } from "@/lib/local-guide-pages";
 import { abuDhabiLocations, getServiceLocationPaths } from "@/lib/locations";
 import { resourcePages } from "@/lib/resources";
 import { cleaningSolutions } from "@/lib/solutions";
@@ -40,6 +41,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...resourcePages.map((page) => ({ url: `${site.url}/resources/${page.slug}`, lastModified: new Date() })),
     ...cleaningSolutions.map((solution) => ({ url: `${site.url}/solutions/${solution.slug}`, lastModified: new Date() })),
     ...comparisonPages.map((page) => ({ url: `${site.url}/compare/${page.slug}`, lastModified: new Date() })),
+    ...localGuidePages.map((page) => ({ url: `${site.url}/local-guides/${page.slug}`, lastModified: new Date() })),
     ...posts.map((post) => ({ url: `${site.url}/blog/${post.slug}`, lastModified: new Date(post.publishedAt) })),
     ...tags.map((tag) => ({ url: `${site.url}/blog/tag/${encodeURIComponent(tag)}`, lastModified: new Date() })),
     { url: `${site.url}/blog/author/just-shine-team`, lastModified: new Date() },

@@ -8,6 +8,7 @@ import { JsonLd, breadcrumbSchema } from "@/components/seo";
 import { comparisonPages } from "@/lib/comparisons";
 import { services, site } from "@/lib/content";
 import { cleaningGuides } from "@/lib/guides";
+import { localGuidePages, shortServiceName } from "@/lib/local-guide-pages";
 import { abuDhabiLocations } from "@/lib/locations";
 import { resourcePages } from "@/lib/resources";
 import { cleaningSolutions } from "@/lib/solutions";
@@ -176,6 +177,32 @@ export default function AreasWeServePage() {
                   ))}
                 </div>
               </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="eyebrow">100 local cleaning guides</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Detailed guides by service and area</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700 sm:text-base">
+                These pages explain local scope, access notes, pricing factors, checklists, and FAQs for high-intent service searches across Abu Dhabi.
+              </p>
+            </div>
+            <span className="inline-flex min-h-11 w-fit items-center justify-center rounded-lg bg-lime-300 px-4 text-sm font-medium text-emerald-950">
+              {localGuidePages.length} guides
+            </span>
+          </div>
+          <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {localGuidePages.map((page) => (
+              <Link className="rounded-2xl bg-[#fbfff7] p-4 ring-1 ring-emerald-950/10 transition hover:bg-lime-50" href={`/local-guides/${page.slug}`} key={page.slug}>
+                <p className="text-xs font-medium uppercase tracking-[0.08em] text-emerald-700">{page.location.name}</p>
+                <h3 className="mt-3 text-sm font-medium leading-6 text-emerald-950">{shortServiceName(page.service)} guide</h3>
+                <p className="mt-2 text-xs leading-5 text-slate-600">{page.service.price ? `From AED ${page.service.price} ${page.service.priceUnit}` : "Local guide"}</p>
+              </Link>
             ))}
           </div>
         </div>
