@@ -8,6 +8,7 @@ import { services, site } from "@/lib/content";
 
 const nav = [
   ["Services", "/services"],
+  ["Areas", "/areas-we-serve"],
   ["Pricing", "/pricing"],
   ["About", "/about"],
   ["Blog", "/blog"],
@@ -124,6 +125,7 @@ export function Footer() {
           </FooterAccordion>
           <FooterAccordion title="Company">
             <Link href="/about">About</Link>
+            <Link href="/areas-we-serve">Areas We Serve</Link>
             <Link href="/pricing">Pricing</Link>
             <Link href="/faq">FAQ</Link>
             <Link href="/testimonials">Testimonials</Link>
@@ -144,6 +146,7 @@ export function Footer() {
             <h3 className="font-medium">Company</h3>
             <div className="mt-3 grid gap-2 text-sm text-slate-700">
               <Link href="/about">About</Link>
+              <Link href="/areas-we-serve">Areas We Serve</Link>
               <Link href="/pricing">Pricing</Link>
               <Link href="/faq">FAQ</Link>
               <Link href="/testimonials">Testimonials</Link>
