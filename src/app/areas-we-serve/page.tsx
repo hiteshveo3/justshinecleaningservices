@@ -8,6 +8,7 @@ import { JsonLd, breadcrumbSchema } from "@/components/seo";
 import { services, site } from "@/lib/content";
 import { cleaningGuides } from "@/lib/guides";
 import { abuDhabiLocations } from "@/lib/locations";
+import { resourcePages } from "@/lib/resources";
 
 export const metadata: Metadata = {
   title: "Areas We Serve in Abu Dhabi | Just Shine Cleaning Services",
@@ -188,6 +189,22 @@ export default function AreasWeServePage() {
                 <p className="text-xs font-medium uppercase tracking-[0.08em] text-emerald-700">{guide.eyebrow}</p>
                 <h3 className="mt-3 text-base font-medium leading-6 text-emerald-950">{guide.title}</h3>
                 <p className="mt-2 text-xs leading-5 text-slate-600">{guide.readingTime}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[#fbfff7] px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <p className="eyebrow">Service resources</p>
+          <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Checklists and cost guides</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700 sm:text-base">Use these pages to understand scope, pricing factors, preparation steps, and what to send before booking.</p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {resourcePages.map((page) => (
+              <Link className="rounded-2xl bg-white p-4 ring-1 ring-emerald-950/10 transition hover:bg-lime-50" href={`/resources/${page.slug}`} key={page.slug}>
+                <p className="text-xs font-medium uppercase tracking-[0.08em] text-emerald-700">{page.eyebrow}</p>
+                <h3 className="mt-3 text-sm font-medium leading-6 text-emerald-950">{page.title}</h3>
               </Link>
             ))}
           </div>
