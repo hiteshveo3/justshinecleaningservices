@@ -329,7 +329,7 @@ export const posts = [
 <p>Ready to experience the Just Shine Cleaning Services difference? Contact Just Shine Cleaning Services for a free quote and consultation. Your spotless, healthy home is one booking away.</p>`,
     author: "Just Shine Cleaning Services Team",
     publishedAt: "2026-07-15",
-    featured_image: "/images/Affordable Cleaning Services in Abu Dhabi - Just Shine Cleaning Services.webp",
+    featured_image: "/images/services/deep-cleaning.webp",
     tags: ["deep cleaning", "abu dhabi", "villa cleaning", "home cleaning", "cleaning guide"],
   },
   {
@@ -340,7 +340,7 @@ export const posts = [
     content: "<p>A deep cleaning checklist helps Abu Dhabi homes stay organized before a professional team arrives. Clear scope, access, and priorities help the cleaning visit move faster and deliver better results.</p><h2>Start with priority rooms</h2><p>Begin with kitchens, bathrooms, bedrooms, balconies, and majlis areas. These zones usually need the most detailed cleaning because they collect grease, scale, dust, and daily-use marks.</p><h2>Prepare access and surfaces</h2><p>Move personal items from counters, floors, and soft furnishings. This helps cleaners focus on sanitizing, degreasing, dusting, and mopping instead of spending time sorting belongings.</p><h2>Confirm extras before arrival</h2><p>Window tracks, sofa cleaning, carpet shampooing, and post-construction residue may require extra tools or time. Share photos on WhatsApp so the team can plan properly.</p>",
     author: "Just Shine Cleaning Services Team",
     publishedAt: "2026-01-12",
-    featured_image: "/images/Affordable Cleaning Services in Abu Dhabi - Just Shine Cleaning Services.webp",
+    featured_image: "/images/services/deep-cleaning.webp",
     tags: ["deep cleaning", "abu dhabi"],
   },
   {
@@ -438,7 +438,7 @@ export const posts = [
 <p>Get a quote in minutes, ask about same-day or next-day availability, and compare your best service option. Start with <a href="/services/home-cleaning">home cleaning</a>, upgrade to <a href="/services/deep-cleaning">deep cleaning</a> when needed, or visit the <a href="/faq">FAQ page</a> for more cleaning questions.</p>`,
     author: "Just Shine Cleaning Services Team",
     publishedAt: "2026-07-15",
-    featured_image: "/images/Affordable Cleaning Services in Abu Dhabi - Just Shine Cleaning Services.webp",
+    featured_image: "/images/services/home-cleaning.webp",
     tags: ["home cleaning", "deep cleaning", "abu dhabi", "cleaning tips", "cost comparison"],
   },
   {
@@ -528,7 +528,7 @@ export const posts = [
 <p>To start, send your home size, location, and photos on WhatsApp at <a href="https://wa.me/971552232850">+971 55 223 2850</a>, or compare related guidance in our <a href="/blog/home-cleaning-vs-deep-cleaning-abu-dhabi">home cleaning vs deep cleaning guide</a>.</p>`,
     author: "Just Shine Cleaning Services Team",
     publishedAt: "2026-07-15",
-    featured_image: "/images/Affordable Cleaning Services in Abu Dhabi - Just Shine Cleaning Services.webp",
+    featured_image: "/images/services/deep-cleaning.webp",
     tags: ["deep cleaning", "surface cleaning", "abu dhabi", "home maintenance", "health benefits"],
   },
   {
@@ -636,7 +636,7 @@ Final checks:
 <p>Book move-in cleaning before furniture arrives. Send your apartment size, location, move-in date, and photos to <a href="https://wa.me/971552232850">WhatsApp +971 55 223 2850</a>, or compare current options on the <a href="/pricing">pricing page</a>.</p>`,
     author: "Just Shine Cleaning Services Team",
     publishedAt: "2026-07-15",
-    featured_image: "/images/Affordable Cleaning Services in Abu Dhabi - Just Shine Cleaning Services.webp",
+    featured_image: "/images/services/move-in-out-cleaning.webp",
     tags: ["move in cleaning", "abu dhabi", "new apartment", "relocation", "cleaning checklist"],
   },
   {
@@ -753,7 +753,7 @@ Overall:
 <p>To get a villa cleaning quote, WhatsApp <a href="https://wa.me/971552232850">+971 55 223 2850</a>, call <a href="tel:+971552232850">+971 55 223 2850</a>, or visit the <a href="/services/villa-cleaning">Villa Cleaning Services</a> page.</p>`,
     author: "Just Shine Cleaning Services Team",
     publishedAt: "2026-07-15",
-    featured_image: "/images/Affordable Cleaning Services in Abu Dhabi - Just Shine Cleaning Services.webp",
+    featured_image: "/images/services/villa-cleaning.webp",
     tags: ["villa cleaning", "abu dhabi", "large properties", "residential cleaning", "professional cleaning"],
   },
   {
@@ -847,7 +847,7 @@ Overall:
 <p>For sofa and upholstery cleaning in Abu Dhabi, WhatsApp <a href="https://wa.me/971552232850">+971 55 223 2850</a>, call <a href="tel:+971552232850">+971 55 223 2850</a>, or visit <a href="/services/sofa-cleaning">Sofa Cleaning Services</a>.</p>`,
     author: "Just Shine Cleaning Services Team",
     publishedAt: "2026-07-15",
-    featured_image: "/images/Affordable Cleaning Services in Abu Dhabi - Just Shine Cleaning Services.webp",
+    featured_image: "/images/services/sofa-cleaning.webp",
     tags: ["sofa cleaning", "upholstery", "pet cleaning", "furniture care", "abu dhabi"],
   },
   {
@@ -858,7 +858,7 @@ Overall:
     content: "<p>Sofa cleaning frequency depends on family size, humidity, food habits, pets, and guest traffic. In Abu Dhabi, dust and AC use can make upholstery feel dull faster than expected.</p><h2>General cleaning frequency</h2><p>Most homes benefit from professional sofa cleaning every 6 to 12 months. Light-use seating can wait longer, while family rooms need a shorter cycle.</p><h2>When to clean sooner</h2><p>Book earlier if you notice odor, visible stains, sticky fabric, allergy symptoms, or heavy dust. Homes with children, pets, or frequent visitors often need cleaning every 3 to 6 months.</p><h2>Maintain between services</h2><p>Vacuum cushions weekly, blot spills quickly, and avoid harsh chemicals. If stains spread or fabric changes color, stop DIY cleaning and ask for professional advice.</p>",
     author: "Just Shine Cleaning Services Team",
     publishedAt: "2026-02-08",
-    featured_image: "/images/Affordable Cleaning Services in Abu Dhabi - Just Shine Cleaning Services.webp",
+    featured_image: "/images/services/sofa-cleaning.webp",
     tags: ["sofa cleaning", "upholstery"],
   },
 ];

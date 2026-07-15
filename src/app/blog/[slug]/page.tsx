@@ -30,23 +30,37 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+function extractFaqBlock(html: string) {
+  const faqHeading = /<h2>(Frequently Asked Questions|FAQ|Common Questions[^<]*)<\/h2>/i.exec(html);
+  if (!faqHeading || faqHeading.index === undefined) return { html, title: "", items: [] as { q: string; a: string }[] };
+  const start = faqHeading.index;
+  const contentStart = start + faqHeading[0].length;
+  const nextHeading = html.slice(contentStart).search(/<h2>/i);
+  const end = nextHeading === -1 ? html.length : contentStart + nextHeading;
+  const faqHtml = html.slice(contentStart, end);
+  const items = Array.from(faqHtml.matchAll(/<h3>([\s\S]*?)<\/h3>\s*<p>([\s\S]*?)<\/p>/gi)).map((match) => ({
+    q: match[1].replace(/<[^>]+>/g, "").trim(),
+    a: match[2].replace(/<[^>]+>/g, "").trim(),
+  })).filter((item) => item.q && item.a);
+  if (items.length === 0) return { html, title: "", items };
+  return {
+    html: `${html.slice(0, start)}${html.slice(end)}`,
+    title: faqHeading[1].replace(/<[^>]+>/g, "").trim(),
+    items,
+  };
+}
+
 export default async function BlogPost({ params }: Props) {
   const { slug } = await params;
   const posts = await getBlogPosts();
   const post = posts.find((item) => item.slug === slug);
   if (!post) notFound();
   const isDeepCleaningGuide = post.slug === "deep-cleaning-services-abu-dhabi-guide-2026";
-  const faqSplit = isDeepCleaningGuide ? post.content.split("<h2>Frequently Asked Questions</h2>") : [post.content];
-  const mainArticleContent = faqSplit[0];
+  const faqBlock = extractFaqBlock(post.content);
+  const mainArticleContent = faqBlock.html;
   const headings = extractHeadings(mainArticleContent);
   const content = withHeadingIds(mainArticleContent);
-  const faqItems = isDeepCleaningGuide ? [
-    { q: "How long does deep cleaning take?", a: "Most homes take 4-8 hours depending on size and condition. Large villas may require a longer visit or larger team." },
-    { q: "Is deep cleaning safe for pets and children?", a: "Yes, professional teams can use family-safe products. Tell the team about pets, allergies, or sensitive surfaces before the visit." },
-    { q: "What should I do before cleaners arrive?", a: "Clear floors, secure valuables, move lightweight items, and share priority areas or photos on WhatsApp." },
-    { q: "Can deep cleaning remove all stains?", a: "Most stains improve, but permanent damage cannot always be reversed. It is best to discuss expectations before starting." },
-    { q: "How often should villas get deep cleaning in Abu Dhabi?", a: "Every 8-12 weeks works for many villas. Homes with pets, allergies, or high traffic may benefit from monthly deep cleaning." },
-  ] : [];
+  const faqItems = faqBlock.items;
   const relatedServices = services.filter((service) => ["deep-cleaning", "sofa-cleaning", "carpet-cleaning", "move-in-out-cleaning"].includes(service.slug));
   const related = relatedPosts(post, posts);
   const minutes = readingTime(post.content);
@@ -70,6 +84,17 @@ export default async function BlogPost({ params }: Props) {
         dateModified: post.publishedAt,
         mainEntityOfPage: postUrl,
       }} />
+      {faqItems.length > 0 && (
+        <JsonLd data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqItems.map((item) => ({
+            "@type": "Question",
+            name: item.q,
+            acceptedAnswer: { "@type": "Answer", text: item.a },
+          })),
+        }} />
+      )}
       <section className="bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-end">
           <div className="min-w-0">
@@ -137,7 +162,7 @@ export default async function BlogPost({ params }: Props) {
             {faqItems.length > 0 && (
               <section className="mt-10">
                 <p className="eyebrow">FAQ</p>
-                <h2 className="mt-4 text-2xl font-medium text-emerald-950">Deep cleaning questions</h2>
+                <h2 className="mt-4 text-2xl font-medium text-emerald-950">{faqBlock.title || "Cleaning questions"}</h2>
                 <div className="mt-5"><FaqAccordion items={faqItems} /></div>
               </section>
             )}
