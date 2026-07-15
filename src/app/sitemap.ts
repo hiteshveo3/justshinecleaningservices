@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/contact",
     "/faq",
     "/testimonials",
+    "/services/deep-cleaning/mussafah-abu-dhabi",
     "/privacy",
     "/terms",
     "/refund-policy",
