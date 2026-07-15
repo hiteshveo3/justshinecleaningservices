@@ -136,8 +136,8 @@ export default async function ServiceLocationPage({ params }: Props) {
         ])}
       />
 
-      <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 rounded-3xl bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] p-5 ring-1 ring-emerald-950/10 sm:p-8 lg:grid-cols-[1.05fr_.95fr] lg:p-10">
+      <section className="bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
           <div>
             <p className="eyebrow">{location.shortName} service area</p>
             <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-emerald-950 sm:text-[2.45rem] lg:text-[2.75rem]">
@@ -167,7 +167,7 @@ export default async function ServiceLocationPage({ params }: Props) {
           </div>
 
           <div className="relative">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-white ring-1 ring-emerald-950/10">
+            <div className="elevated relative aspect-[4/3] overflow-hidden rounded-2xl border border-emerald-950/10 bg-white">
               <Image
                 alt={`${service.name} in ${location.name}, Abu Dhabi`}
                 className="object-cover"
