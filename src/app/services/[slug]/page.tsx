@@ -48,6 +48,28 @@ export default async function ServicePage({ params }: Props) {
   const pageContent = getServicePageContent(service);
   const relatedServices = allServices.filter((item) => item.slug !== service.slug).slice(0, 3);
   const serviceImage = service.images[0] || brandCleaningImage;
+  const offerCatalog = pricing ? {
+    "@type": "OfferCatalog",
+    name: `${service.name} pricing and discounts`,
+    itemListElement: [
+      {
+        "@type": "Offer",
+        name: `${service.name} starting price`,
+        price: service.price,
+        priceCurrency: "AED",
+        description: pricing.current,
+        availability: "https://schema.org/InStock",
+        url: `${site.url}/services/${service.slug}`,
+      },
+      ...pricing.discounts.slice(0, 3).map((tier) => ({
+        "@type": "Offer",
+        name: tier.label,
+        priceCurrency: "AED",
+        description: `${tier.price}${tier.note ? ` - ${tier.note}` : ""}`,
+        url: `${site.url}/pricing`,
+      })),
+    ],
+  } : undefined;
   const schema = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -64,7 +86,7 @@ export default async function ServicePage({ params }: Props) {
       url: site.url,
     },
     areaServed: "Abu Dhabi",
-    offers: {
+    offers: offerCatalog || {
       "@type": "Offer",
       price: service.price,
       priceCurrency: "AED",
@@ -123,7 +145,7 @@ export default async function ServicePage({ params }: Props) {
                 </a>
               ))}
             </div>
-            <div className="mt-8"><CtaButtons service={service.name.toLowerCase().replace(" cleaning", "")} /></div>
+            <div className="mt-8"><CtaButtons service={service.name.toLowerCase().replace(" services", "").replace(" cleaning", "")} quoteLabel={`Get instant quote • ${servicePriceLabel(service)}`} /></div>
           </div>
           <div className="relative">
             <div className="elevated relative aspect-[4/3] overflow-hidden rounded-2xl border border-emerald-950/10 bg-white">
@@ -167,6 +189,14 @@ export default async function ServicePage({ params }: Props) {
               <div className="mt-5 rounded-2xl bg-[#f3ffe8] p-4 ring-1 ring-emerald-950/10">
                 <h3 className="text-base font-medium text-emerald-950">Why Abu Dhabi homes need this rhythm</h3>
                 <p className="mt-2 text-sm leading-7 text-slate-700">{pageContent.localContext}</p>
+                <div className="mt-4 grid gap-3 md:grid-cols-3">
+                  {pageContent.localFactors.map((factor) => (
+                    <div className="rounded-xl bg-white/80 p-3 ring-1 ring-emerald-950/10" key={factor.title}>
+                      <p className="text-sm font-medium text-emerald-950">{factor.title}</p>
+                      <p className="mt-1 text-xs leading-5 text-slate-600">{factor.text}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {pageContent.quickFacts.map((fact) => (
@@ -198,7 +228,7 @@ export default async function ServicePage({ params }: Props) {
                     <h2 className="text-2xl font-medium text-emerald-950 sm:text-3xl">Pricing options for {service.name}</h2>
                     <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700 sm:text-base">{pricing.bestFor}</p>
                   </div>
-                  <Link className="inline-flex min-h-11 w-fit items-center justify-center rounded-lg bg-lime-300 px-4 text-sm font-medium text-emerald-950" href="/pricing">Full pricing</Link>
+                  <Link className="inline-flex min-h-11 w-fit items-center justify-center rounded-lg bg-lime-300 px-4 text-sm font-medium text-emerald-950" href="/pricing">View pricing & monthly discounts</Link>
                 </div>
 
                 <div className="mt-5 grid gap-4 md:grid-cols-3">
@@ -425,7 +455,7 @@ export default async function ServicePage({ params }: Props) {
                 <p className="text-lg font-medium text-emerald-950">{servicePriceLabel(service)}</p>
               </div>
               <div className="mt-4">
-                <CtaButtons service={service.name.toLowerCase().replace(" cleaning", "")} />
+                <CtaButtons service={service.name.toLowerCase().replace(" services", "").replace(" cleaning", "")} quoteLabel={`Get quote • ${servicePriceLabel(service)}`} />
               </div>
               <Link className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-white px-4 text-sm font-medium text-emerald-950 ring-1 ring-emerald-950/10" href="/pricing">Compare pricing</Link>
             </div>
@@ -453,6 +483,17 @@ function getServicePageContent(service: Service) {
     localContext: isHomeCleaning
       ? "Fine desert dust can settle again within a few days, especially when AC airflow moves particles through bedrooms, living rooms, and window tracks. Coastal humidity and daily foot traffic also make kitchens and bathrooms feel used faster than expected. For many Abu Dhabi homes, a weekly maintenance clean keeps the space comfortable, while periodic deep cleaning handles corners, grout, vents, and appliance interiors."
       : "Abu Dhabi properties deal with fine dust, AC airflow, humidity, busy family routines, and frequent guest traffic. Planning the right cleaning frequency helps protect surfaces, keep indoor spaces fresher, and reduce the need for rushed last-minute cleaning before visitors, inspections, or handovers.",
+    localFactors: isHomeCleaning
+      ? [
+        { title: "Sand returns fast", text: "Windows, shoes, balcony doors, and AC airflow can bring fine dust back within 5-7 days." },
+        { title: "AC moves particles", text: "Bedrooms and living rooms often need regular dusting because cooled air keeps dust circulating." },
+        { title: "Bathrooms need rhythm", text: "Humidity, hard-water marks, and daily use make weekly surface cleaning more practical." },
+      ]
+      : [
+        { title: "Local dust", text: "Fine sand affects glass, floors, soft furnishings, and corners faster than many cooler climates." },
+        { title: "High-use spaces", text: "Families, offices, restaurants, and showrooms need cleaning frequency matched to traffic." },
+        { title: "Better planning", text: "Photos and priority notes help avoid vague pricing and make each visit more efficient." },
+      ],
     quickFacts: [
       { label: "Starting price", value: price },
       { label: "Typical duration", value: `${service.duration} hours` },
