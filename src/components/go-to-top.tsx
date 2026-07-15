@@ -16,7 +16,7 @@ export function GoToTop() {
 
   return (
     <button
-      className={`fixed bottom-24 right-4 z-50 grid size-11 place-items-center rounded-full bg-emerald-950 text-white shadow-lg ring-1 ring-white/30 transition md:bottom-6 ${visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"}`}
+      className={`fixed bottom-[10.75rem] right-4 z-50 grid size-11 place-items-center rounded-full bg-emerald-950 text-white shadow-lg ring-1 ring-white/30 transition md:bottom-6 ${visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"}`}
       type="button"
       aria-label="Go to top"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
