@@ -10,6 +10,7 @@ import {
   SparklesIcon,
 } from "@hugeicons/core-free-icons";
 import { CtaButtons } from "@/components/cta-buttons";
+import { FaqAccordion } from "@/components/faq-accordion";
 import { JsonLd, breadcrumbSchema } from "@/components/seo";
 import { getService, getServices } from "@/lib/data";
 import { servicePriceLabel, services, site, type Service } from "@/lib/content";
@@ -79,6 +80,7 @@ export default async function ServiceLocationPage({ params }: Props) {
   const title = locationServiceTitle(service, location);
   const description = locationServiceDescription(service, location);
   const faqItems = locationFaqs(service, location);
+  const pageDetails = serviceLocationDetails(service, location);
   const schemaUrl = `${site.url}/services/${service.slug}/${location.slug}`;
 
   return (
@@ -186,7 +188,21 @@ export default async function ServiceLocationPage({ params }: Props) {
       <section className="bg-white px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="space-y-8">
-            <section className="rounded-3xl bg-[#fbfff7] p-5 ring-1 ring-emerald-950/10 sm:p-6">
+            <nav className="sticky top-16 z-20 -mx-4 overflow-x-auto border-y border-emerald-950/10 bg-white/95 px-4 py-3 backdrop-blur lg:hidden">
+              <div className="flex min-w-max gap-2">
+                {[
+                  ["Overview", "#overview"],
+                  ["Scope", "#scope"],
+                  ["Pricing", "#pricing"],
+                  ["Checklist", "#checklist"],
+                  ["FAQ", "#faq"],
+                ].map(([label, href]) => (
+                  <a className="rounded-lg bg-[#f8fff3] px-3 py-2 text-sm font-medium text-emerald-950 ring-1 ring-emerald-950/10" href={href} key={href}>{label}</a>
+                ))}
+              </div>
+            </nav>
+
+            <section className="rounded-3xl bg-[#fbfff7] p-5 ring-1 ring-emerald-950/10 sm:p-6" id="overview">
               <p className="eyebrow">Local overview</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">
                 Cleaning planned for {location.name} properties
@@ -212,6 +228,31 @@ export default async function ServiceLocationPage({ params }: Props) {
             </section>
 
             <section className="rounded-3xl bg-white p-5 ring-1 ring-emerald-950/10 sm:p-6">
+              <div className="grid gap-5 lg:grid-cols-[1fr_.85fr] lg:items-start">
+                <div>
+                  <p className="eyebrow">Local fit</p>
+                  <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">
+                    Why this service fits {location.shortName}
+                  </h2>
+                  <p className="mt-3 text-sm leading-7 text-slate-700 sm:text-base">{pageDetails.localFit}</p>
+                </div>
+                <div className="grid gap-3 rounded-2xl bg-[#fbfff7] p-4 ring-1 ring-emerald-950/10">
+                  {pageDetails.quickNotes.map((note) => (
+                    <div className="grid grid-cols-[2rem_1fr] gap-3 rounded-xl bg-white p-3 ring-1 ring-emerald-950/10" key={note.label}>
+                      <span className="grid size-8 place-items-center rounded-lg bg-lime-200 text-emerald-950">
+                        <HugeiconsIcon icon={CheckmarkCircle02Icon} className="icon" size={17} color="currentColor" strokeWidth={2} aria-hidden="true" />
+                      </span>
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-[0.08em] text-emerald-700">{note.label}</p>
+                        <p className="mt-1 text-sm font-medium leading-6 text-emerald-950">{note.value}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            <section className="rounded-3xl bg-white p-5 ring-1 ring-emerald-950/10 sm:p-6" id="scope">
               <p className="eyebrow">What we cover</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">
                 {service.name} scope in {location.shortName}
@@ -224,6 +265,53 @@ export default async function ServiceLocationPage({ params }: Props) {
                     </span>
                     <p className="text-sm font-medium leading-6 text-emerald-950">{item}</p>
                   </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-3xl bg-[#fbfff7] p-5 ring-1 ring-emerald-950/10 sm:p-6" id="pricing">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="eyebrow">Pricing guidance</p>
+                  <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">
+                    Clear quote for {location.shortName}, not vague pricing
+                  </h2>
+                  <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700 sm:text-base">
+                    Starting price is {servicePriceLabel(service)}. Final pricing depends on property size, condition, access, timing, and requested add-ons. Photos help us estimate scope faster and avoid unclear pricing.
+                  </p>
+                </div>
+                <Link className="inline-flex min-h-11 w-fit items-center justify-center rounded-lg bg-lime-300 px-4 text-sm font-medium text-emerald-950" href="/pricing">
+                  View pricing
+                </Link>
+              </div>
+              <div className="mt-5 grid gap-4 md:grid-cols-3">
+                {pageDetails.priceFactors.map((factor) => (
+                  <article className="rounded-2xl bg-white p-4 ring-1 ring-emerald-950/10" key={factor.title}>
+                    <p className="text-base font-medium text-emerald-950">{factor.title}</p>
+                    <p className="mt-2 text-sm leading-6 text-slate-700">{factor.text}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-3xl bg-white p-5 ring-1 ring-emerald-950/10 sm:p-6" id="checklist">
+              <p className="eyebrow">Local checklist</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">
+                What the team checks in {location.shortName}
+              </h2>
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                {pageDetails.checklists.map((list) => (
+                  <article className="rounded-2xl bg-[#fbfff7] p-4 ring-1 ring-emerald-950/10" key={list.title}>
+                    <h3 className="text-base font-medium text-emerald-950">{list.title}</h3>
+                    <ul className="mt-3 grid gap-2">
+                      {list.items.map((item) => (
+                        <li className="flex gap-2 text-sm leading-6 text-slate-700" key={item}>
+                          <span className="mt-2 size-1.5 shrink-0 rounded-full bg-lime-400" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </article>
                 ))}
               </div>
             </section>
@@ -245,6 +333,25 @@ export default async function ServiceLocationPage({ params }: Props) {
                     <h3 className="mt-4 text-base font-medium text-emerald-950">{step}</h3>
                     <p className="mt-2 text-sm leading-6 text-slate-700">{text}</p>
                   </article>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-3xl bg-white p-5 ring-1 ring-emerald-950/10 sm:p-6">
+              <p className="eyebrow">Before booking</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">
+                Send these details for a faster quote
+              </h2>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {[
+                  "Exact area and building or villa community",
+                  "Property type, size, and number of rooms",
+                  "Photos of priority areas or stains",
+                  "Preferred date, time, and access notes",
+                ].map((item) => (
+                  <div className="rounded-2xl bg-[#f8fff3] p-4 text-sm font-medium leading-6 text-emerald-950 ring-1 ring-emerald-950/10" key={item}>
+                    {item}
+                  </div>
                 ))}
               </div>
             </section>
@@ -286,18 +393,16 @@ export default async function ServiceLocationPage({ params }: Props) {
               </div>
             </section>
 
-            <section className="rounded-3xl bg-[linear-gradient(135deg,#f8fff3,#efffcf)] p-5 ring-1 ring-emerald-950/10 sm:p-6">
+            <section className="rounded-3xl bg-[linear-gradient(135deg,#f8fff3,#efffcf)] p-5 ring-1 ring-emerald-950/10 sm:p-6" id="faq">
               <p className="eyebrow">FAQ</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">
                 {service.name} in {location.shortName}: quick answers
               </h2>
-              <div className="mt-5 grid gap-3">
-                {faqItems.map((item) => (
-                  <article className="rounded-2xl bg-white p-4 ring-1 ring-emerald-950/10" key={item.q}>
-                    <h3 className="text-base font-medium leading-7 text-emerald-950">{item.q}</h3>
-                    <p className="mt-2 text-sm leading-7 text-slate-700">{item.a}</p>
-                  </article>
-                ))}
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700 sm:text-base">
+                These answers use the same global FAQ accordion styling as the rest of the website, with local internal links where useful.
+              </p>
+              <div className="mt-5">
+                <FaqAccordion items={faqItems} idPrefix={`area-${service.slug}-${location.slug}`} defaultOpenCount={2} />
               </div>
             </section>
           </div>
@@ -340,15 +445,69 @@ function localHighlights(service: Service, location: AbuDhabiLocation) {
   ];
 }
 
+function serviceLocationDetails(service: Service, location: AbuDhabiLocation) {
+  const isCommercial = ["office-cleaning", "restaurant-cleaning", "showroom-cleaning"].includes(service.slug);
+  const isSpecialist = ["sofa-cleaning", "carpet-cleaning", "window-cleaning", "pest-control"].includes(service.slug);
+  const visitType = isCommercial ? "business" : isSpecialist ? "specialist" : "home";
+
+  return {
+    localFit: `${service.name} in ${location.name} works best when the visit is planned around the property type, access, and actual condition. ${location.shortName} includes ${location.areaType}, so a one-size-fits-all checklist is not enough. Just Shine Cleaning Services confirms ${location.propertyFocus.toLowerCase()}, priority areas, timing, and add-ons before arrival. This helps the team focus on the right rooms and surfaces instead of wasting time on unclear scope.`,
+    quickNotes: [
+      { label: "Visit type", value: `${visitType.charAt(0).toUpperCase()}${visitType.slice(1)} cleaning visit` },
+      { label: "Best for", value: location.propertyFocus },
+      { label: "Quote method", value: "WhatsApp photos, location, and preferred timing" },
+    ],
+    priceFactors: [
+      {
+        title: "Property size",
+        text: `A studio, apartment, villa, office, or commercial unit in ${location.shortName} needs different time and team planning.`,
+      },
+      {
+        title: "Condition and access",
+        text: `Heavy dust, stains, parking, lift access, security check-in, and outdoor areas can change the visit duration.`,
+      },
+      {
+        title: "Add-ons",
+        text: "Sofa, carpet, window, pest control, deep appliance cleaning, and move-in work can be quoted separately if needed.",
+      },
+    ],
+    checklists: [
+      {
+        title: "Before arrival",
+        items: [
+          "Confirm building name, villa community, or exact map pin.",
+          "Share priority rooms, stains, dusty areas, or access restrictions.",
+          "Move fragile personal items if the team needs to clean shelves or counters.",
+          "Confirm whether parking, elevator, or security access is required.",
+        ],
+      },
+      {
+        title: "During the visit",
+        items: [
+          `Focus on ${service.scope.toLowerCase()} and the agreed priority areas.`,
+          "Use practical room-by-room order to reduce missed spots.",
+          "Flag add-ons if the property needs work outside the original scope.",
+          "Complete a final walkthrough or photo confirmation where possible.",
+        ],
+      },
+    ],
+  };
+}
+
 function locationFaqs(service: Service, location: AbuDhabiLocation) {
   return [
     {
       q: `Do you provide ${service.name.toLowerCase()} in ${location.name}?`,
       a: `Yes. Just Shine Cleaning Services provides ${service.name.toLowerCase()} in ${location.name}, Abu Dhabi. Share your property type, location, preferred time, and a few photos on WhatsApp so the team can confirm scope and availability.`,
+      links: [
+        { label: "View all areas", href: "/areas-we-serve" },
+        { label: "Main service page", href: `/services/${service.slug}` },
+      ],
     },
     {
       q: `How much does ${service.name.toLowerCase()} cost in ${location.shortName}?`,
       a: `The starting price is ${servicePriceLabel(service)}. Final cost depends on property size, condition, access, number of rooms, and add-ons. We confirm the estimate before booking so there are no vague surprises.`,
+      links: [{ label: "View pricing", href: "/pricing" }],
     },
     {
       q: `What makes ${location.shortName} cleaning different?`,
@@ -357,6 +516,7 @@ function locationFaqs(service: Service, location: AbuDhabiLocation) {
     {
       q: "Can I book by WhatsApp?",
       a: `Yes. WhatsApp is usually the fastest way to book. Send the service name, ${location.name} location, property size, preferred date, and photos if available. The team will reply with timing and price guidance.`,
+      links: [{ label: "Contact Just Shine", href: "/contact" }],
     },
   ];
 }
