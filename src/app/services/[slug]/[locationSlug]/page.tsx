@@ -136,11 +136,11 @@ export default async function ServiceLocationPage({ params }: Props) {
         ])}
       />
 
-      <section className="bg-[linear-gradient(135deg,#fbfff7_0%,#efffcf_48%,#d9f8d8_100%)] px-4 py-14 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
+      <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 rounded-3xl bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] p-5 ring-1 ring-emerald-950/10 sm:p-8 lg:grid-cols-[1.05fr_.95fr] lg:p-10">
           <div>
             <p className="eyebrow">{location.shortName} service area</p>
-            <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-emerald-950 sm:text-[2.55rem] lg:text-[2.9rem]">
+            <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-emerald-950 sm:text-[2.45rem] lg:text-[2.75rem]">
               {title}
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-700">
@@ -167,7 +167,7 @@ export default async function ServiceLocationPage({ params }: Props) {
           </div>
 
           <div className="relative">
-            <div className="elevated relative aspect-[4/3] overflow-hidden rounded-2xl border border-emerald-950/10 bg-white">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-white ring-1 ring-emerald-950/10">
               <Image
                 alt={`${service.name} in ${location.name}, Abu Dhabi`}
                 className="object-cover"
@@ -176,9 +176,9 @@ export default async function ServiceLocationPage({ params }: Props) {
                 sizes="(min-width: 1024px) 45vw, 100vw"
                 src={image}
               />
-              <div className="absolute bottom-4 left-4 max-w-[20rem] rounded-xl bg-white/92 p-3 ring-1 ring-emerald-950/10 backdrop-blur">
-                <p className="text-sm font-medium text-emerald-950">{service.name}</p>
-                <p className="mt-1 text-xs leading-5 text-slate-600">{location.areaType}</p>
+              <div className="absolute bottom-4 left-4 right-4 max-w-[22rem] rounded-xl bg-white/92 p-4 ring-1 ring-emerald-950/10 backdrop-blur">
+                <p className="text-base font-medium text-emerald-950">{service.name.replace(" Services", "")} | {location.shortName}</p>
+                <p className="mt-1 text-sm leading-6 text-slate-700">{location.areaType}</p>
               </div>
             </div>
           </div>
