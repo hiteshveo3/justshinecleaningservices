@@ -52,14 +52,41 @@ export default async function ServicePage({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "Service",
     name: service.name,
-    provider: { "@type": "LocalBusiness", name: site.name, telephone: site.phone },
+    description: service.description,
+    serviceType: service.name,
+    url: `${site.url}/services/${service.slug}`,
+    provider: {
+      "@type": "LocalBusiness",
+      name: site.name,
+      telephone: site.phone,
+      email: site.email,
+      address: site.location,
+      url: site.url,
+    },
     areaServed: "Abu Dhabi",
-    offers: { "@type": "Offer", price: service.price, priceCurrency: "AED" },
+    offers: {
+      "@type": "Offer",
+      price: service.price,
+      priceCurrency: "AED",
+      availability: "https://schema.org/InStock",
+      url: `${site.url}/services/${service.slug}`,
+    },
+    aggregateRating: { "@type": "AggregateRating", ratingValue: "4.8", reviewCount: "48" },
+  };
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: serviceFaqs.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: { "@type": "Answer", text: item.a },
+    })),
   };
 
   return (
     <>
       <JsonLd data={schema} />
+      <JsonLd data={faqSchema} />
       <JsonLd data={breadcrumbSchema([
         { name: "Home", url: "/" },
         { name: "Services", url: "/services" },
@@ -78,6 +105,22 @@ export default async function ServicePage({ params }: Props) {
             <div className="mt-4 flex flex-wrap gap-2">
               {service.highlights.slice(0, 4).map((highlight) => (
                 <span className="rounded-lg bg-white/70 px-3 py-2 text-xs font-medium text-emerald-950 ring-1 ring-emerald-950/10" key={highlight}>{highlight}</span>
+              ))}
+            </div>
+            <div className="mt-5 grid max-w-xl grid-cols-1 gap-2 sm:grid-cols-3">
+              {[
+                { label: "4.8 rated", text: "Google review signal" },
+                { label: "12+ years", text: "Abu Dhabi experience" },
+                { label: "Eco-friendly", text: "Surface-safe options" },
+              ].map((badge) => (
+                <a
+                  className="rounded-xl bg-white/82 p-3 ring-1 ring-emerald-950/10 transition hover:bg-white"
+                  href={badge.label === "4.8 rated" ? "/testimonials" : badge.label === "Eco-friendly" ? "/sustainability" : "/about"}
+                  key={badge.label}
+                >
+                  <span className="block text-sm font-medium text-emerald-950">{badge.label}</span>
+                  <span className="mt-1 block text-xs leading-5 text-slate-600">{badge.text}</span>
+                </a>
               ))}
             </div>
             <div className="mt-8"><CtaButtons service={service.name.toLowerCase().replace(" cleaning", "")} /></div>
@@ -121,6 +164,10 @@ export default async function ServicePage({ params }: Props) {
               <p className="eyebrow">Overview</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">{service.name} for Abu Dhabi homes and businesses</h2>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700 sm:text-base">{pageContent.overview}</p>
+              <div className="mt-5 rounded-2xl bg-[#f3ffe8] p-4 ring-1 ring-emerald-950/10">
+                <h3 className="text-base font-medium text-emerald-950">Why Abu Dhabi homes need this rhythm</h3>
+                <p className="mt-2 text-sm leading-7 text-slate-700">{pageContent.localContext}</p>
+              </div>
               <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {pageContent.quickFacts.map((fact) => (
                   <div className="rounded-xl border border-emerald-950/10 bg-[#f8fff3] p-4" key={fact.label}>
@@ -364,7 +411,7 @@ export default async function ServicePage({ params }: Props) {
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">{service.name} questions</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700 sm:text-base">Quick answers about scope, booking, timing, pricing, and what to expect.</p>
               <div className="mt-5">
-                <FaqAccordion items={serviceFaqs} idPrefix={`service-${service.slug}`} />
+                <FaqAccordion items={serviceFaqs} idPrefix={`service-${service.slug}`} searchable={service.slug === "home-cleaning"} defaultOpenCount={service.slug === "home-cleaning" ? 3 : 0} />
               </div>
             </section>
           </div>
@@ -396,10 +443,16 @@ function getServicePageContent(service: Service) {
   const price = servicePriceLabel(service);
   const isCommercial = ["office-cleaning", "restaurant-cleaning", "showroom-cleaning"].includes(service.slug);
   const isSpecialist = ["sofa-cleaning", "carpet-cleaning", "window-cleaning", "pest-control"].includes(service.slug);
+  const isHomeCleaning = service.slug === "home-cleaning";
   const comparison = getServiceComparison(service);
 
   return {
-    overview: `${name} in Abu Dhabi helps keep ${isCommercial ? "commercial spaces, teams, visitors, and customers" : "homes, apartments, villas, and family spaces"} cleaner, healthier, and easier to maintain. Just Shine Cleaning Services focuses on clear scope, practical scheduling, and WhatsApp-first booking so you know what is included before the team arrives.`,
+    overview: isHomeCleaning
+      ? "Home cleaning in Abu Dhabi is a practical maintenance clean for bedrooms, living rooms, bathrooms, kitchens, and high-use surfaces. It is designed for weekly or bi-weekly upkeep, not the heavy hidden-area work of deep cleaning. Most visits take 2-4 hours depending on home size, condition, and priority areas. It is an affordable cleaning option for busy professionals, families, and apartment residents who want the home to stay fresh between deeper resets. Just Shine Cleaning Services confirms the scope by Call or WhatsApp first, so you know what is included, how long it may take, and whether add-ons such as window, sofa, carpet, or deep cleaning are better for your situation. Ready to keep your space clean all week? Send your location, preferred time, and a few photos for a quick quote."
+      : `${name} in Abu Dhabi helps keep ${isCommercial ? "commercial spaces, teams, visitors, and customers" : "homes, apartments, villas, and family spaces"} cleaner, healthier, and easier to maintain. Just Shine Cleaning Services focuses on clear scope, practical scheduling, and WhatsApp-first booking so you know what is included before the team arrives.`,
+    localContext: isHomeCleaning
+      ? "Fine desert dust can settle again within a few days, especially when AC airflow moves particles through bedrooms, living rooms, and window tracks. Coastal humidity and daily foot traffic also make kitchens and bathrooms feel used faster than expected. For many Abu Dhabi homes, a weekly maintenance clean keeps the space comfortable, while periodic deep cleaning handles corners, grout, vents, and appliance interiors."
+      : "Abu Dhabi properties deal with fine dust, AC airflow, humidity, busy family routines, and frequent guest traffic. Planning the right cleaning frequency helps protect surfaces, keep indoor spaces fresher, and reduce the need for rushed last-minute cleaning before visitors, inspections, or handovers.",
     quickFacts: [
       { label: "Starting price", value: price },
       { label: "Typical duration", value: `${service.duration} hours` },
@@ -624,6 +677,87 @@ function getServiceComparison(service: Service) {
 }
 
 function getServiceFaqs(slug: string): FaqItem[] {
+  if (slug === "home-cleaning") {
+    return [
+      {
+        q: "How is home cleaning different from deep cleaning?",
+        a: "Home cleaning is a regular maintenance clean for visible and high-use areas such as bedrooms, living rooms, bathrooms, kitchens, floors, counters, and basic dusting. It keeps the home fresh week to week. Deep cleaning is a heavier reset for hidden buildup, grout, corners, kitchen grease, vents, and areas behind furniture. If your home is generally tidy but dusty, home cleaning is usually enough. If it has not been cleaned in weeks, has heavy stains, or needs detailed sanitation, start with deep cleaning.",
+        links: [
+          { label: "Deep cleaning", href: "/services/deep-cleaning" },
+          { label: "Compare pricing", href: "/pricing" },
+        ],
+      },
+      {
+        q: "How often should I book home cleaning in Abu Dhabi?",
+        a: "Most Abu Dhabi homes benefit from weekly or bi-weekly home cleaning. Fine sand, AC airflow, and daily foot traffic can make surfaces dusty again within 5-7 days, especially in apartments, villas, and homes with children or guests. Weekly cleaning is best for busy families and allergy-sensitive homes. Bi-weekly cleaning can work for smaller apartments or low-traffic spaces. A quarterly deep clean can then handle hidden dust, grout, vents, and appliance interiors.",
+        links: [
+          { label: "Deep cleaning guide", href: "/blog/deep-cleaning-services-abu-dhabi-guide-2026" },
+        ],
+      },
+      {
+        q: "What is included in AED 30 per hour?",
+        a: "The AED 30 per hour starting rate covers standard home cleaning tasks agreed before the visit, such as basic dusting, sweeping or mopping, kitchen surface cleaning, bathroom surface cleaning, bedrooms, living room areas, and general tidying of accessible surfaces. The final time depends on home size, condition, and priority list. Specialized work such as sofa shampooing, carpet cleaning, pest control, exterior windows, or heavy deep-cleaning tasks is quoted separately so there are no surprises.",
+        links: [
+          { label: "Full pricing", href: "/pricing" },
+          { label: "Sofa cleaning", href: "/services/sofa-cleaning" },
+        ],
+      },
+      {
+        q: "Can I book weekly home cleaning?",
+        a: "Yes. Weekly home cleaning is one of the best options for Abu Dhabi homes because dust and sand build up quickly. A recurring weekly slot helps your home stay consistently clean without waiting for a large monthly cleanup. It is also easier to control cost because each visit starts from a cleaner baseline. You can share preferred days, timing, home size, and priority areas on WhatsApp, and the team can suggest a practical schedule.",
+        links: [
+          { label: "WhatsApp booking", href: `https://wa.me/${site.tel.replace("+", "")}` },
+        ],
+      },
+      {
+        q: "Is home cleaning enough or should I book deep cleaning first?",
+        a: "If the home has been cleaned recently and only needs dusting, floors, bathrooms, kitchen surfaces, and regular upkeep, home cleaning is enough. If there is heavy grease, stained grout, dusty corners, AC vent buildup, post-party mess, move-in/move-out dirt, or months of buildup, book deep cleaning first. After that, home cleaning can maintain the result weekly or bi-weekly. Photos on WhatsApp help us guide you honestly before booking.",
+        links: [
+          { label: "Deep cleaning", href: "/services/deep-cleaning" },
+          { label: "Move in/out cleaning", href: "/services/move-in-out-cleaning" },
+        ],
+      },
+      {
+        q: "Which areas do you cover during home cleaning?",
+        a: "Home cleaning can cover bedrooms, living rooms, bathrooms, kitchen surfaces, floors, counters, shelves, accessible dusting areas, and general daily-use spaces. The exact scope depends on your home size and booked time. For example, a small apartment may be completed faster than a large villa with multiple bathrooms. Outdoor areas, balcony deep washing, window exterior work, carpet shampooing, and upholstery cleaning can be added as separate services if needed.",
+        links: [
+          { label: "Apartment cleaning", href: "/services/apartment-cleaning" },
+          { label: "Villa cleaning", href: "/services/villa-cleaning" },
+        ],
+      },
+      {
+        q: "Do you bring cleaning supplies?",
+        a: "Yes, the team can bring standard cleaning supplies and tools suitable for normal home cleaning. If you prefer a specific product for marble, wood, glass, baby areas, pet areas, or allergy-sensitive rooms, tell us before the visit. Some homes have delicate surfaces that need special care, so sharing photos or surface notes helps us avoid the wrong product. For specialized jobs such as sofa, carpet, or pest control, dedicated tools and pricing apply.",
+        links: [
+          { label: "Sustainability", href: "/sustainability" },
+          { label: "Carpet cleaning", href: "/services/carpet-cleaning" },
+        ],
+      },
+      {
+        q: "Can I trust the team if I am not home?",
+        a: "Many customers prefer to be present for the first visit, especially to explain priorities, access, pets, and delicate items. Once the routine is clear, recurring visits can be easier to manage. We recommend securing valuables, documents, jewelry, and fragile decor before any cleaning visit. Share access instructions clearly, keep emergency contact details available, and use WhatsApp for any priority notes so the team follows the agreed scope.",
+        links: [
+          { label: "About Just Shine", href: "/about" },
+          { label: "Contact", href: "/contact" },
+        ],
+      },
+      {
+        q: "What should I prepare before home cleaning?",
+        a: "Clear loose items from floors, counters, beds, and bathroom surfaces where possible. This helps cleaners spend more time cleaning and less time moving belongings. Secure valuables, move fragile decor, share parking or building access details, and tell us about pets, stains, delicate surfaces, or priority rooms. If you want a faster quote, send photos on WhatsApp with your location, home size, preferred date, and the areas you want cleaned first.",
+        links: [
+          { label: "Contact us", href: "/contact" },
+        ],
+      },
+      {
+        q: "What if I am not satisfied with the cleaning?",
+        a: "Tell us as soon as possible, ideally during the final walkthrough or by WhatsApp with photos. Clear feedback helps us understand whether the issue is scope, timing, access, product choice, or a missed area. If the concern is within the agreed home-cleaning scope, we will guide the next step and work to resolve it professionally. For tasks outside the booked scope, such as deep stains or carpet shampooing, we will recommend the right add-on service.",
+        links: [
+          { label: "Testimonials", href: "/testimonials" },
+          { label: "WhatsApp", href: `https://wa.me/${site.tel.replace("+", "")}` },
+        ],
+      },
+    ];
+  }
   const categoryBySlug: Record<string, string[]> = {
     "home-cleaning": ["Deep Cleaning", "Cleaning Frequency", "Booking & General"],
     "deep-cleaning": ["Deep Cleaning"],

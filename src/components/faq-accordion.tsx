@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowDown01Icon, MessageQuestionIcon } from "@hugeicons/core-free-icons";
+import { ArrowDown01Icon, MessageQuestionIcon, Search01Icon } from "@hugeicons/core-free-icons";
 
 type FaqItem = {
   q: string;
@@ -11,12 +11,46 @@ type FaqItem = {
   links?: { label: string; href: string }[];
 };
 
-export function FaqAccordion({ items, idPrefix = "faq" }: { items: FaqItem[]; idPrefix?: string }) {
-  const [open, setOpen] = useState<string[]>([]);
+export function FaqAccordion({
+  items,
+  idPrefix = "faq",
+  searchable = false,
+  defaultOpenCount = 0,
+}: {
+  items: FaqItem[];
+  idPrefix?: string;
+  searchable?: boolean;
+  defaultOpenCount?: number;
+}) {
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState<string[]>(() => items.slice(0, defaultOpenCount).map((item) => item.q));
+  const filteredItems = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    if (!normalized) return items;
+    return items.filter((item) => `${item.q} ${item.a}`.toLowerCase().includes(normalized));
+  }, [items, query]);
 
   return (
     <div className="grid gap-3">
-      {items.map((item, index) => (
+      {searchable && (
+        <label className="relative block">
+          <span className="sr-only">Search FAQs</span>
+          <HugeiconsIcon icon={Search01Icon} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-emerald-900" size={19} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
+          <input
+            className="min-h-12 w-full rounded-xl border border-emerald-950/10 bg-white py-3 pl-11 pr-4 text-sm text-emerald-950 outline-none transition placeholder:text-slate-400 focus:border-emerald-800 focus:ring-4 focus:ring-lime-200"
+            placeholder="Search home cleaning questions"
+            type="search"
+            value={query}
+            onChange={(event) => {
+              const value = event.target.value;
+              setQuery(value);
+              window.gtag?.("event", "faq_searched", { query: value });
+            }}
+          />
+        </label>
+      )}
+
+      {filteredItems.map((item, index) => (
         <FaqRow
           item={item}
           id={`${idPrefix}-${index + 1}`}
@@ -25,6 +59,11 @@ export function FaqAccordion({ items, idPrefix = "faq" }: { items: FaqItem[]; id
           onToggle={() => setOpen((current) => current.includes(item.q) ? current.filter((key) => key !== item.q) : [...current, item.q])}
         />
       ))}
+      {filteredItems.length === 0 && (
+        <div className="rounded-xl bg-white p-5 text-sm leading-6 text-slate-700 ring-1 ring-emerald-950/10">
+          No matching FAQ found. Try searching price, weekly, supplies, trust, or deep cleaning.
+        </div>
+      )}
     </div>
   );
 }
