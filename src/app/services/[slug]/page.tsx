@@ -314,14 +314,34 @@ export default async function ServicePage({ params }: Props) {
               </div>
             </section>
 
-            <section className="rounded-3xl bg-white p-5 ring-1 ring-emerald-950/10 sm:p-6" id="process">
+            <section className="rounded-3xl bg-white p-5 ring-1 ring-emerald-950/10 sm:p-6">
+              <p className="eyebrow">Choose a plan</p>
+              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Pick the right cleaning rhythm</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700 sm:text-base">Not every home needs the same schedule. Use this as a quick guide before you ask for a quote.</p>
+              <div className="mt-5 grid gap-4 md:grid-cols-3">
+                {pageContent.planGuide.map((plan) => (
+                  <article className={`rounded-2xl p-5 ring-1 ring-emerald-950/10 ${plan.recommended ? "bg-[#efffcf]" : "bg-[#fbfff7]"}`} key={plan.title}>
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="text-lg font-medium text-emerald-950">{plan.title}</h3>
+                      {plan.recommended && <span className="rounded-lg bg-lime-300 px-2 py-1 text-xs font-medium text-emerald-950">Best value</span>}
+                    </div>
+                    <p className="mt-3 text-sm leading-6 text-slate-700">{plan.text}</p>
+                    <p className="mt-4 rounded-xl bg-white/75 p-3 text-sm font-medium leading-6 text-emerald-950 ring-1 ring-emerald-950/10">{plan.cta}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-3xl bg-[#fbfff7] p-5 ring-1 ring-emerald-950/10 sm:p-6" id="process">
               <p className="eyebrow">Process</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">How the service works</h2>
-              <div className="mt-5 grid gap-4 md:grid-cols-4">
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700 sm:text-base">The process is built around clear scope first, then scheduling. That keeps pricing practical and avoids last-minute confusion.</p>
+              <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 {pageContent.process.map((step, index) => (
-                  <article className="relative rounded-xl border border-emerald-950/10 bg-[#fbfff7] p-4" key={step}>
+                  <article className="relative rounded-2xl border border-emerald-950/10 bg-white p-4" key={step.title}>
                     <span className="inline-flex size-9 items-center justify-center rounded-lg bg-lime-300 text-sm font-medium text-emerald-950">0{index + 1}</span>
-                    <p className="mt-3 text-sm font-medium leading-6 text-emerald-950">{step}</p>
+                    <h3 className="mt-3 text-base font-medium text-emerald-950">{step.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-700">{step.text}</p>
                   </article>
                 ))}
               </div>
@@ -553,11 +573,48 @@ function getServicePageContent(service: Service) {
       { title: "Before guests or inspections", text: "Book before visitors, handovers, office checks, events, or property viewings for a more polished space." },
       { title: "Dust and hygiene reset", text: "Abu Dhabi dust, AC circulation, and busy routines can make professional cleaning helpful even when surfaces look tidy." },
     ],
+    planGuide: isHomeCleaning
+      ? [
+        {
+          title: "One-time clean",
+          text: "Best when your home is mostly maintained but needs a refresh before guests, travel, inspection, or a busy week.",
+          cta: "Send photos and priority rooms for a quick WhatsApp estimate.",
+        },
+        {
+          title: "Weekly maintenance",
+          text: "Best for families, busy professionals, pets, allergies, and homes where Abu Dhabi dust returns within a few days.",
+          cta: "Recommended for consistent freshness and lower effort per visit.",
+          recommended: true,
+        },
+        {
+          title: "Home + deep clean",
+          text: "Best if the home has hidden buildup, kitchen grease, bathroom scale, old dust, or corners that need a stronger reset first.",
+          cta: "Start with deep cleaning, then maintain with weekly home cleaning.",
+        },
+      ]
+      : [
+        {
+          title: "One-time service",
+          text: "Best for urgent needs, guests, inspections, handovers, or a specific area that needs professional attention.",
+          cta: "Share photos for a clearer starting quote.",
+        },
+        {
+          title: "Recurring schedule",
+          text: "Best for homes, offices, villas, and commercial spaces that need consistent cleaning without repeated planning.",
+          cta: "Ask about monthly, quarterly, or bundled options.",
+          recommended: true,
+        },
+        {
+          title: "Bundle add-ons",
+          text: "Best when you want to combine related work such as windows, sofa, carpet, pest control, or deep cleaning.",
+          cta: "Bundle planning helps reduce extra visits.",
+        },
+      ],
     process: [
-      "Send service type, location, preferred timing, and photos if possible.",
-      "We confirm scope, starting price, expected duration, and available slot.",
-      "The team arrives with the agreed plan and focuses on priority areas first.",
-      "You review the result and ask for add-ons or recurring options if needed.",
+      { title: "Send details", text: "Share service type, location, preferred timing, home size, and photos if possible." },
+      { title: "Confirm scope", text: "We confirm the starting price, expected duration, priority areas, and available slot." },
+      { title: "Team arrives", text: "The team follows the agreed plan and focuses on the highest-priority areas first." },
+      { title: "Review result", text: "You review the work and ask for add-ons or recurring options if needed." },
     ],
     timing: [
       { label: "Typical visit", value: `${service.duration} hours`, note: "Actual time depends on property size, condition, access, and add-ons." },
