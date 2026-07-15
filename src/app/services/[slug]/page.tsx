@@ -294,7 +294,7 @@ export default async function ServicePage({ params }: Props) {
                     <h2 className="text-2xl font-medium text-emerald-950 sm:text-3xl">Pricing options for {service.name}</h2>
                     <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700 sm:text-base">{pricing.bestFor}</p>
                   </div>
-                  <Link className="inline-flex min-h-11 w-fit items-center justify-center rounded-lg bg-lime-300 px-4 text-sm font-medium text-emerald-950" href="/pricing">View pricing & monthly discounts</Link>
+                  <Link className="inline-flex min-h-11 w-fit items-center justify-center rounded-lg bg-lime-300 px-4 text-sm font-medium text-emerald-950" href="/pricing">View pricing</Link>
                 </div>
 
                 <div className="mt-5 grid gap-4 md:grid-cols-3">
@@ -399,16 +399,34 @@ export default async function ServicePage({ params }: Props) {
               </div>
             </section>
 
-            <section className="rounded-3xl bg-[#f3ffe8] p-5 ring-1 ring-emerald-950/10 sm:p-6">
+            <section className="rounded-3xl bg-white p-5 ring-1 ring-emerald-950/10 sm:p-6">
               <p className="eyebrow">Timing</p>
               <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">Duration and scheduling</h2>
               <div className="mt-5 grid gap-4 md:grid-cols-3">
-                {pageContent.timing.map((item) => (
-                  <div className="rounded-xl border border-emerald-950/10 bg-lime-50 p-5" key={item.label}>
-                    <p className="text-sm text-slate-600">{item.label}</p>
+                {pageContent.timing.map((item, index) => (
+                  <div className={[
+                    "rounded-2xl p-5 ring-1 ring-emerald-950/10",
+                    index === 1 ? "bg-[#efffcf]" : "bg-[#f8fff3]",
+                  ].join(" ")} key={item.label}>
+                    <div className="flex items-center gap-3">
+                      <span className="grid size-10 place-items-center rounded-xl bg-white text-emerald-900 ring-1 ring-emerald-950/10">
+                        <HugeiconsIcon icon={[Calendar03Icon, WhatsappBusinessIcon, SparklesIcon][index] || Calendar03Icon} className="icon" size={20} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
+                      </span>
+                      <p className="text-sm font-medium text-emerald-800">{item.label}</p>
+                    </div>
                     <p className="mt-2 text-xl font-medium text-emerald-950">{item.value}</p>
                     <p className="mt-2 text-sm leading-6 text-slate-700">{item.note}</p>
                   </div>
+                ))}
+              </div>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {[
+                  ["View pricing", "#pricing"],
+                  ["How it works", "#process"],
+                  ["Compare options", "#comparison"],
+                  ["Questions", "#faq"],
+                ].map(([label, href]) => (
+                  <a className="rounded-lg bg-[#f8fff3] px-3 py-2 text-sm font-medium text-emerald-950 ring-1 ring-emerald-950/10 transition hover:bg-lime-100" href={href} key={href}>{label}</a>
                 ))}
               </div>
             </section>
@@ -570,7 +588,7 @@ export default async function ServicePage({ params }: Props) {
                 <p className="text-lg font-medium text-emerald-950">{servicePriceLabel(service)}</p>
               </div>
               <div className="mt-4">
-                <CtaButtons service={service.name.toLowerCase().replace(" services", "").replace(" cleaning", "")} quoteLabel={`Get quote • ${servicePriceLabel(service)}`} />
+                <CtaButtons service={service.name.toLowerCase().replace(" services", "").replace(" cleaning", "")} quoteLabel={`Get quote • ${servicePriceLabel(service)}`} callVariant="green" />
               </div>
               <Link className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-white px-4 text-sm font-medium text-emerald-950 ring-1 ring-emerald-950/10" href="/pricing">Compare pricing</Link>
             </div>
