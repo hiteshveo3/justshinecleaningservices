@@ -43,7 +43,7 @@ export const services: Service[] = [
     slug: "deep-cleaning",
     name: "Deep Cleaning Services",
     description: "Intensive deep cleaning to remove hidden dust, bacteria, grime, and stains from every corner.",
-    price: 100,
+    price: 35,
     priceUnit: "per hour",
     scope: "Complete deep sanitation for rooms",
     duration: 3,
@@ -56,7 +56,7 @@ export const services: Service[] = [
     slug: "villa-cleaning",
     name: "Villa Cleaning Services",
     description: "Comprehensive cleaning for villas including interiors, outdoor areas, garden spaces, and parking areas.",
-    price: 100,
+    price: 35,
     priceUnit: "per hour",
     scope: "Villa, garden, and parking areas",
     duration: 4,
@@ -305,7 +305,8 @@ export const posts = [
 <p>A strong deep cleaning process usually starts with a pre-cleaning inspection, followed by preparation, kitchen deep cleaning, bathroom deep cleaning, living area detailing, floor care, and a final inspection.</p>
 <p>Typical timing can include 15 minutes for inspection, 20 minutes for preparation, around 90 minutes for kitchen detailing, 60 minutes for bathrooms, 90 minutes for living areas, and 20 minutes for final touch-ups. Larger villas or heavily soiled homes need more time.</p>
 <h2>Cost of Deep Cleaning Services in Abu Dhabi</h2>
-<table><thead><tr><th>Home Size</th><th>Bedrooms</th><th>Time Required</th><th>Cost Range</th></tr></thead><tbody><tr><td>Studio/1BR</td><td>1-2</td><td>3-4 hours</td><td>AED 400-600</td></tr><tr><td>2BR Apartment</td><td>2</td><td>4-5 hours</td><td>AED 600-800</td></tr><tr><td>3BR Villa</td><td>3</td><td>6-7 hours</td><td>AED 800-1,000</td></tr><tr><td>4BR+ Villa</td><td>4+</td><td>7-8+ hours</td><td>AED 1,000-1,500</td></tr></tbody></table>
+<table><thead><tr><th>Home Size</th><th>Bedrooms</th><th>Time Required</th><th>Cost Range</th></tr></thead><tbody><tr><td>Studio/1BR</td><td>1-2</td><td>3-4 hours</td><td>AED 105-140</td></tr><tr><td>2BR Apartment</td><td>2</td><td>4-5 hours</td><td>AED 140-175</td></tr><tr><td>3BR Villa</td><td>3</td><td>6-7 hours</td><td>AED 210-245</td></tr><tr><td>4BR+ Villa</td><td>4+</td><td>7-8+ hours</td><td>AED 245-280+</td></tr></tbody></table>
+<p>Deep cleaning and villa cleaning start from AED 35 per hour. Final quotes depend on size, condition, and scope.</p>
 <p>Final price depends on home condition, square footage, add-ons such as sofa or carpet cleaning, frequency, and special treatments such as grout sealing or stone polishing.</p>
 <h2>How to Choose a Deep Cleaning Company</h2>
 <table><thead><tr><th>Criteria</th><th>What Matters</th></tr></thead><tbody><tr><td>Certification and insurance</td><td>Licensed, accountable company</td></tr><tr><td>Experience</td><td>Local Abu Dhabi home experience</td></tr><tr><td>Products</td><td>Safe, family-friendly, eco-conscious options</td></tr><tr><td>Reviews</td><td>Detailed customer feedback</td></tr><tr><td>Pricing</td><td>Clear quote, no hidden charges</td></tr><tr><td>Team</td><td>Trained and supervised staff</td></tr></tbody></table>
@@ -373,7 +374,7 @@ export const faqs = [
   },
   {
     q: "How much does deep cleaning cost in Abu Dhabi?",
-    a: "Costs vary based on home size, condition, and add-on services. Current guide pricing is:\n\nBy Home Size:\n- Studio/1BR Apartment: AED 400-600 (3-4 hours)\n- 2BR Apartment: AED 600-800 (4-5 hours)\n- 3BR Villa: AED 800-1,000 (6-7 hours)\n- 4BR+ Villa: AED 1,000-1,500+ (7-8+ hours)\n\nFactors Affecting Price:\n- Heavily soiled home: +20-30%\n- Additional services (sofa, carpet): +AED 200-500 each\n- Grout sealing: +AED 100-300\n- Stone polishing: +AED 150-250\n- Post-renovation cleaning: +AED 300-500\n- Urgent/same-day booking: +10-15%\n\nDiscounts Available:\n- Monthly contracts: 15-20% savings\n- Quarterly contracts: 10-15% savings\n- Bundled services: 10-25% savings\n- Loyalty programs: 5-10% ongoing\n\nCost-Benefit Analysis:\n- Professional deep cleaning saves significant time\n- Regular care may extend furniture and flooring life\n- Better cleaning can reduce dust, odors, and hidden buildup\n- Clear scope helps avoid surprise charges",
+    a: "Costs vary based on home size, condition, and add-on services. Deep cleaning starts from AED 35 per hour. Current guide pricing is:\n\nBy Home Size:\n- Studio/1BR Apartment: AED 105-140 (3-4 hours)\n- 2BR Apartment: AED 140-175 (4-5 hours)\n- 3BR Villa: AED 210-245 (6-7 hours)\n- 4BR+ Villa: AED 245-280+ (7-8+ hours)\n\nFactors Affecting Price:\n- Heavily soiled home: +20-30%\n- Additional services (sofa, carpet): +AED 200-500 each\n- Grout sealing: +AED 100-300\n- Stone polishing: +AED 150-250\n- Post-renovation cleaning: +AED 300-500\n- Urgent/same-day booking: +10-15%\n\nDiscounts Available:\n- Monthly contracts: 15-20% savings\n- Quarterly contracts: 10-15% savings\n- Bundled services: 10-25% savings\n- Loyalty programs: 5-10% ongoing\n\nCost-Benefit Analysis:\n- Professional deep cleaning saves significant time\n- Regular care may extend furniture and flooring life\n- Better cleaning can reduce dust, odors, and hidden buildup\n- Clear scope helps avoid surprise charges",
   },
   {
     q: "Is deep cleaning safe for pets and children?",
