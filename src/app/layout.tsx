@@ -17,10 +17,10 @@ export const metadata: Metadata = {
   description: "Professional villa, home, office, carpet, sofa, and window cleaning in Abu Dhabi. Call or WhatsApp Just Shine Cleaning Services for fast booking.",
   icons: {
     icon: [
-      { url: "/favicon.ico?v=2", sizes: "any" },
-      { url: "/icon.png?v=2", type: "image/png" },
+      { url: "/favicon.ico?v=3", sizes: "any" },
+      { url: "/icon.png?v=3", type: "image/png" },
     ],
-    apple: [{ url: "/apple-touch-icon.png?v=2", sizes: "180x180" }],
+    apple: [{ url: "/apple-touch-icon.png?v=3", sizes: "180x180" }],
   },
   openGraph: {
     title: "Just Shine Cleaning Services Abu Dhabi",
@@ -28,12 +28,12 @@ export const metadata: Metadata = {
     url: "https://justshinecleaningservices.com",
     siteName: "Just Shine Cleaning Services",
     type: "website",
-    images: [{ url: "/just-shine-fav.png?v=2", width: 1024, height: 1024, alt: "Just Shine Cleaning Services" }],
+    images: [{ url: "/just-shine-fav.png?v=3", width: 1254, height: 1254, alt: "Just Shine Cleaning Services" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Just Shine Cleaning Services Abu Dhabi",
-    images: ["/just-shine-fav.png?v=2"],
+    images: ["/just-shine-fav.png?v=3"],
   },
 };
 
