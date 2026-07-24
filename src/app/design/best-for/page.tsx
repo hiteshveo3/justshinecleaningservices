@@ -17,6 +17,8 @@ const variations = [
     name: "Forest panel + lime numbers (applied live)",
     note: "Dark section, bright numbers, no pale cards. Strong contrast.",
     shell: "rounded-3xl bg-[#0b4f2f] p-5 sm:p-8",
+    heading: "text-white",
+    eyebrow: "eyebrow-lime" as const,
     render: () => (
       <div className="grid gap-0 divide-y divide-white/15 md:grid-cols-3 md:divide-x md:divide-y-0">
         {items.map((item, index) => (
@@ -34,11 +36,13 @@ const variations = [
     name: "Lime wash + charcoal type",
     note: "Bright brand ground, dark readable text, no white boxes.",
     shell: "rounded-3xl bg-[#d9ff42] p-5 sm:p-8",
+    heading: "text-[#10231b]",
+    eyebrow: "eyebrow" as const,
     render: () => (
       <div className="grid gap-6 md:grid-cols-3">
         {items.map((item, index) => (
           <article key={item.title}>
-            <p className="text-sm font-semibold tracking-[0.16em] text-[#0b4f2f]/0{index + 1}</p>
+            <p className="text-sm font-semibold tracking-[0.16em] text-[#0b4f2f]">0{index + 1}</p>
             <h3 className="mt-2 text-xl font-medium text-[#10231b]">{item.title}</h3>
             <p className="mt-2 text-sm leading-6 text-[#10231b]/90">{item.text}</p>
           </article>
@@ -51,6 +55,8 @@ const variations = [
     name: "Split contrast tiles",
     note: "Each tile is forest or lime alternating — maximum punch.",
     shell: "rounded-3xl bg-[#eef6ea] p-5 sm:p-8",
+    heading: "text-emerald-950",
+    eyebrow: "eyebrow" as const,
     render: () => (
       <div className="grid gap-3 md:grid-cols-3">
         {items.map((item, index) => {
@@ -74,6 +80,8 @@ const variations = [
     name: "Editorial on deep green (no cards)",
     note: "One composition — stacked rows, high contrast type only.",
     shell: "rounded-3xl bg-[#063d25] p-5 sm:p-8",
+    heading: "text-white",
+    eyebrow: "eyebrow-lime" as const,
     render: () => (
       <div className="grid gap-6">
         {items.map((item, index) => (
@@ -93,6 +101,8 @@ const variations = [
     name: "Soft mint section + solid forest blocks",
     note: "Light page feel, but each item is a dark high-contrast block.",
     shell: "rounded-3xl bg-[#e7f6ea] p-5 sm:p-8",
+    heading: "text-emerald-950",
+    eyebrow: "eyebrow" as const,
     render: () => (
       <div className="grid gap-3 md:grid-cols-3">
         {items.map((item, index) => (
@@ -128,8 +138,8 @@ export default function BestForVariationsPage() {
                 <p className="mt-1 text-sm text-slate-600">{item.note}</p>
               </div>
               <div className={item.shell}>
-                <p className={item.id === "C2" ? "eyebrow" : "eyebrow-lime"}>Best for</p>
-                <h3 className={`mt-4 text-2xl font-medium sm:text-3xl ${item.id === "C2" ? "text-[#10231b]" : item.id === "C3" || item.id === "C5" ? "text-emerald-950" : "text-white"}`}>
+                <p className={item.eyebrow}>Best for</p>
+                <h3 className={`mt-4 text-2xl font-medium sm:text-3xl ${item.heading}`}>
                   When to book Home Cleaning
                 </h3>
                 <div className="mt-6">{item.render()}</div>
