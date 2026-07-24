@@ -15,11 +15,28 @@ export const localBusinessSchema = {
   email: site.email,
   url: site.url,
   priceRange: site.priceRange,
-  foundingDate: `${site.foundingYear}-02`,
-  identifier: {
-    "@type": "PropertyValue",
-    name: "Trade License CR",
-    value: site.tradeLicenseNumber,
+  foundingDate: site.foundingDate,
+  identifier: [
+    {
+      "@type": "PropertyValue",
+      name: "Licence No.",
+      value: site.tradeLicenseNumber,
+    },
+    {
+      "@type": "PropertyValue",
+      name: "Unified Licence No.",
+      value: site.unifiedLicenceNo,
+    },
+    {
+      "@type": "PropertyValue",
+      name: "Unified Registration No.",
+      value: site.unifiedRegistrationNo,
+    },
+  ],
+  founder: {
+    "@type": "Person",
+    name: site.ownerName,
+    nationality: site.ownerNationality,
   },
   areaServed: {
     "@type": "City",

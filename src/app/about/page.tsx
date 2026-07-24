@@ -4,12 +4,12 @@ import { site } from "@/lib/content";
 
 export const metadata = {
   title: "About Just Shine Cleaning Services Abu Dhabi",
-  description: "Just Shine Cleaning Services started in February 2021 in Abu Dhabi. Clear prices, trained teams, WhatsApp booking, and Google-reviewed cleaning for homes and businesses.",
+  description: "Just Shine Cleaning Services is a licensed Abu Dhabi cleaning establishment (Licence No. CN-5067242), established 10 October 2023. Clear prices, trained teams, and WhatsApp booking.",
   alternates: { canonical: "/about" },
 };
 
 const milestones = [
-  [`${site.foundingMonth} ${site.foundingYear}`, "Started serving Abu Dhabi homes from Al Jazeera Towers, Al Danah, with responsive Call and WhatsApp booking."],
+  [`${site.foundingDay} ${site.foundingMonth} ${site.foundingYear}`, "Economic establishment licensed in Abu Dhabi for buildings cleaning services."],
   ["Residential growth", "Expanded apartment, home, and villa cleaning across Abu Dhabi communities."],
   ["Commercial + specialty", "Added office, restaurant, showroom, sofa, carpet, window, move-in/out, and in-house pest control."],
   ["Today", `A practical team of about ${site.teamSize} people focused on clear quotes, trained cleaners, and repeat customer care.`],
@@ -32,16 +32,22 @@ export default function AboutPage() {
     "@type": "LocalBusiness",
     "@id": `${site.url}/#business`,
     name: site.name,
+    alternateName: site.tradeNameAr,
     description: `${site.tagline} ${site.sinceLabel}.`,
     url: site.url,
     telephone: site.phone,
     email: site.email,
     image: `${site.url}${site.logo}`,
-    foundingDate: `${site.foundingYear}-02`,
-    identifier: {
-      "@type": "PropertyValue",
-      name: "Trade License CR",
-      value: site.tradeLicenseNumber,
+    foundingDate: site.foundingDate,
+    identifier: [
+      { "@type": "PropertyValue", name: "Licence No.", value: site.tradeLicenseNumber },
+      { "@type": "PropertyValue", name: "Unified Licence No.", value: site.unifiedLicenceNo },
+      { "@type": "PropertyValue", name: "Unified Registration No.", value: site.unifiedRegistrationNo },
+    ],
+    founder: {
+      "@type": "Person",
+      name: site.ownerName,
+      nationality: site.ownerNationality,
     },
     priceRange: site.priceRange,
     numberOfEmployees: site.teamSize,
@@ -75,8 +81,8 @@ export default function AboutPage() {
             <p className="eyebrow bg-white/90 text-emerald-900 ring-1 ring-emerald-950/10">About Just Shine Cleaning Services</p>
             <h1 className="mt-4 max-w-3xl text-[2rem] font-medium leading-tight text-emerald-950 sm:text-4xl">Abu Dhabi cleaning with clear prices and fast booking.</h1>
             <p className="mt-5 max-w-2xl text-base leading-8 text-slate-700">
-              Just Shine Cleaning Services started in {site.foundingMonth} {site.foundingYear} and operates from {site.location}.
-              We are a licensed Abu Dhabi cleaning company ({site.tradeLicenseLabel}) with about {site.yearsExperience} years of local experience and a team of about {site.teamSize} people.
+              {site.tradeName} ({site.tradeNameAr}) is a licensed Abu Dhabi {site.legalForm.toLowerCase()} for {site.licenceActivity.toLowerCase()}.
+              We operate from {site.location} with a team of about {site.teamSize} people.
             </p>
             <p className="mt-3 max-w-2xl text-base leading-8 text-slate-700">{site.tagline}</p>
             <div className="mt-6 max-w-xl"><CtaButtons service="home" /></div>
@@ -119,6 +125,39 @@ export default function AboutPage() {
       </section>
 
       <section className="section bg-lime-50">
+        <div className="container">
+          <p className="eyebrow">Licensed in Abu Dhabi</p>
+          <h2 className="mt-3 max-w-2xl text-2xl font-medium text-emerald-950">Official economic licence details</h2>
+          <p className="mt-4 max-w-3xl text-base leading-8 text-slate-700">
+            Verify our economic licence on the TAMM TAHAQAQ service at{" "}
+            <a className="font-medium text-emerald-900 underline underline-offset-2" href={site.licenceVerifyUrl} target="_blank" rel="noreferrer">www.tamm.abudhabi</a>
+            {" "}({site.licenceAuthorityUrl.replace("https://", "")}).
+          </p>
+          <dl className="mt-8 grid gap-3 sm:grid-cols-2">
+            {[
+              ["Trade name", site.tradeName],
+              ["Owner", site.ownerName],
+              ["Establishment date", `10 ${site.foundingMonth} ${site.foundingYear}`],
+              ["Licence No.", site.tradeLicenseNumber],
+              ["Unified Licence No.", site.unifiedLicenceNo],
+              ["Unified Registration No.", site.unifiedRegistrationNo],
+              ["ADCCI No.", site.adcciNo],
+              ["Licence activity", `${site.licenceActivity} (${site.licenceActivityCode})`],
+              ["Legal form", site.legalForm],
+              ["Licence category", site.licenceCategory],
+              ["Licence expiry", "25 October 2026"],
+              ["MOHRE establishment card", site.mohreEstablishmentCardNo],
+            ].map(([label, value]) => (
+              <div key={label} className="rounded-lg border border-emerald-950/10 bg-white p-4">
+                <dt className="text-xs font-medium uppercase tracking-wide text-emerald-700">{label}</dt>
+                <dd className="mt-1 text-sm font-medium leading-6 text-emerald-950">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      <section className="section bg-white">
         <div className="container">
           <p className="eyebrow">Mission and values</p>
           <h2 className="mt-3 max-w-2xl text-2xl font-medium text-emerald-950">Clean spaces, clear standards.</h2>
