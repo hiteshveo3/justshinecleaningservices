@@ -109,7 +109,7 @@ export default async function LocalGuidePage({ params }: Props) {
       <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl items-center gap-10 rounded-3xl bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] p-5 ring-1 ring-emerald-950/10 sm:p-8 lg:grid-cols-[1.04fr_.96fr] lg:p-10">
           <div>
-            <p className="eyebrow">Local cleaning guide</p>
+            <p className="eyebrow-lime">Local cleaning guide</p>
             <h1 className="mt-4 max-w-4xl text-3xl font-semibold leading-tight text-emerald-950 sm:text-4xl lg:text-[2.65rem]">
               {serviceName} in {page.location.name}, Abu Dhabi
             </h1>

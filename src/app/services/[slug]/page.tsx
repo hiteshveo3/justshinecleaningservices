@@ -120,7 +120,7 @@ export default async function ServicePage({ params }: Props) {
       <section className="bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
           <div>
-            <p className="eyebrow">Service</p>
+            <p className="eyebrow-lime">Service</p>
             <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-emerald-950 sm:text-[2.65rem] lg:text-[3rem]">{service.name} in Abu Dhabi</h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-700">{service.description}</p>
             <div className="mt-5 flex flex-wrap gap-2 text-sm">
@@ -344,14 +344,17 @@ export default async function ServicePage({ params }: Props) {
               </section>
             )}
 
-            <section className="rounded-3xl bg-[#f8fff3] p-5 ring-1 ring-emerald-950/10 sm:p-6">
-              <p className="eyebrow">Best for</p>
-              <h2 className="mt-4 text-2xl font-medium text-emerald-950 sm:text-3xl">When to book {service.name}</h2>
-              <div className="mt-5 grid gap-4 md:grid-cols-3">
-                {pageContent.bestFor.map((item) => (
-                  <article className="rounded-xl border border-emerald-950/10 bg-[#f8fff3] p-5" key={item.title}>
-                    <h3 className="text-lg font-medium text-emerald-950">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-slate-700">{item.text}</p>
+            <section className="rounded-3xl bg-[#063d25] p-5 sm:p-8">
+              <p className="eyebrow-lime">Best for</p>
+              <h2 className="mt-4 text-2xl font-medium text-white sm:text-3xl">When to book {service.name}</h2>
+              <div className="mt-6 grid gap-6">
+                {pageContent.bestFor.map((item, index) => (
+                  <article className="grid gap-2 border-b border-white/15 pb-6 last:border-0 last:pb-0 sm:grid-cols-[5rem_1fr] sm:gap-6" key={item.title}>
+                    <p className="text-4xl font-medium leading-none text-[#d9ff42]">0{index + 1}</p>
+                    <div>
+                      <h3 className="text-xl font-medium text-white">{item.title}</h3>
+                      <p className="mt-2 max-w-xl text-sm leading-7 text-emerald-50/85">{item.text}</p>
+                    </div>
                   </article>
                 ))}
               </div>

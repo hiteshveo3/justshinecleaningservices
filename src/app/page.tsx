@@ -66,7 +66,7 @@ export default function Home() {
       <section className="bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
           <div>
-            <p className="eyebrow">Just Shine Cleaning Services</p>
+            <p className="eyebrow-lime">Just Shine Cleaning Services</p>
             <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-emerald-950 sm:text-[2.65rem] lg:text-[3rem]">Professional Cleaning Services in Abu Dhabi</h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-700">{site.tagline}</p>
             <p className="mt-3 max-w-2xl text-base leading-7 text-slate-700">Home cleaning from AED {site.priceWithoutMaterials}/hour without materials, or AED {site.priceWithMaterials}/hour with materials. Villa and deep cleaning from AED {site.priceWithMaterials}/hour. Minimum booking {site.minBookingHours} hours.</p>

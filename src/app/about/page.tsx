@@ -67,7 +67,7 @@ export default function AboutPage() {
       <section className="section hero-gradient">
         <div className="container grid gap-10 lg:grid-cols-[.9fr_.7fr] lg:items-center">
           <div>
-            <p className="eyebrow bg-white/90 text-emerald-900 ring-1 ring-emerald-950/10">About Just Shine Cleaning Services</p>
+            <p className="eyebrow-lime">About Just Shine Cleaning Services</p>
             <h1 className="mt-4 max-w-3xl text-[2rem] font-medium leading-tight text-emerald-950 sm:text-4xl">Abu Dhabi cleaning with clear prices and fast booking.</h1>
             <p className="mt-5 max-w-2xl text-base leading-8 text-slate-700">
               Just Shine Cleaning Services started in {site.foundingMonth} {site.foundingYear} and operates from {site.location}.

@@ -78,7 +78,7 @@ function FaqRow({ item, id, open, onToggle }: { item: FaqItem; id: string; open:
   };
 
   return (
-    <div className="scroll-mt-24 rounded-xl border border-emerald-950/10 bg-[#f6fff0] transition hover:border-emerald-900/20 hover:bg-[#f3ffe8]" id={id}>
+    <div className="scroll-mt-24 rounded-xl border border-emerald-950/10 bg-[#f6fff0] transition duration-500 hover:border-emerald-900/20 hover:bg-[#f3ffe8]" id={id}>
       <button
         className="flex w-full cursor-pointer items-center justify-between gap-4 p-5 text-left font-medium text-emerald-950"
         type="button"
@@ -91,39 +91,43 @@ function FaqRow({ item, id, open, onToggle }: { item: FaqItem; id: string; open:
           </span>
           <span>{item.q}</span>
         </span>
-        <span className={`grid size-8 shrink-0 place-items-center rounded-full bg-white text-emerald-900 ring-1 ring-emerald-950/10 transition-transform duration-500 ${open ? "rotate-180" : ""}`}>
+        <span className={`grid size-8 shrink-0 place-items-center rounded-full bg-white text-emerald-900 ring-1 ring-emerald-950/10 transition-transform duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${open ? "rotate-180" : ""}`}>
           <HugeiconsIcon icon={ArrowDown01Icon} className="icon" size={17} color="currentColor" strokeWidth={2} aria-hidden="true" />
         </span>
       </button>
-      <div className={`overflow-hidden transition-all duration-700 ease-in-out ${open ? "max-h-[5000px] opacity-100" : "max-h-0 opacity-0"}`}>
-        <div className="px-5 pb-5 md:pl-[4.25rem]">
-          <div className="whitespace-pre-line border-l-2 border-lime-300 py-1 pl-4 text-sm leading-7 text-slate-700 sm:text-base">
-            {answer}
-          </div>
-          {isLong && (
-            <button
-              className="mt-3 inline-flex min-h-10 items-center justify-center rounded-lg bg-lime-300 px-4 text-sm font-medium text-emerald-950 transition hover:bg-lime-200"
-              type="button"
-              onClick={() => setShowFull((value) => !value)}
-            >
-              {showFull ? "Show shorter answer" : "Read full answer"}
-            </button>
-          )}
-          {item.links && item.links.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-2">
-              {item.links.map((link) => (
-                link.href.startsWith("http") ? (
-                  <a className="rounded-lg bg-white px-3 py-2 text-sm font-medium text-emerald-900 ring-1 ring-emerald-950/10" href={link.href} key={link.href}>
-                    {link.label}
-                  </a>
-                ) : (
-                  <Link className="rounded-lg bg-white px-3 py-2 text-sm font-medium text-emerald-900 ring-1 ring-emerald-950/10" href={link.href} key={link.href}>
-                    {link.label}
-                  </Link>
-                )
-              ))}
+      <div
+        className={`grid transition-[grid-template-rows,opacity] duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
+      >
+        <div className="min-h-0 overflow-hidden">
+          <div className="px-5 pb-5 md:pl-[4.25rem]">
+            <div className="whitespace-pre-line border-l-2 border-lime-300 py-1 pl-4 text-sm leading-7 text-slate-700 sm:text-base">
+              {answer}
             </div>
-          )}
+            {isLong && (
+              <button
+                className="mt-3 inline-flex min-h-10 items-center justify-center rounded-lg bg-lime-300 px-4 text-sm font-medium text-emerald-950 transition hover:bg-lime-200"
+                type="button"
+                onClick={() => setShowFull((value) => !value)}
+              >
+                {showFull ? "Show shorter answer" : "Read full answer"}
+              </button>
+            )}
+            {item.links && item.links.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {item.links.map((link) => (
+                  link.href.startsWith("http") ? (
+                    <a className="rounded-lg bg-white px-3 py-2 text-sm font-medium text-emerald-900 ring-1 ring-emerald-950/10" href={link.href} key={link.href}>
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link className="rounded-lg bg-white px-3 py-2 text-sm font-medium text-emerald-900 ring-1 ring-emerald-950/10" href={link.href} key={link.href}>
+                      {link.label}
+                    </Link>
+                  )
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

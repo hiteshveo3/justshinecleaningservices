@@ -70,7 +70,7 @@ export default async function GuidePage({ params }: Props) {
       <section className="bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
           <div>
-            <p className="eyebrow">{guide.eyebrow}</p>
+            <p className="eyebrow-lime">{guide.eyebrow}</p>
             <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-emerald-950 sm:text-[2.55rem] lg:text-[2.9rem]">
               {guide.title}
             </h1>

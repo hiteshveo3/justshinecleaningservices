@@ -82,7 +82,8 @@ summary::-webkit-details-marker { display: none; }
   main h1,
   main h2,
   main h3,
-  main .eyebrow {
+  main .eyebrow,
+  main .eyebrow-lime {
     animation: text-rise-on-scroll both;
     animation-timeline: view();
     animation-range: entry 0% cover 26%;
@@ -157,17 +158,35 @@ summary::-webkit-details-marker { display: none; }
   .section { padding: 3.25rem 1rem; }
 }
 .container { margin: 0 auto; max-width: 80rem; }
+/* V2 default — forest solid */
 .eyebrow {
-  background: rgba(217, 255, 66, .45);
-  border: 1px solid rgba(4, 120, 87, .12);
+  align-items: center;
+  background: #0b4f2f;
+  border: 1px solid transparent;
   border-radius: .5rem;
-  color: #047857;
+  color: #ffffff;
   display: inline-flex;
   font-size: .78rem;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: .08em;
-  padding: .35rem .6rem;
+  padding: .4rem .75rem;
   text-transform: uppercase;
+  width: fit-content;
+}
+/* V3 accent — lime punch (heroes / brand moments) */
+.eyebrow-lime {
+  align-items: center;
+  background: #d9ff42;
+  border: 1px solid rgba(16, 35, 27, .08);
+  border-radius: .5rem;
+  color: #10231b;
+  display: inline-flex;
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  padding: .4rem .75rem;
+  text-transform: uppercase;
+  width: fit-content;
 }
 .btn-primary, .btn-secondary {
   align-items: center;

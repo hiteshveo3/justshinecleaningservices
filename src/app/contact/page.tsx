@@ -59,7 +59,7 @@ export default async function ContactPage({ searchParams }: { searchParams?: Pro
       <section className="section hero-gradient">
         <div className="container grid gap-10 lg:grid-cols-[.8fr_1fr] lg:items-center">
           <div>
-            <p className="eyebrow">Contact Just Shine Cleaning Services</p>
+            <p className="eyebrow-lime">Contact Just Shine Cleaning Services</p>
             <h1 className="mt-4 text-3xl font-medium leading-tight text-emerald-950 sm:text-4xl">We&apos;re here to help with cleaning quotes.</h1>
             <p className="mt-4 max-w-2xl text-base leading-8 text-slate-700">Multiple ways to reach us. Choose what works best for you and get a free quote for cleaning services in Abu Dhabi.</p>
             {sent === "1" && (

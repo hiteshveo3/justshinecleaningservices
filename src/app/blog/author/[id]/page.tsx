@@ -52,7 +52,7 @@ export default async function BlogAuthorPage({ params }: Props) {
             <Image alt={author.name} className="object-cover" fill priority sizes="(min-width: 768px) 13rem, 100vw" src={author.image} />
           </div>
           <div>
-            <p className="eyebrow w-fit bg-lime-100 text-emerald-900 ring-1 ring-emerald-950/10">Author</p>
+            <p className="eyebrow-lime">Author</p>
             <h1 className="mt-4 text-3xl font-semibold text-emerald-950 sm:text-4xl">{author.name}</h1>
             <p className="mt-2 text-sm font-medium text-emerald-800">{author.role}</p>
             <p className="mt-4 max-w-3xl leading-7 text-slate-700">{author.bio}</p>

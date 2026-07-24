@@ -111,7 +111,7 @@ export default async function BlogPost({ params }: Props) {
       <section className="bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-end">
           <div className="min-w-0">
-            <p className="eyebrow">Cleaning guide</p>
+            <p className="eyebrow-lime">Cleaning guide</p>
             <h1 className="mt-4 text-3xl font-semibold leading-tight text-emerald-950 sm:text-4xl lg:text-[2.65rem]">{post.title}</h1>
             <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-700">{post.excerpt}</p>
             <div className="mt-5 flex flex-wrap gap-3 text-sm text-slate-600">

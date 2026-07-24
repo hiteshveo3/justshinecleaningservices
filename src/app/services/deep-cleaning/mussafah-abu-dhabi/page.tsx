@@ -100,7 +100,7 @@ export default function MussafahDeepCleaningPage() {
       <section className="bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-center">
           <div>
-            <p className="eyebrow">Mussafah cleaning</p>
+            <p className="eyebrow-lime">Mussafah cleaning</p>
             <h1 className="mt-4 max-w-4xl text-3xl font-semibold leading-tight text-emerald-950 sm:text-[2.65rem] lg:text-[3rem]">Deep Cleaning Services in Mussafah, Abu Dhabi</h1>
             <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-700">Professional cleaning for industrial facilities, warehouses, commercial offices, worker accommodations, and high-traffic Mussafah properties.</p>
             <div className="mt-6 max-w-xl">

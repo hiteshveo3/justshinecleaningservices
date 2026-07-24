@@ -16,7 +16,7 @@ export default async function BlogPage() {
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-[.9fr_1.1fr] lg:items-end">
           <div>
-            <p className="eyebrow">Blog</p>
+            <p className="eyebrow-lime">Blog</p>
             <h1 className="mt-4 max-w-4xl text-4xl font-semibold leading-tight text-emerald-950 sm:text-5xl">Cleaning advice for Abu Dhabi homes and offices</h1>
             <p className="mt-4 max-w-3xl leading-7 text-slate-700">Helpful guides, service explainers, and local cleaning advice built for Abu Dhabi homes, villas, and offices.</p>
           </div>

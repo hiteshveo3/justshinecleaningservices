@@ -73,7 +73,7 @@ export default async function SolutionPage({ params }: Props) {
       <section className="bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
           <div>
-            <p className="eyebrow">{solution.eyebrow}</p>
+            <p className="eyebrow-lime">{solution.eyebrow}</p>
             <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-emerald-950 sm:text-[2.55rem] lg:text-[2.9rem]">{solution.title}</h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-700">{solution.description}</p>
             <div className="mt-5 flex flex-wrap gap-2">
