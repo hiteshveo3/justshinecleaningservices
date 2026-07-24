@@ -1,6 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowDown01Icon, CallIcon, InstagramIcon, SparklesIcon, WhatsappBusinessIcon } from "@hugeicons/core-free-icons";
+import { ArrowDown01Icon, CallIcon, InstagramIcon, WhatsappBusinessIcon } from "@hugeicons/core-free-icons";
 import { FooterAccordion } from "./footer-accordion";
 import { MobileBottomNav } from "./mobile-bottom-nav";
 import { SiteSearch } from "./site-search";
@@ -41,7 +42,14 @@ export function Header() {
     <header className="header-solid sticky top-0 z-40 border-b border-emerald-950/10">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2 font-medium text-emerald-950">
-          <span className="grid size-10 place-items-center rounded-lg bg-lime-300 text-emerald-950 ring-1 ring-lime-600/20"><HugeiconsIcon icon={SparklesIcon} className="icon" size={21} color="currentColor" strokeWidth={2} aria-hidden="true" /></span>
+          <Image
+            alt="Just Shine Cleaning Services"
+            className="size-10 rounded-lg ring-1 ring-emerald-950/10"
+            height={40}
+            priority
+            src="/just-shine-fav.png"
+            width={40}
+          />
           <span className="leading-tight tracking-[-0.01em]">
             <span className="block max-w-[9rem] text-sm sm:hidden">Just Shine Cleaning Services</span>
             <span className="hidden text-[0.95rem] sm:block">Just Shine Cleaning Services</span>
@@ -104,7 +112,16 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid gap-5 md:grid-cols-[1fr_auto] md:items-center">
           <div>
-            <h2 className="text-xl font-medium">{site.name}</h2>
+            <div className="flex items-center gap-3">
+              <Image
+                alt="Just Shine Cleaning Services"
+                className="size-12 rounded-lg ring-1 ring-emerald-950/10"
+                height={48}
+                src="/just-shine-fav.png"
+                width={48}
+              />
+              <h2 className="text-xl font-medium">{site.name}</h2>
+            </div>
             <p className="mt-3 text-sm leading-6 text-slate-700">{site.location}</p>
           </div>
           <div className="hidden gap-3 md:flex">
