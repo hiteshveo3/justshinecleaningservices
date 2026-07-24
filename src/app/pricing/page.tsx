@@ -20,7 +20,7 @@ export default function PricingPage() {
       }} />
       <section className="bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_48%,#c6f7d4_100%)] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <p className="eyebrow w-fit bg-white/80">Transparent pricing</p>
+          <p className="eyebrow-lime">Transparent pricing</p>
           <div className="mt-5 grid gap-8 lg:grid-cols-[1fr_24rem] lg:items-end">
             <div>
               <h1 className="max-w-4xl text-4xl font-medium leading-tight text-emerald-950 sm:text-5xl">No hidden charges. Clear cleaning prices.</h1>

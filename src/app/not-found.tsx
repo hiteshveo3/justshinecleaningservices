@@ -10,7 +10,7 @@ export default function NotFound() {
     <section className="bg-[linear-gradient(135deg,#f8fff3_0%,#ecffd0_48%,#dff8e9_100%)] px-4 py-16 sm:px-6 lg:px-8">
       <div className="mx-auto grid min-h-[62vh] max-w-5xl content-center gap-8 lg:grid-cols-[1fr_0.9fr] lg:items-center">
         <div>
-          <p className="eyebrow w-fit bg-white/80 text-emerald-900 ring-1 ring-emerald-950/10">Page not found</p>
+          <p className="eyebrow-lime">Page not found</p>
           <h1 className="mt-5 max-w-3xl text-4xl font-medium leading-tight text-emerald-950 sm:text-5xl">
             This page is not here, but cleaning help is.
           </h1>

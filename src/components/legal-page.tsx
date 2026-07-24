@@ -23,7 +23,7 @@ export function LegalPageView({ page }: { page: LegalPage }) {
       <section className="section hero-gradient">
         <div className="container grid gap-8 lg:grid-cols-[.9fr_.6fr] lg:items-end">
           <div>
-            <p className="eyebrow">Just Shine Cleaning Services policy</p>
+            <p className="eyebrow-lime">Just Shine Cleaning Services policy</p>
             <h1 className="mt-4 max-w-4xl text-3xl font-medium leading-tight text-emerald-950 sm:text-4xl">{page.title}</h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-slate-700">{page.description}</p>
             {page.effectiveDate ? <p className="mt-4 text-sm text-emerald-900">Effective date: {page.effectiveDate}</p> : null}

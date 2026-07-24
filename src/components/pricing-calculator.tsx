@@ -211,7 +211,7 @@ export function PricingCalculator() {
         </div>
 
         <aside className="rounded-lg border border-emerald-950/10 bg-white/85 p-5 xl:sticky xl:top-24 xl:self-start">
-          <p className="eyebrow w-fit">Live estimate</p>
+          <p className="eyebrow">Live estimate</p>
           <h3 className="mt-3 text-2xl font-medium text-emerald-950">AED {estimatedTotal}</h3>
           <p className="mt-2 text-sm leading-6 text-slate-700">Final quote may change after photos, access, stains, furniture moving, or exact area details.</p>
           <div className="mt-5 grid gap-2 text-sm">

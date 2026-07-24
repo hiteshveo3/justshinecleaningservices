@@ -17,7 +17,7 @@ export default function FaqPage() {
       <section className="bg-[linear-gradient(135deg,#f8fff3_0%,#ecffd0_42%,#c9f7d9_100%)] px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <div>
-            <p className="eyebrow w-fit bg-white/75 text-emerald-900 ring-1 ring-emerald-950/10">FAQ</p>
+            <p className="eyebrow-lime">FAQ</p>
             <h1 className="mt-5 max-w-3xl text-4xl font-medium leading-tight text-emerald-950 sm:text-5xl">
               Cleaning FAQs for Abu Dhabi
             </h1>
@@ -57,7 +57,7 @@ export default function FaqPage() {
             {faqCategories.map((category, index) => (
               <section className="scroll-mt-28" id={slugify(category.title)} key={category.title}>
                 <div className="mb-5 rounded-2xl bg-[linear-gradient(135deg,#f7fff1_0%,#efffcb_58%,#ddf8e8_100%)] p-5 ring-1 ring-emerald-950/10 sm:p-6">
-                  <p className="eyebrow w-fit bg-white/80 text-emerald-900 ring-1 ring-emerald-950/10">{category.title}</p>
+                  <p className="eyebrow-lime">{category.title}</p>
                   <div className="mt-3">
                     <h2 className="text-2xl font-medium text-emerald-950 sm:text-3xl">{category.title}</h2>
                     <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-700 sm:text-base">{category.description}</p>

@@ -29,7 +29,7 @@ export default async function BlogTagPage({ params }: Props) {
   return (
     <section className="bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <p className="eyebrow">Blog tag</p>
+        <p className="eyebrow-lime">Blog tag</p>
         <h1 className="mt-4 text-3xl font-semibold text-emerald-950 sm:text-4xl">{tag}</h1>
         <p className="mt-4 max-w-3xl leading-7 text-slate-700">Articles and cleaning tips related to {tag}.</p>
         <BlogIndex posts={posts} />
