@@ -47,7 +47,7 @@ export function Header() {
             className="size-10 rounded-lg ring-1 ring-emerald-950/10"
             height={40}
             priority
-            src="/just-shine-fav.png"
+            src="/brand-mark.png"
             width={40}
           />
           <span className="leading-tight tracking-[-0.01em]">
