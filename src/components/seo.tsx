@@ -15,7 +15,29 @@ export const localBusinessSchema = {
   email: site.email,
   url: site.url,
   priceRange: site.priceRange,
-  foundingDate: String(site.foundingYear),
+  foundingDate: site.foundingDate,
+  identifier: [
+    {
+      "@type": "PropertyValue",
+      name: "Licence No.",
+      value: site.tradeLicenseNumber,
+    },
+    {
+      "@type": "PropertyValue",
+      name: "Unified Licence No.",
+      value: site.unifiedLicenceNo,
+    },
+    {
+      "@type": "PropertyValue",
+      name: "Unified Registration No.",
+      value: site.unifiedRegistrationNo,
+    },
+  ],
+  founder: {
+    "@type": "Person",
+    name: site.ownerName,
+    nationality: site.ownerNationality,
+  },
   areaServed: {
     "@type": "City",
     name: "Abu Dhabi",
