@@ -25,7 +25,9 @@ export default function PricingPage() {
             <div>
               <h1 className="max-w-4xl text-4xl font-medium leading-tight text-emerald-950 sm:text-5xl">No hidden charges. Clear cleaning prices.</h1>
               <p className="mt-4 max-w-3xl text-base leading-7 text-slate-700 sm:text-lg">
-                Current discounted rates, original market reference prices, contract savings, bundles, add-ons, and quick WhatsApp quote paths.
+                Home cleaning: AED {site.priceWithoutMaterials}/hour without materials, AED {site.priceWithMaterials}/hour with materials.
+                Villa and deep cleaning from AED {site.priceWithMaterials}/hour. Minimum booking {site.minBookingHours} hours.
+                Same-day and weekend slots when available — no surcharge. All Abu Dhabi areas, no extra travel fee.
               </p>
             </div>
             <div className="rounded-2xl bg-white/75 p-5 ring-1 ring-emerald-950/10">

@@ -38,7 +38,7 @@ export default async function ContactPage({ searchParams }: { searchParams?: Pro
       "@type": "OpeningHoursSpecification",
       dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
       opens: "08:00",
-      closes: "20:00",
+      closes: "22:00",
     },
     sameAs: [site.facebook, site.instagram, site.googleMapsUrl],
     contactPoint: {
@@ -77,7 +77,7 @@ export default async function ContactPage({ searchParams }: { searchParams?: Pro
               ["Business email", site.email, "Primary email"],
               ["Gmail", site.socialEmail, "Alternate email"],
               ["Location", site.location, site.openingHoursLabel],
-              ["Trust", `${site.rating.value}/${site.rating.best} Google`, `${site.rating.count}+ reviews · ${site.yearsExperience}+ years`],
+              ["Trust", `${site.rating.value}/${site.rating.best} Google`, `${site.rating.count} reviews · ${site.sinceLabel}`],
             ].map(([label, value, note]) => (
               <div key={label} className="rounded-lg border border-emerald-950/10 bg-white/75 p-5">
                 <p className="text-sm text-slate-600">{label}</p>

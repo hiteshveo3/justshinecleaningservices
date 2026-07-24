@@ -6,7 +6,7 @@ import { site, testimonials } from "@/lib/content";
 
 export const metadata = {
   title: "Customer Reviews",
-  description: `Read verified-style Google customer reviews for Just Shine Cleaning Services in Abu Dhabi. ${site.rating.value}/5 from ${site.rating.count}+ reviews.`,
+  description: `Read 5-star Google reviews for Just Shine Cleaning Services in Abu Dhabi. Google rating ${site.rating.value}/5 from ${site.rating.count} reviews.`,
   alternates: { canonical: "/testimonials" },
 };
 
@@ -38,12 +38,12 @@ export default function TestimonialsPage() {
         <p className="eyebrow">Reviews</p>
         <h1 className="mt-4 text-3xl font-semibold text-emerald-950 sm:text-4xl">What customers say</h1>
         <p className="mt-4 max-w-2xl text-base leading-7 text-slate-700">
-          Sample Google customer feedback for Just Shine Cleaning Services in Abu Dhabi.
-          Overall rating: <strong className="text-emerald-950">{site.rating.value}/{site.rating.best}</strong> from {site.rating.count}+ reviews.
+          We show 5-star Google customer feedback only. Overall Google rating:
+          <strong className="text-emerald-950"> {site.rating.value}/{site.rating.best}</strong> from {site.rating.count} reviews.
         </p>
         <div className="mt-5 flex flex-wrap gap-3 text-sm">
           <Link className="rounded-lg bg-lime-300 px-4 py-2 font-medium text-emerald-950" href="/contact">Book via WhatsApp or call</Link>
-          <a className="rounded-lg bg-white px-4 py-2 font-medium text-emerald-900 ring-1 ring-emerald-950/10" href={site.googleMapsUrl} target="_blank" rel="noreferrer">Find us on Google Maps</a>
+          <a className="rounded-lg bg-white px-4 py-2 font-medium text-emerald-900 ring-1 ring-emerald-950/10" href={site.googleMapsUrl} target="_blank" rel="noreferrer">See all reviews on Google</a>
         </div>
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           {testimonials.map((item) => (

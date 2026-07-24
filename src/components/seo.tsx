@@ -31,9 +31,15 @@ export const localBusinessSchema = {
     "@type": "OpeningHoursSpecification",
     dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
     opens: "08:00",
-    closes: "20:00",
+    closes: "22:00",
   },
   sameAs: [site.facebook, site.instagram, site.googleMapsUrl],
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: 24.4917066,
+    longitude: 54.3650786,
+  },
+  numberOfEmployees: site.teamSize,
   knowsAbout: ["Deep Cleaning", "Villa Cleaning", "Home Cleaning", "Office Cleaning", "Carpet Cleaning", "Sofa Cleaning", "Window Cleaning", "Pest Control"],
   potentialAction: {
     "@type": "ReserveAction",

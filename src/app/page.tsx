@@ -18,9 +18,9 @@ const processSteps = [
 ];
 const trustPoints = [
   { label: `${site.rating.value}/${site.rating.best} Google rating`, href: "/testimonials" },
-  { label: `${site.rating.count}+ customer reviews`, href: "/testimonials" },
-  { label: `${site.yearsExperience}+ years in Abu Dhabi`, href: "/about" },
-  { label: "Satisfaction re-clean support", href: "/about" },
+  { label: `${site.rating.count} Google reviews`, href: "/testimonials" },
+  { label: site.sinceLabel, href: "/about" },
+  { label: "Min 2 hours · materials optional", href: "/pricing" },
 ];
 const cleaningPlans = [
   { title: "Quick refresh", text: "For regular dust, floors, bathrooms, and visible daily mess.", href: "/services/home-cleaning" },
@@ -66,12 +66,13 @@ export default function Home() {
       <section className="bg-[linear-gradient(135deg,#f8fff3_0%,#e8ff87_45%,#c6f7d4_100%)] px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
           <div>
-            <p className="eyebrow">Abu Dhabi cleaning company</p>
+            <p className="eyebrow">Just Shine Cleaning Services</p>
             <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-emerald-950 sm:text-[2.65rem] lg:text-[3rem]">Professional Cleaning Services in Abu Dhabi</h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-700">Villa, home, office, carpet, sofa, and window cleaning by trained teams with fast Call and WhatsApp booking.</p>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-700">{site.tagline}</p>
+            <p className="mt-3 max-w-2xl text-base leading-7 text-slate-700">Home cleaning from AED {site.priceWithoutMaterials}/hour without materials, or AED {site.priceWithMaterials}/hour with materials. Villa and deep cleaning from AED {site.priceWithMaterials}/hour. Minimum booking {site.minBookingHours} hours.</p>
             <div className="mt-8"><CtaButtons service="home" /></div>
             <div className="mt-8 grid gap-3 text-sm font-normal text-emerald-950 sm:grid-cols-3">
-              {["Same-week slots", "Trained cleaners", "Supplies included"].map((item) => <span key={item} className="flex items-center gap-2"><HugeiconsIcon icon={CheckmarkCircle02Icon} className="icon" size={19} color="currentColor" strokeWidth={2} aria-hidden="true" />{item}</span>)}
+              {["WhatsApp quote in minutes", `Team of ~${site.teamSize}`, "All Abu Dhabi areas"].map((item) => <span key={item} className="flex items-center gap-2"><HugeiconsIcon icon={CheckmarkCircle02Icon} className="icon" size={19} color="currentColor" strokeWidth={2} aria-hidden="true" />{item}</span>)}
             </div>
           </div>
           <div className="relative">

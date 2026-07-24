@@ -180,7 +180,7 @@ export function Footer() {
             <p className="mt-3 text-sm text-slate-700">{site.location}</p>
             <p className="mt-2 text-sm text-slate-700">Hours: {site.openingHoursLabel}</p>
             <p className="mt-2 text-sm text-slate-700">Business: {site.email}</p>
-            <p className="mt-2 text-sm text-slate-700">{site.rating.value}/{site.rating.best} Google · {site.rating.count}+ reviews</p>
+            <p className="mt-2 text-sm text-slate-700">{site.rating.value}/{site.rating.best} Google · {site.rating.count} reviews · {site.sinceLabel}</p>
             <div className="mt-5 flex flex-wrap gap-3 text-sm">
               <a className="inline-flex items-center gap-2 rounded-lg border border-emerald-950/10 bg-white/70 px-3 py-2 text-emerald-950" href={site.instagram} target="_blank" rel="noreferrer">
                 <HugeiconsIcon icon={InstagramIcon} className="icon" size={17} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
