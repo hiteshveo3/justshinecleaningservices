@@ -117,7 +117,7 @@ export function Footer() {
                 alt="Just Shine Cleaning Services"
                 className="size-12 rounded-lg ring-1 ring-emerald-950/10"
                 height={48}
-                src="/just-shine-fav.png"
+                src="/brand-mark.png"
                 width={48}
               />
               <h2 className="text-xl font-medium">{site.name}</h2>
