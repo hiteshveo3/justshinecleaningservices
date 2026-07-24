@@ -15,7 +15,12 @@ export const localBusinessSchema = {
   email: site.email,
   url: site.url,
   priceRange: site.priceRange,
-  foundingDate: String(site.foundingYear),
+  foundingDate: `${site.foundingYear}-02`,
+  identifier: {
+    "@type": "PropertyValue",
+    name: "Trade License CR",
+    value: site.tradeLicenseNumber,
+  },
   areaServed: {
     "@type": "City",
     name: "Abu Dhabi",

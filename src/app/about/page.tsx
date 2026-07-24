@@ -4,7 +4,7 @@ import { site } from "@/lib/content";
 
 export const metadata = {
   title: "About Just Shine Cleaning Services Abu Dhabi",
-  description: "Just Shine Cleaning Services started in February 2024 in Abu Dhabi. Clear prices, trained teams, WhatsApp booking, and Google-reviewed cleaning for homes and businesses.",
+  description: "Just Shine Cleaning Services started in February 2021 in Abu Dhabi. Clear prices, trained teams, WhatsApp booking, and Google-reviewed cleaning for homes and businesses.",
   alternates: { canonical: "/about" },
 };
 
@@ -18,11 +18,11 @@ const milestones = [
 const values = ["Professionalism", "Integrity", "Reliability", "Eco-consciousness", "Customer-first service", "Clear pricing"];
 const stats = [
   site.sinceLabel,
+  site.tradeLicenseLabel,
   `${site.rating.value} ${site.rating.source} rating`,
   `${site.rating.count} Google reviews`,
   `Team of ~${site.teamSize}`,
   "All Abu Dhabi areas",
-  "Min 2-hour booking",
 ];
 const areas = ["Al Danah", "Al Reem Island", "Khalifa City", "Yas Island", "Saadiyat Island", "Al Raha Beach", "Corniche", "Al Bateen", "Mussafah", "Al Reef", "MBZ City", "Downtown Abu Dhabi"];
 
@@ -38,6 +38,11 @@ export default function AboutPage() {
     email: site.email,
     image: `${site.url}${site.logo}`,
     foundingDate: `${site.foundingYear}-02`,
+    identifier: {
+      "@type": "PropertyValue",
+      name: "Trade License CR",
+      value: site.tradeLicenseNumber,
+    },
     priceRange: site.priceRange,
     numberOfEmployees: site.teamSize,
     address: {
@@ -71,7 +76,7 @@ export default function AboutPage() {
             <h1 className="mt-4 max-w-3xl text-[2rem] font-medium leading-tight text-emerald-950 sm:text-4xl">Abu Dhabi cleaning with clear prices and fast booking.</h1>
             <p className="mt-5 max-w-2xl text-base leading-8 text-slate-700">
               Just Shine Cleaning Services started in {site.foundingMonth} {site.foundingYear} and operates from {site.location}.
-              We clean homes, villas, offices, and specialty spaces across Abu Dhabi with a team of about {site.teamSize} people.
+              We are a licensed Abu Dhabi cleaning company ({site.tradeLicenseLabel}) with about {site.yearsExperience} years of local experience and a team of about {site.teamSize} people.
             </p>
             <p className="mt-3 max-w-2xl text-base leading-8 text-slate-700">{site.tagline}</p>
             <div className="mt-6 max-w-xl"><CtaButtons service="home" /></div>
