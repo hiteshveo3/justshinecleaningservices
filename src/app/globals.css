@@ -82,7 +82,8 @@ summary::-webkit-details-marker { display: none; }
   main h1,
   main h2,
   main h3,
-  main .eyebrow {
+  main .eyebrow,
+  main .eyebrow-lime {
     animation: text-rise-on-scroll both;
     animation-timeline: view();
     animation-range: entry 0% cover 26%;
