@@ -7,12 +7,33 @@ export function JsonLd({ data }: { data: object }) {
 export const localBusinessSchema = {
   "@context": "https://schema.org",
   "@type": ["LocalBusiness", "ProfessionalService"],
+  "@id": `${site.url}/#business`,
   name: site.name,
+  image: [`${site.url}${site.logo}`],
+  logo: `${site.url}${site.logo}`,
   telephone: site.phone,
   email: site.email,
-  address: site.location,
   url: site.url,
-  areaServed: "Abu Dhabi",
+  priceRange: site.priceRange,
+  foundingDate: String(site.foundingYear),
+  areaServed: {
+    "@type": "City",
+    name: "Abu Dhabi",
+  },
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: site.streetAddress,
+    addressLocality: site.addressLocality,
+    addressRegion: site.addressRegion,
+    addressCountry: site.addressCountry,
+  },
+  openingHoursSpecification: {
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+    opens: "08:00",
+    closes: "20:00",
+  },
+  sameAs: [site.facebook, site.instagram, site.googleMapsUrl],
   knowsAbout: ["Deep Cleaning", "Villa Cleaning", "Home Cleaning", "Office Cleaning", "Carpet Cleaning", "Sofa Cleaning", "Window Cleaning", "Pest Control"],
   potentialAction: {
     "@type": "ReserveAction",
@@ -22,7 +43,12 @@ export const localBusinessSchema = {
       actionPlatform: ["https://schema.org/DesktopWebPlatform", "https://schema.org/MobileWebPlatform"],
     },
   },
-  aggregateRating: { "@type": "AggregateRating", ratingValue: "5", reviewCount: "48" },
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: String(site.rating.value),
+    reviewCount: String(site.rating.count),
+    bestRating: String(site.rating.best),
+  },
 };
 
 export function breadcrumbSchema(items: { name: string; url: string }[]) {

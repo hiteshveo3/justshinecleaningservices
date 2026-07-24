@@ -113,7 +113,7 @@ export default async function ServiceLocationPage({ params }: Props) {
             availability: "https://schema.org/InStock",
             url: schemaUrl,
           },
-          aggregateRating: { "@type": "AggregateRating", ratingValue: "4.8", reviewCount: "48" },
+          aggregateRating: { "@type": "AggregateRating", ratingValue: String(site.rating.value), reviewCount: String(site.rating.count), bestRating: String(site.rating.best) },
         }}
       />
       <JsonLd

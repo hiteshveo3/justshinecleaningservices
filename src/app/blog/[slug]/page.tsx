@@ -8,7 +8,7 @@ import { FaqAccordion } from "@/components/faq-accordion";
 import { ReadingProgress } from "@/components/reading-progress";
 import { JsonLd } from "@/components/seo";
 import { getBlogPosts } from "@/lib/data";
-import { servicePriceLabel, services, site } from "@/lib/content";
+import { authors, servicePriceLabel, services, site } from "@/lib/content";
 import { extractHeadings, readingTime, relatedPosts, withHeadingIds } from "@/lib/blog";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -67,7 +67,9 @@ export default async function BlogPost({ params }: Props) {
   const postUrl = `${site.url}/blog/${post.slug}`;
   const shareText = encodeURIComponent(post.title);
   const shareUrl = encodeURIComponent(postUrl);
-  const authorImage = "/images/Affordable Cleaning Services in Abu Dhabi - Just Shine Cleaning Services.webp";
+  const author = authors["just-shine-team"];
+  const authorImage = author.image;
+  const authorUrl = `${site.url}/blog/author/${author.id}`;
 
   return (
     <article className="bg-white">
@@ -78,8 +80,19 @@ export default async function BlogPost({ params }: Props) {
         headline: post.title,
         description: post.excerpt,
         image: `${site.url}${post.featured_image}`,
-        author: { "@type": "Person", name: post.author },
-        publisher: { "@type": "Organization", name: site.name },
+        author: {
+          "@type": "Organization",
+          name: post.author,
+          url: authorUrl,
+        },
+        publisher: {
+          "@type": "Organization",
+          name: site.name,
+          logo: {
+            "@type": "ImageObject",
+            url: `${site.url}${site.logo}`,
+          },
+        },
         datePublished: post.publishedAt,
         dateModified: post.publishedAt,
         mainEntityOfPage: postUrl,
@@ -102,9 +115,10 @@ export default async function BlogPost({ params }: Props) {
             <h1 className="mt-4 text-3xl font-semibold leading-tight text-emerald-950 sm:text-4xl lg:text-[2.65rem]">{post.title}</h1>
             <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-700">{post.excerpt}</p>
             <div className="mt-5 flex flex-wrap gap-3 text-sm text-slate-600">
-              <span>By {post.author}</span>
+              <span>By <Link className="font-medium text-emerald-900 underline" href={`/blog/author/${author.id}`}>{post.author}</Link></span>
               <span>{post.publishedAt}</span>
               <span>{minutes} min read</span>
+              <span>Reviewed by operations</span>
             </div>
             <div className="mt-5 flex flex-wrap gap-2 text-xs text-emerald-950">
               <span className="rounded-lg bg-white/80 px-3 py-2 ring-1 ring-emerald-950/10">Abu Dhabi cleaning experts</span>

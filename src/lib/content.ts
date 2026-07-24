@@ -5,10 +5,47 @@ export const site = {
   email: "info@justshinecleaningservices.com",
   socialEmail: "justshinec@gmail.com",
   location: "Al Jazeera Towers, 613 Hamdan Bin Mohammed Street, Abu Dhabi",
+  streetAddress: "Al Jazeera Towers, 613 Hamdan Bin Mohammed Street",
+  addressLocality: "Abu Dhabi",
+  addressRegion: "Abu Dhabi",
+  addressCountry: "AE",
   url: "https://justshinecleaningservices.com",
   facebook: "https://web.facebook.com/justshinecleaningservces",
   instagram: "https://www.instagram.com/justshine.uae/",
+  googleMapsUrl: "https://maps.google.com/?q=Al+Jazeera+Towers+Hamdan+Bin+Mohammed+Street+Abu+Dhabi",
+  logo: "/brand-mark.png",
+  foundingYear: 2014,
+  yearsExperience: 12,
+  openingHours: "Mo-Su 08:00-20:00",
+  openingHoursLabel: "8:00 AM - 8:00 PM daily",
+  priceRange: "AED 30-150 per hour",
+  managerName: "Maika",
+  rating: {
+    value: 4.8,
+    count: 48,
+    best: 5,
+    source: "Google",
+  },
 };
+
+export const authors = {
+  "just-shine-team": {
+    id: "just-shine-team",
+    name: "Just Shine Cleaning Services Team",
+    role: "Abu Dhabi cleaning specialists",
+    bio: "Field-tested cleaning guidance from Just Shine teams serving apartments, villas, and offices across Abu Dhabi. Content is reviewed by operations before publishing.",
+    credentials: [
+      "Local Abu Dhabi residential and commercial cleaning experience",
+      "Trained teams for deep clean, villa, sofa, and carpet work",
+      "Quote-first process with clear scope before booking",
+    ],
+    image: "/brand-mark.png",
+    sameAs: [
+      "https://justshinecleaningservices.com/about",
+      "https://www.instagram.com/justshine.uae/",
+    ],
+  },
+} as const;
 
 export type Service = {
   id: string;
@@ -228,27 +265,6 @@ export const testimonials = [
     area: "Google review",
     service: "Cleaning Service",
     quote: "Excellent work.",
-    rating: 5,
-  },
-  {
-    name: "Ellene Saeed",
-    area: "Google review",
-    service: "Home Cleaning",
-    quote: "A recent Google reviewer for Just Shine Cleaning Services in Abu Dhabi.",
-    rating: 5,
-  },
-  {
-    name: "haider khan",
-    area: "Google review",
-    service: "Cleaning Service",
-    quote: "A recent Google reviewer for Just Shine Cleaning Services.",
-    rating: 5,
-  },
-  {
-    name: "Just Shine Cleaning Services customer",
-    area: "Facebook",
-    service: "Home Cleaning",
-    quote: "A clean home is a happy home. Let Just Shine Cleaning Services make your home sparkle.",
     rating: 5,
   },
 ];

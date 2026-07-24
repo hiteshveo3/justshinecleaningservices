@@ -17,10 +17,10 @@ const processSteps = [
   { title: "Team arrives", text: "Trained cleaners bring the standard supplies and follow the agreed plan.", icon: Clock01Icon },
 ];
 const trustPoints = [
-  "Residential and commercial cleaning",
-  "Clear starting prices before booking",
-  "WhatsApp quote with photos and location",
-  "Flexible hourly and visit-based services",
+  { label: `${site.rating.value}/${site.rating.best} Google rating`, href: "/testimonials" },
+  { label: `${site.rating.count}+ customer reviews`, href: "/testimonials" },
+  { label: `${site.yearsExperience}+ years in Abu Dhabi`, href: "/about" },
+  { label: "Satisfaction re-clean support", href: "/about" },
 ];
 const cleaningPlans = [
   { title: "Quick refresh", text: "For regular dust, floors, bathrooms, and visible daily mess.", href: "/services/home-cleaning" },
@@ -96,12 +96,12 @@ export default function Home() {
         <div className="container">
           <div className="grid gap-4 md:grid-cols-4">
             {trustPoints.map((point) => (
-              <div className="flex items-center gap-3 rounded-xl border border-emerald-950/10 bg-[#f8fff3] p-4" key={point}>
+              <Link className="flex items-center gap-3 rounded-xl border border-emerald-950/10 bg-[#f8fff3] p-4 transition hover:bg-lime-50" href={point.href} key={point.label}>
                 <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-lime-300 text-emerald-950">
                   <HugeiconsIcon icon={CheckmarkCircle02Icon} className="icon" size={18} color="currentColor" strokeWidth={1.8} aria-hidden="true" />
                 </span>
-                <p className="text-sm font-medium leading-5 text-emerald-950">{point}</p>
-              </div>
+                <p className="text-sm font-medium leading-5 text-emerald-950">{point.label}</p>
+              </Link>
             ))}
           </div>
         </div>
@@ -195,7 +195,7 @@ export default function Home() {
             <div>
               <p className="eyebrow">How it works</p>
               <h2 className="mt-3 text-2xl font-medium leading-tight text-emerald-950 sm:text-3xl">Simple booking.</h2>
-              <p className="mt-4 max-w-xl text-sm leading-7 text-slate-700 sm:text-base">No complicated booking flow for Phase 1. Call or WhatsApp, share the details, and we guide you to the right cleaning service.</p>
+              <p className="mt-4 max-w-xl text-sm leading-7 text-slate-700 sm:text-base">Call or WhatsApp, share the details, and we guide you to the right cleaning service with a clear starting quote.</p>
             </div>
             <div className="grid gap-4 md:grid-cols-3">
               {processSteps.map((step, index) => (

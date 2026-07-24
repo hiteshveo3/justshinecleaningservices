@@ -96,7 +96,7 @@ export default async function ServicePage({ params }: Props) {
       availability: "https://schema.org/InStock",
       url: `${site.url}/services/${service.slug}`,
     },
-    aggregateRating: { "@type": "AggregateRating", ratingValue: "4.8", reviewCount: "48" },
+    aggregateRating: { "@type": "AggregateRating", ratingValue: String(site.rating.value), reviewCount: String(site.rating.count), bestRating: String(site.rating.best) },
   };
   const faqSchema = {
     "@context": "https://schema.org",
@@ -134,13 +134,13 @@ export default async function ServicePage({ params }: Props) {
             </div>
             <div className="mt-5 grid max-w-xl grid-cols-1 gap-2 sm:grid-cols-3">
               {[
-                { label: "4.8 rated", text: "Google review signal" },
-                { label: "12+ years", text: "Abu Dhabi experience" },
+                { label: `${site.rating.value} rated`, text: `${site.rating.source} reviews` },
+                { label: `${site.yearsExperience}+ years`, text: "Abu Dhabi experience" },
                 { label: "Eco-friendly", text: "Surface-safe options" },
               ].map((badge) => (
                 <a
                   className="rounded-xl bg-white/82 p-3 ring-1 ring-emerald-950/10 transition hover:bg-white"
-                  href={badge.label === "4.8 rated" ? "/testimonials" : badge.label === "Eco-friendly" ? "/sustainability" : "/about"}
+                  href={badge.label === `${site.rating.value} rated` ? "/testimonials" : badge.label === "Eco-friendly" ? "/sustainability" : "/about"}
                   key={badge.label}
                 >
                   <span className="block text-sm font-medium text-emerald-950">{badge.label}</span>

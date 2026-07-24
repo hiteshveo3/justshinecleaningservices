@@ -21,10 +21,26 @@ export default async function ContactPage({ searchParams }: { searchParams?: Pro
   const schema = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
+    "@id": `${site.url}/#business`,
     name: site.name,
     telephone: site.phone,
     email: site.email,
-    address: site.location,
+    url: site.url,
+    image: `${site.url}${site.logo}`,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: site.streetAddress,
+      addressLocality: site.addressLocality,
+      addressRegion: site.addressRegion,
+      addressCountry: site.addressCountry,
+    },
+    openingHoursSpecification: {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      opens: "08:00",
+      closes: "20:00",
+    },
+    sameAs: [site.facebook, site.instagram, site.googleMapsUrl],
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "Customer Service",
@@ -32,6 +48,7 @@ export default async function ContactPage({ searchParams }: { searchParams?: Pro
       email: site.email,
       areaServed: "Abu Dhabi, UAE",
       availableLanguage: ["English", "Arabic", "Urdu", "Hindi"],
+      hoursAvailable: site.openingHoursLabel,
     },
   };
 
@@ -59,7 +76,8 @@ export default async function ContactPage({ searchParams }: { searchParams?: Pro
               ["WhatsApp", site.phone, "Fastest for photos and quotes"],
               ["Business email", site.email, "Primary email"],
               ["Gmail", site.socialEmail, "Alternate email"],
-              ["Location", site.location, "8:00 AM - 8:00 PM daily"],
+              ["Location", site.location, site.openingHoursLabel],
+              ["Trust", `${site.rating.value}/${site.rating.best} Google`, `${site.rating.count}+ reviews · ${site.yearsExperience}+ years`],
             ].map(([label, value, note]) => (
               <div key={label} className="rounded-lg border border-emerald-950/10 bg-white/75 p-5">
                 <p className="text-sm text-slate-600">{label}</p>
