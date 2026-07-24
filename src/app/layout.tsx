@@ -15,14 +15,26 @@ export const metadata: Metadata = {
     template: "%s | Just Shine Cleaning Services",
   },
   description: "Professional villa, home, office, carpet, sofa, and window cleaning in Abu Dhabi. Call or WhatsApp Just Shine Cleaning Services for fast booking.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+  },
   openGraph: {
     title: "Just Shine Cleaning Services Abu Dhabi",
     description: "Fast, trusted cleaning services in Abu Dhabi with call and WhatsApp booking.",
     url: "https://justshinecleaningservices.com",
     siteName: "Just Shine Cleaning Services",
     type: "website",
+    images: [{ url: "/just-shine-fav.png", width: 1024, height: 1024, alt: "Just Shine Cleaning Services" }],
   },
-  twitter: { card: "summary_large_image", title: "Just Shine Cleaning Services Abu Dhabi" },
+  twitter: {
+    card: "summary_large_image",
+    title: "Just Shine Cleaning Services Abu Dhabi",
+    images: ["/just-shine-fav.png"],
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
