@@ -14,7 +14,7 @@ const items = [
 const variations = [
   {
     id: "C1",
-    name: "Forest panel + lime numbers (applied live)",
+    name: "Forest panel + lime numbers",
     note: "Dark section, bright numbers, no pale cards. Strong contrast.",
     shell: "rounded-3xl bg-[#0b4f2f] p-5 sm:p-8",
     heading: "text-white",
@@ -77,7 +77,7 @@ const variations = [
   },
   {
     id: "C4",
-    name: "Editorial on deep green (no cards)",
+    name: "Editorial on deep green (no cards) — applied live",
     note: "One composition — stacked rows, high contrast type only.",
     shell: "rounded-3xl bg-[#063d25] p-5 sm:p-8",
     heading: "text-white",
@@ -127,7 +127,7 @@ export default function BestForVariationsPage() {
         <p className="eyebrow">Design preview</p>
         <h1 className="mt-3 text-3xl font-medium text-emerald-950">Best-for — high contrast only</h1>
         <p className="mt-3 max-w-2xl text-base leading-7 text-slate-700">
-          White-on-white / pale cards removed. Live site currently uses <strong>C1</strong>. Reply with C2–C5 to switch.
+          White-on-white / pale cards removed. Live site currently uses <strong>C4</strong>. Reply with C1–C3 or C5 to switch.
         </p>
         <div className="mt-10 grid gap-8">
           {variations.map((item) => (

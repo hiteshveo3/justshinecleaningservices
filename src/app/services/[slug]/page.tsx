@@ -344,15 +344,17 @@ export default async function ServicePage({ params }: Props) {
               </section>
             )}
 
-            <section className="rounded-3xl bg-[#0b4f2f] p-5 sm:p-8">
+            <section className="rounded-3xl bg-[#063d25] p-5 sm:p-8">
               <p className="eyebrow-lime">Best for</p>
               <h2 className="mt-4 text-2xl font-medium text-white sm:text-3xl">When to book {service.name}</h2>
-              <div className="mt-6 grid gap-0 divide-y divide-white/15 md:grid-cols-3 md:divide-x md:divide-y-0">
+              <div className="mt-6 grid gap-6">
                 {pageContent.bestFor.map((item, index) => (
-                  <article className="px-0 py-5 md:px-5 md:py-0 md:first:pl-0 md:last:pr-0" key={item.title}>
-                    <p className="text-3xl font-semibold text-[#d9ff42]">0{index + 1}</p>
-                    <h3 className="mt-3 text-lg font-medium text-white">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-emerald-50/85">{item.text}</p>
+                  <article className="grid gap-2 border-b border-white/15 pb-6 last:border-0 last:pb-0 sm:grid-cols-[5rem_1fr] sm:gap-6" key={item.title}>
+                    <p className="text-4xl font-medium leading-none text-[#d9ff42]">0{index + 1}</p>
+                    <div>
+                      <h3 className="text-xl font-medium text-white">{item.title}</h3>
+                      <p className="mt-2 max-w-xl text-sm leading-7 text-emerald-50/85">{item.text}</p>
+                    </div>
                   </article>
                 ))}
               </div>
